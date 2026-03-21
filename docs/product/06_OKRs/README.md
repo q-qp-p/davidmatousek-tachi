@@ -134,3 +134,14 @@ OKRs align the team around measurable goals. They answer:
 ---
 
 **Template Instructions**: Create a new OKR file each quarter (YYYY-QN.md). Delete this message after creating your first OKR document.
+
+---
+
+## Feature Delivery Log
+
+> **Purpose**: Track feature deliveries for OKR alignment once quarterly OKRs are established.
+> Features listed here should be mapped to Key Results when OKRs are created.
+
+| Date | Feature | PRD | Impact |
+|------|---------|-----|--------|
+| 2026-03-21 | F-001: Project Skeleton & Interface Contract | [001](../02_PRD/001-project-skeleton-interface-contract-2026-03-21.md) | Foundation layer complete: 11 threat agent prompts, interface contract, output template, 3 schemas, 3 examples. Unblocks F-002 through F-010. |

@@ -94,6 +94,30 @@ This document defines the technology stack for tachi.
 
 These are tools used by the AOD Kit itself (not the adopter's application stack).
 
+### Threat Modeling Schemas (Feature 001)
+
+**Directory**: `schemas/` (machine-readable data contracts for threat analysis pipeline)
+- Architecture: Hub-and-spoke content model -- `agents/` (hub) produces findings conforming to schemas, `templates/` (format) consumes them, `adapters/` (configuration) tunes scoring/context (Feature 001)
+- Interface contract: `docs/INTERFACE-CONTRACT.md` -- single integration reference for input formats, dispatch rules, and output structure
+
+| Schema | Purpose | Key Fields |
+|--------|---------|------------|
+| `schemas/finding.yaml` | Intermediate Representation (IR) -- data contract between agents and templates | 10 fields: id, category, component, threat, likelihood, impact, risk_level, mitigation, references, dfd_element_type |
+| `schemas/input.yaml` | Input validation -- accepted architecture description formats | 5 formats: ASCII, free-text, Mermaid, PlantUML, C4; includes recognition patterns and `format: auto` heuristic detection |
+| `schemas/output.yaml` | Output structure -- sections required in generated threat model | 7 sections: System Overview, Trust Boundaries, STRIDE Tables, AI Threat Tables, Coverage Matrix, Risk Summary, Recommended Actions |
+
+**Threat agent prompts**: `agents/` (11 prompt files + orchestrator placeholder)
+| Subdirectory | Count | Scope |
+|-------------|-------|-------|
+| `agents/stride/` | 6 agents | STRIDE categories: Spoofing, Tampering, Repudiation, Info Disclosure, Denial of Service, Privilege Escalation |
+| `agents/ai/` | 5 agents | AI-specific threats: Prompt Injection, Tool Abuse, Data Poisoning, Model Theft, Agent Autonomy |
+
+**Standards**: OWASP 3x3 risk matrix (likelihood x impact), STRIDE-per-Element methodology (DFD element mapping), OWASP references (ASI-xx, MCP-xx, LLM0x:2025 for AI agents).
+
+**Output template**: `templates/threats.md` -- canonical 7-section threat model template with `schema_version: "1.0"` frontmatter.
+
+---
+
 ### Shell Scripts
 
 **Bash 3.2** (macOS default `/bin/bash`)
