@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-03-21T23:39:29Z.
+> Auto-generated from GitHub Issues on 2026-03-21T23:40:14Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -40,4 +40,4 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #1 | Project Skeleton & Interface Contract | OPEN | 2026-03-21 |
+| #1 | Project Skeleton & Interface Contract | CLOSED | 2026-03-21 |
