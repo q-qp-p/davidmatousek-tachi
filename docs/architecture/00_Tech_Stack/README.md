@@ -104,14 +104,14 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 |--------|---------|------------|
 | `schemas/finding.yaml` | Intermediate Representation (IR) -- data contract between agents and templates | 10 fields: id, category, component, threat, likelihood, impact, risk_level, mitigation, references, dfd_element_type |
 | `schemas/input.yaml` | Input validation -- accepted architecture description formats | 5 formats: ASCII, free-text, Mermaid, PlantUML, C4; includes recognition patterns and `format: auto` heuristic detection |
-| `schemas/output.yaml` | Output structure -- sections required in generated threat model | 7 sections: System Overview, Trust Boundaries, STRIDE Tables, AI Threat Tables, Coverage Matrix, Risk Summary, Recommended Actions |
+| `schemas/output.yaml` | Output structure -- sections required in generated threat model | 7 sections + Section 4a: System Overview, Trust Boundaries, STRIDE Tables, AI Threat Tables, **Correlated Findings (4a)**, Coverage Matrix, Risk Summary, Recommended Actions (Feature 010) |
 
 **Threat agent prompts**: `agents/` (11 agent prompt files + orchestrator)
 | Subdirectory | Count | Scope | Status |
 |-------------|-------|-------|--------|
 | `agents/stride/` | 6 agents | STRIDE categories: Spoofing, Tampering, Repudiation, Info Disclosure, Denial of Service, Privilege Escalation | Validated end-to-end (Feature 005) |
 | `agents/ai/` | 5 agents | AI-specific threats: Prompt Injection, Tool Abuse, Data Poisoning, Model Theft, Agent Autonomy; two-layer keyword dispatch (AG-prefixed agentic, LLM-prefixed LLM categories) | Validated end-to-end (Feature 007) |
-| `agents/orchestrator.md` | 1 agent | Central orchestrator implementing OWASP 4-phase workflow (Scope, Determine Threats, Determine Countermeasures, Assess) with STRIDE-per-Element dispatch and AI keyword dispatch (Feature 003) | Complete |
+| `agents/orchestrator.md` | 1 agent | Central orchestrator implementing OWASP 4-phase workflow (Scope, Determine Threats, Determine Countermeasures, Assess) with STRIDE-per-Element dispatch, AI keyword dispatch (Feature 003), and cross-agent correlation detection with deduplicated coverage matrix and risk summary (Feature 010) | Complete |
 
 **STRIDE agent capabilities** (Feature 005):
 - Each agent enforces STRIDE-per-Element matrix targeting (DFD element type filtering)
@@ -122,7 +122,7 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 
 **Standards**: OWASP 3x3 risk matrix (likelihood x impact), STRIDE-per-Element methodology (DFD element mapping), OWASP API Security 2023 (API1-API10), OWASP Top 10 2021 (A01-A10), OWASP references (ASI-xx, MCP-xx, LLM0x:2025 for AI agents), CWE and MITRE ATT&CK cross-references.
 
-**Output template**: `templates/threats.md` -- canonical 7-section threat model template with `schema_version: "1.0"` frontmatter.
+**Output template**: `templates/threats.md` -- canonical 7-section + Section 4a threat model template with `schema_version: "1.1"` frontmatter. Section 4a (Correlated Findings) added in Feature 010. Coverage matrix uses three-state cell model (deduplicated count, "---" analyzed-but-clean, "n/a" not-applicable). Risk summary shows deduplicated counts with raw count parenthetical when different.
 
 ---
 

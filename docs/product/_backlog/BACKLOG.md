@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-03-22T19:19:36Z.
+> Auto-generated from GitHub Issues on 2026-03-22T20:15:35Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -40,7 +40,7 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #10 | Feature 008: Deduplication & Risk Rating | OPEN | 2026-03-22 |
+| #10 | Feature 008: Deduplication & Risk Rating | CLOSED | 2026-03-22 |
 | #7 | AI Threat Agents | CLOSED | 2026-03-22 |
 | #5 | STRIDE Threat Agents | CLOSED | 2026-03-22 |
 | #3 | Orchestrator Agent | CLOSED | 2026-03-22 |

@@ -68,6 +68,7 @@ This directory documents reusable design patterns for tachi.
 
 ### Threat Modeling Patterns (AOD Kit)
 - [STRIDE-per-Element Matrix Targeting](#pattern-stride-per-element-matrix-targeting)
+- [Cross-Agent Correlation Detection](#pattern-cross-agent-correlation-detection)
 
 ### Stack Pack Architecture Patterns (AOD Kit)
 - [Two-Level Architecture (Build-Time / Run-Time)](#pattern-two-level-architecture)
@@ -1258,6 +1259,87 @@ output_schema: schemas/finding.yaml
 #### Related Patterns
 - [On-Demand Reference File Segmentation](#pattern-on-demand-reference-file-segmentation) -- agent prompts follow a similar selective-loading principle (analyze only what is relevant)
 - [Graceful CLI Degradation](#pattern-graceful-cli-degradation) -- agents default ambiguous components to Process (broadest coverage) rather than failing
+
+---
+
+### Pattern: Cross-Agent Correlation Detection
+
+**Added**: Feature 010 (Deduplication & Risk Rating)
+**ADR**: [ADR-012](../02_ADRs/ADR-012-cross-agent-correlation-detection.md)
+
+#### Problem
+
+When STRIDE and AI threat agents independently analyze the same architecture, they produce overlapping findings on the same component from different threat perspectives. For example, a Tampering finding (T-2) and a Data-Poisoning finding (LLM-1) on the same LLM pipeline both address data integrity. Reporting these as independent findings inflates risk counts in the coverage matrix and risk summary, misleading security reviewers about the actual distinct threat count.
+
+#### Solution
+
+After all agent findings are collected (Phase 3), apply deterministic correlation detection before coverage matrix generation (Phase 4). Five fixed rules map STRIDE-to-AI category pairs based on shared threat semantics. Findings are grouped by target component first, then cross-category pairs are checked against the rule table. Matched findings are grouped into correlation groups (CG-N). Each finding belongs to at most one group.
+
+The correlation is non-destructive: original findings remain in their STRIDE and AI tables. Correlation groups appear in a separate Section 4a. Deduplication affects only the coverage matrix cell counts and the risk summary totals.
+
+| Rule | STRIDE Category | AI Category | Correlation Basis |
+|------|----------------|-------------|-------------------|
+| CR-1 | Tampering (T) | Data-Poisoning (LLM) | Data integrity |
+| CR-2 | Privilege-Escalation (E) | Agent-Autonomy (AG) | Excessive permissions |
+| CR-3 | Info-Disclosure (I) | Prompt-Injection (LLM) | Information leakage |
+| CR-4 | Repudiation (R) | Agent-Autonomy (AG) | Accountability gaps |
+| CR-5 | Denial-of-Service (D) | Tool-Abuse (AG) | Resource exhaustion |
+
+#### Example
+
+```markdown
+# Orchestrator Phase 3 correlation detection (pseudocode)
+
+# 1. Group findings by target component
+groups = findings.group_by(component)
+
+# 2. For each component group, check cross-category pairs against 5 rules
+for component, component_findings in groups:
+    stride_findings = [f for f in component_findings if f.category in STRIDE]
+    ai_findings = [f for f in component_findings if f.category in AI]
+
+    matched = []
+    for sf in stride_findings:
+        for af in ai_findings:
+            if (sf.category, af.category) matches any CR-1..CR-5:
+                matched.append((sf, af))
+
+    # 3. If matches found, create one correlation group per component
+    if matched:
+        CG-N = CorrelationGroup(
+            findings=flatten(matched),
+            risk_level=max(risk_level for f in flatten(matched)),
+            component=component
+        )
+
+# 4. Self-check: no finding in more than one group
+```
+
+Output in Section 4a:
+
+```markdown
+## 4a. Correlated Findings
+
+| Group | Findings | Component | Threat Summary | Risk Level |
+|-------|----------|-----------|----------------|------------|
+| CG-1  | T-2, LLM-1 | LLM Agent Pipeline | Tampering: data corruption; Data-Poisoning: training data manipulation | High |
+```
+
+Coverage matrix uses deduplicated counts (CG-1 members count as 1 per cell). Three-state cell model: integer (deduplicated count), "---" (analyzed-but-clean), "n/a" (not-applicable).
+
+#### When to Use
+- Multi-agent threat analysis where different agents analyze the same components through different lenses
+- When inflated finding counts from overlapping agent perspectives reduce output credibility
+- When downstream consumers (coverage matrix, risk summary) need accurate distinct threat counts
+
+#### When NOT to Use
+- Single-agent analysis (no cross-agent overlap possible)
+- When finding overlap is acceptable and deduplication would obscure important perspectives
+- When findings target different components (correlation requires same-component matching)
+
+#### Related Patterns
+- [STRIDE-per-Element Matrix Targeting](#pattern-stride-per-element-matrix-targeting) -- the dispatch mechanism that produces the findings being correlated
+- [On-Demand Reference File Segmentation](#pattern-on-demand-reference-file-segmentation) -- correlation rules are embedded in the orchestrator prompt, not loaded from external files
 
 ---
 

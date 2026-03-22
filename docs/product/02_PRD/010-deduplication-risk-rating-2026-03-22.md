@@ -3,7 +3,7 @@ prd:
   number: "010"
   topic: deduplication-risk-rating
   created: 2026-03-22
-  status: Approved
+  status: Delivered
   type: feature
 triad:
   pm_signoff: {agent: product-manager, date: 2026-03-22, status: approved, notes: "PRD drafted by PM via ~aod-define skill with GitHub Issue #10 user stories and consumer guide research as primary inputs"}
@@ -16,7 +16,7 @@ source:
 
 # Deduplication & Risk Rating - Product Requirements Document
 
-**Status**: Approved
+**Status**: Delivered
 **Created**: 2026-03-22
 **Author**: product-manager
 **Reviewers**: architect, team-lead
