@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Feature 010 — Deduplication & Risk Rating
+
+**Added**
+- Cross-agent finding correlation with 5 deterministic rules, deduplicated risk summaries, three-state coverage matrix, and OWASP 3x3 risk calibration matrix; schema v1.1 (`2eac145`)
+
+**Changed**
+- Closed Feature 010 — updated product docs, architecture docs (ADR-012), patterns, KB entry PAT-003 (`87eeb89`)
+- Regenerated BACKLOG.md after issue closure (`d147318`)
+
 ### Feature 007 — AI Threat Agents
 
 **Added**
