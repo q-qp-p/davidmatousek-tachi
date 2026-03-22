@@ -106,11 +106,12 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 | `schemas/input.yaml` | Input validation -- accepted architecture description formats | 5 formats: ASCII, free-text, Mermaid, PlantUML, C4; includes recognition patterns and `format: auto` heuristic detection |
 | `schemas/output.yaml` | Output structure -- sections required in generated threat model | 7 sections: System Overview, Trust Boundaries, STRIDE Tables, AI Threat Tables, Coverage Matrix, Risk Summary, Recommended Actions |
 
-**Threat agent prompts**: `agents/` (11 prompt files + orchestrator placeholder)
+**Threat agent prompts**: `agents/` (11 agent prompt files + orchestrator)
 | Subdirectory | Count | Scope |
 |-------------|-------|-------|
 | `agents/stride/` | 6 agents | STRIDE categories: Spoofing, Tampering, Repudiation, Info Disclosure, Denial of Service, Privilege Escalation |
 | `agents/ai/` | 5 agents | AI-specific threats: Prompt Injection, Tool Abuse, Data Poisoning, Model Theft, Agent Autonomy |
+| `agents/orchestrator.md` | 1 agent | Central orchestrator implementing OWASP 4-phase workflow (Scope, Determine Threats, Determine Countermeasures, Assess) with STRIDE-per-Element dispatch and AI keyword dispatch (Feature 003) |
 
 **Standards**: OWASP 3x3 risk matrix (likelihood x impact), STRIDE-per-Element methodology (DFD element mapping), OWASP references (ASI-xx, MCP-xx, LLM0x:2025 for AI agents).
 

@@ -171,22 +171,23 @@ Architecture Input (5 formats)
 ### Component 1: Orchestrator Prompt File
 
 **File**: `agents/orchestrator.md`
-**Type**: Replace placeholder
+**Type**: Replace placeholder (Feature 001 placeholder replaced with full implementation)
 **Purpose**: Central prompt implementing OWASP 4-step threat modeling workflow — parse, classify, dispatch, assemble.
 
 **Internal Structure** (prompt sections):
 
 | Section | OWASP Phase | Responsibility |
 |---------|-------------|----------------|
-| Frontmatter | — | Agent metadata (agent_name, category, status, version) |
-| Role & Purpose | — | Establish orchestrator identity and output constraints |
-| Input Sanitization Boundary | — | Mark architecture input as data, not instructions |
-| Phase 1: Scope | Scope | Format detection, component extraction, DFD classification, trust boundary identification, System Overview assembly |
-| Phase 2: Determine Threats | Determine Threats | STRIDE-per-Element normalization table, AI keyword dispatch rules, agent invocation protocol (parallel + sequential) |
-| Phase 3: Determine Countermeasures | Determine Countermeasures | Agent finding collection, risk_level validation (OWASP 3x3), STRIDE table assembly (6), AI table assembly (2 via 5-to-2 mapping) |
-| Phase 4: Assess | Assess | Coverage matrix generation, risk summary computation, recommended actions list (sorted by risk descending) |
-| Error Handling | — | UNSUPPORTED_FORMAT, NO_COMPONENTS, INVALID_FORMAT_VALUE responses |
-| Output Validation | — | Structural integrity check (7 sections, frontmatter, finding ID patterns) |
+| Frontmatter | — | Agent metadata (agent_name, category, status, version) with explicit references to all schemas, templates, and agent files |
+| Role & Purpose | — | Establish orchestrator identity, platform-neutrality, and output constraints |
+| Input Sanitization Boundary | — | Mark architecture input as data, not instructions; reject prompt injection attempts within `<architecture-input>` tags |
+| Output Format Specification | — | Define 7-section structure (System Overview, Trust Boundaries, STRIDE Tables x6, AI Tables x2, Coverage Matrix, Risk Summary, Recommended Actions) with YAML frontmatter |
+| Phase 1: Scope | Scope | Format detection (5 formats with heuristic priority), component extraction with format-specific parsers, DFD classification (4 element types with ambiguous-default-to-Process rule), trust boundary identification, System Overview assembly, **Component Inventory intermediate output with self-check** |
+| Phase 2: Determine Threats | Determine Threats | STRIDE-per-Element normalization table (DFD type to applicable categories), AI keyword dispatch rules (LLM keywords, AG keywords, dual-dispatch), agent invocation protocol (parallel + sequential modes with full architecture context payload), **Dispatch Table intermediate output with self-check** |
+| Phase 3: Determine Countermeasures | Determine Countermeasures | Agent finding collection, risk_level validation against OWASP 3x3 matrix with correction protocol, STRIDE table assembly (6 tables), AI table assembly (2 tables via 5-agent-to-2-table mapping) |
+| Phase 4: Assess | Assess | Coverage matrix generation (finding counts, dash for analyzed-but-clean, empty for not-applicable), risk summary computation (percentages rounded to 1 decimal), recommended actions list (sorted by risk descending, then table order) |
+| Error Handling | — | Three terminal errors: UNSUPPORTED_FORMAT (auto-detection fails), NO_COMPONENTS (parsing finds no components or data flows), INVALID_FORMAT_VALUE (format field not in allowed enum); two non-terminal handlers: ambiguous classification annotation, non-conforming finding correction |
+| Output Validation | — | Structural integrity checklist: 7 sections present, frontmatter valid, finding IDs sequential, all fields populated, risk levels consistent with OWASP 3x3, cross-section counts match |
 
 ## Data Flow
 

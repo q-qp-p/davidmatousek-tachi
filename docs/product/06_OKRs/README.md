@@ -145,3 +145,4 @@ OKRs align the team around measurable goals. They answer:
 | Date | Feature | PRD | Impact |
 |------|---------|-----|--------|
 | 2026-03-21 | F-001: Project Skeleton & Interface Contract | [001](../02_PRD/001-project-skeleton-interface-contract-2026-03-21.md) | Foundation layer complete: 11 threat agent prompts, interface contract, output template, 3 schemas, 3 examples. Unblocks F-002 through F-010. |
+| 2026-03-21 | F-003: Orchestrator Agent | [003](../02_PRD/003-orchestrator-agent-2026-03-21.md) | Central orchestrator agent prompt: parses 5 architecture formats, dispatches to STRIDE and AI threat agents via STRIDE-per-Element and keyword matching, assembles structured threats.md output. Unblocks F-003 (STRIDE Agents), F-004 (AI Agents), F-005 (Dedup & Risk Rating), F-009 (Platform Adapters). |
