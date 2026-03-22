@@ -16,15 +16,24 @@ Post-delivery quality review for the completed feature. This is Stage 6 of the A
 lifecycle — the one stage designed for human judgment. Each step presents findings
 interactively and commits only what the human approves.
 
-**Flow**: Validate context → Code simplification → Docs-lint → CHANGELOG → API sync → KB review → Report
+**Flow**: Validate context → Branch → Code simplification → Docs-lint → CHANGELOG → API sync → KB review → PR squash-merge → Report
 
 ## Step 0: Validate Context
 
-1. Get branch: `git branch --show-current` → must match `NNN-*` pattern
-2. Extract feature number NNN from branch name
+1. Get branch: `git branch --show-current`
+2. Determine feature number NNN:
+   - If on a `NNN-*` branch: extract NNN from branch name
+   - If on `main`: extract NNN from user input `$ARGUMENTS`, or detect from most recent `feat(NNN)` or `docs(NNN)` commit on main
+   - If NNN cannot be determined: prompt the user for the feature number
 3. Find tasks: `specs/{NNN}-*/tasks.md` → verify all tasks marked `[X]` (build complete)
 4. If tasks incomplete: warn "Build may not be complete — {incomplete_count} tasks remain" and ask whether to proceed
-5. Display: "Document stage for Feature {NNN} on branch {branch}"
+5. Display: "Document stage for Feature {NNN}"
+
+## Step 0b: Create Document Branch
+
+1. If not already on main: `git checkout main && git pull origin main`
+2. Create branch: `git checkout -b {NNN}-document-stage`
+3. Display: "Working on branch {NNN}-document-stage"
 
 ## Step 1: Code Simplification
 
@@ -99,12 +108,12 @@ Analyze changed code for undocumented complex functions and suggest docstrings.
 
 ## Step 3: CHANGELOG Generation
 
-Generate CHANGELOG entries from commits on the feature branch.
+Generate CHANGELOG entries from the feature's delivery commits on main (not the document branch).
 
 ### 3a: Collect and Categorize Commits
 
-1. Run: `git log --format="%H %s" main..HEAD`
-2. If no commits: display "No commits found", proceed to Step 4
+1. Run: `git log --format="%H %s" main` and filter to commits matching `(NNN)` or the feature name from `specs/{NNN}-*/`
+2. If no relevant commits found: display "No commits found", proceed to Step 4
 3. If `CHANGELOG.md` exists: read it and exclude commits whose SHA (first 7 chars) already appear
 4. If all commits already captured: display "CHANGELOG is up to date", proceed to Step 4
 5. Parse conventional commit prefixes:
@@ -171,7 +180,29 @@ Review knowledge base entries captured during build and deliver.
 3. Present each entry for validation: confirm accuracy, improve wording if needed
 4. Commit any KB updates with `docs({NNN}): review KB entries`
 
-## Step 6: Report
+## Step 6: PR Squash-Merge
+
+Push the document branch, create a PR, and squash-merge to main.
+
+1. If no commits on the document branch (`git log main..HEAD --oneline` is empty): display "No changes to merge — skipping PR", proceed to Step 7
+2. Push: `git push -u origin {NNN}-document-stage`
+3. Create PR:
+   ```
+   gh pr create --title "docs({NNN}): post-delivery quality review" --body "$(cat <<'EOF'
+   ## Summary
+   Post-delivery documentation review for Feature {NNN}.
+
+   {one-line summary per commit on the branch}
+
+   🤖 Generated with [Claude Code](https://claude.com/claude-code)
+   EOF
+   )"
+   ```
+4. Squash-merge: `gh pr merge --squash --delete-branch`
+5. Switch to main: `git checkout main && git pull origin main`
+6. Prune stale remote refs: `git remote prune origin`
+
+## Step 7: Report
 
 Display summary of all documentation activities:
 
@@ -179,7 +210,7 @@ Display summary of all documentation activities:
 DOCUMENT STAGE COMPLETE
 
 Feature: {NNN}
-Branch: {branch}
+PR: #{pr_number} (squash-merged)
 
 Results:
   Code Simplification: {accepted/rejected/skipped/no changes}
