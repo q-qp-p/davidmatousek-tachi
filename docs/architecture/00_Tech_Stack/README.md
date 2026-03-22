@@ -110,7 +110,7 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 | Subdirectory | Count | Scope | Status |
 |-------------|-------|-------|--------|
 | `agents/stride/` | 6 agents | STRIDE categories: Spoofing, Tampering, Repudiation, Info Disclosure, Denial of Service, Privilege Escalation | Validated end-to-end (Feature 005) |
-| `agents/ai/` | 5 agents | AI-specific threats: Prompt Injection, Tool Abuse, Data Poisoning, Model Theft, Agent Autonomy | Skeleton (Feature 001) |
+| `agents/ai/` | 5 agents | AI-specific threats: Prompt Injection, Tool Abuse, Data Poisoning, Model Theft, Agent Autonomy; two-layer keyword dispatch (AG-prefixed agentic, LLM-prefixed LLM categories) | Validated end-to-end (Feature 007) |
 | `agents/orchestrator.md` | 1 agent | Central orchestrator implementing OWASP 4-phase workflow (Scope, Determine Threats, Determine Countermeasures, Assess) with STRIDE-per-Element dispatch and AI keyword dispatch (Feature 003) | Complete |
 
 **STRIDE agent capabilities** (Feature 005):
