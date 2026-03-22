@@ -231,11 +231,57 @@ flowchart TD
 
 ### Feature 005: STRIDE Threat Agents
 
+**Status**: Delivered (2026-03-22) | PR #6 | 41/41 tasks complete
+
 ## Components
+
+### Component 1: 6 STRIDE Threat Agent Definitions
+
+**Location**: `agents/stride/`
+**Type**: Enhanced existing files (Feature 001 skeleton refined and validated)
+**Purpose**: Each agent analyzes architecture input through exactly one STRIDE threat lens, producing component-specific findings conforming to `schemas/finding.yaml`.
+
+| Agent File | Threat Class | DFD Targets | ID Prefix | Key Detection Patterns |
+|-----------|-------------|-------------|-----------|----------------------|
+| `spoofing.md` | Spoofing (S) | External Entity, Process | S-N | Authentication bypass, credential theft/replay, session hijacking, service impersonation, federated identity attacks |
+| `tampering.md` | Tampering (T) | Process, Data Store, Data Flow | T-N | Input validation bypass, data integrity violations, message/payload manipulation, storage tampering, configuration tampering |
+| `repudiation.md` | Repudiation (R) | External Entity, Process | R-N | Audit logging gaps, log integrity failures, non-repudiation mechanism absence, timestamp manipulation |
+| `info-disclosure.md` | Information Disclosure (I) | Process, Data Store, Data Flow | I-N | Data leaks via error messages, excessive API responses, side-channel exposure, storage access control gaps, transit encryption gaps |
+| `denial-of-service.md` | Denial of Service (D) | Process, Data Store, Data Flow | D-N | Resource exhaustion, queue/connection pool saturation, storage flooding, algorithmic complexity attacks, cascading failures |
+| `privilege-escalation.md` | Elevation of Privilege (E) | Process | E-N | RBAC/ABAC bypass, horizontal/vertical escalation, default permission over-grants, parameter tampering for privilege gain |
+
+**Agent structure** (canonical per-agent organization):
+- YAML frontmatter: `agent_name`, `category`, `threat_class`, `dfd_targets`, `owasp_references`, `output_schema`
+- Purpose section: Threat class definition and DFD targeting rationale
+- Detection Scope: Targeted DFD element types with patterns and indicators (4-6 subcategories)
+- AI-Specific Threat Patterns: Agentic application extensions per STRIDE category
+- Finding Template: Concrete example demonstrating component-specific findings
+- Risk Computation: OWASP 3x3 matrix application with likelihood/impact guidance
+- References: OWASP Top 10 2021, OWASP API Security 2023, CWE, MITRE ATT&CK identifiers
+
+### Component 2: AI-Specific Threat Pattern Extensions
+
+**Location**: Within each `agents/stride/*.md` agent file
+**Type**: New sections within existing agents
+**Purpose**: Extend classic STRIDE patterns with threats specific to agentic AI applications.
+
+Each STRIDE agent includes an "AI-Specific Threat Patterns" section covering:
+- **Spoofing**: LLM API key theft, model identity spoofing, prompt-based identity assumption
+- **Tampering**: Training data poisoning, RAG context manipulation, tool response modification
+- **Repudiation**: Agentic action audit gaps, tool call logging, autonomous decision accountability
+- **Info Disclosure**: Model inversion attacks, embedding leakage, context window data exposure
+- **DoS**: LLM token exhaustion, recursive agent loops, unbounded tool execution chains
+- **Privilege Escalation**: Agent capability boundary violations, tool permission escalation, MCP server scope creep
+
+### Component 3: OWASP API Security 2023 Cross-References
+
+**Location**: YAML frontmatter `owasp_references` field in each agent file
+**Type**: Enhanced metadata
+**Purpose**: Cross-reference STRIDE findings with OWASP API Security Top 10 2023 (API1-API10) alongside existing OWASP Top 10 2021, CWE, and MITRE ATT&CK references.
 
 ### Agent Validation Framework
 
-The validation approach has three layers:
+The validation approach (used during Feature 005 delivery) has three layers:
 
 **Layer 1: Structural Audit** (per agent)
 - Frontmatter fields present and correct (`agent_name`, `category`, `threat_class`, `dfd_targets`, `owasp_references`, `output_schema`)
@@ -283,9 +329,11 @@ Architecture Input (any format)
 │  Each agent:                │
 │  1. Receives full arch      │
 │  2. Filters by dfd_targets  │
-│  3. Applies detection       │
-│     patterns                │
-│  4. Produces findings       │
+│  3. Applies classic STRIDE  │
+│     detection patterns      │
+│  4. Applies AI-specific     │
+│     threat patterns         │
+│  5. Produces findings       │
 │     (IR schema)             │
 └─────────┬───────────────────┘
           │ findings per schemas/finding.yaml
@@ -309,4 +357,5 @@ Architecture Input (any format)
 |-----------|-----------|---------------|
 | Agent files | Markdown with YAML frontmatter | Platform-neutral, LLM-agnostic prompt format |
 | Schema | YAML | Machine-readable validation contract |
+| Reference frameworks | OWASP Top 10 2021, OWASP API Security 2023, CWE, MITRE ATT&CK | Industry-standard cross-references for threat findings |
 | Validation | Manual review + orchestrator integration run | No automated test framework needed for prompt files |

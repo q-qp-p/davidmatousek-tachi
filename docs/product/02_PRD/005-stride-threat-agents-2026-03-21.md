@@ -3,7 +3,7 @@ prd:
   number: "005"
   topic: stride-threat-agents
   created: 2026-03-21
-  status: Approved
+  status: Delivered
   type: feature
 triad:
   pm_signoff: {agent: product-manager, date: 2026-03-21, status: approved, notes: "PRD drafted by PM via ~aod-define skill with GitHub Issue #5 user stories and consumer guide research as primary inputs"}
@@ -16,8 +16,9 @@ source:
 
 # STRIDE Threat Agents - Product Requirements Document
 
-**Status**: Draft
+**Status**: Delivered
 **Created**: 2026-03-21
+**Delivered**: 2026-03-22
 **Author**: product-manager
 **Reviewers**: architect, team-lead
 **Phase**: Phase 1 (Foundation)

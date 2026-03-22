@@ -1,6 +1,6 @@
 # Design Patterns - tachi
 
-**Last Updated**: 2026-03-21
+**Last Updated**: 2026-03-22
 **Owner**: Architect
 
 ---
@@ -65,6 +65,9 @@ This directory documents reusable design patterns for tachi.
 - [Orchestrator-Awareness Guard](#pattern-orchestrator-awareness-guard)
 - [Non-Fatal Observability Wrapper](#pattern-non-fatal-observability-wrapper)
 - [Built-in Skill Invocation from a Command](#pattern-built-in-skill-invocation-from-a-command)
+
+### Threat Modeling Patterns (AOD Kit)
+- [STRIDE-per-Element Matrix Targeting](#pattern-stride-per-element-matrix-targeting)
 
 ### Stack Pack Architecture Patterns (AOD Kit)
 - [Two-Level Architecture (Build-Time / Run-Time)](#pattern-two-level-architecture)
@@ -1195,6 +1198,66 @@ stacks/fastapi-react/STACK.md (354 lines):
 #### Related Patterns
 - [Dual-Surface Injection](#pattern-dual-surface-injection) -- mechanism that loads STACK.md into agent context at activation time
 - [Two-Level Architecture](#pattern-two-level-architecture) -- knowledge-system packs use STACK.md to define both build-time and run-time conventions
+
+---
+
+### Pattern: STRIDE-per-Element Matrix Targeting
+
+**Added**: Feature 005 (STRIDE Threat Agents)
+**ADR**: [ADR-003](../02_ADRs/ADR-003-stride-per-element-dispatch.md)
+
+#### Problem
+
+Threat agents that analyze all components for all threat categories produce irrelevant findings (e.g., Tampering analysis on an External Entity that the agent does not control). Generic, untargeted threat analysis reduces signal quality and generates noise that security reviewers must manually filter.
+
+#### Solution
+
+Each STRIDE threat agent declares its applicable DFD element types in YAML frontmatter (`dfd_targets` field). When invoked, the agent filters the architecture input to analyze only components whose DFD classification appears in its target list. This enforces the Microsoft STRIDE-per-Element methodology at the agent level.
+
+The matrix is a fixed lookup table -- no probabilistic reasoning or LLM judgment determines which components an agent analyzes:
+
+| DFD Element Type | Applicable Agents |
+|------------------|-------------------|
+| External Entity  | Spoofing (S), Repudiation (R) |
+| Process          | All 6: S, T, R, I, D, E |
+| Data Store       | Tampering (T), Info Disclosure (I), DoS (D) |
+| Data Flow        | Tampering (T), Info Disclosure (I), DoS (D) |
+
+#### Example
+```yaml
+# From agents/stride/spoofing.md frontmatter
+---
+agent_name: spoofing
+category: stride
+threat_class: S
+dfd_targets: [External Entity, Process]
+owasp_references:
+  - "OWASP API Security 2023 API2 — Broken Authentication"
+  - "CWE-287: Improper Authentication"
+output_schema: schemas/finding.yaml
+---
+
+# Agent logic:
+# 1. Receive full architecture input from orchestrator
+# 2. Filter components: keep only those classified as External Entity or Process
+# 3. For each filtered component, apply Spoofing detection patterns
+# 4. Produce findings with S-prefixed IDs referencing specific component names
+# 5. Skip components classified as Data Store or Data Flow (not in dfd_targets)
+```
+
+#### When to Use
+- Threat agents that analyze architecture inputs through a specific threat lens
+- Any dispatch system where component type determines which analyzers are applicable
+- When reducing false positives from structurally inapplicable threat categories is important
+
+#### When NOT to Use
+- Analysis that must consider all components regardless of classification (use full-matrix dispatch)
+- When DFD classification is unavailable or unreliable (agents cannot filter without element types)
+- Single-purpose analyzers that always analyze all components (no filtering benefit)
+
+#### Related Patterns
+- [On-Demand Reference File Segmentation](#pattern-on-demand-reference-file-segmentation) -- agent prompts follow a similar selective-loading principle (analyze only what is relevant)
+- [Graceful CLI Degradation](#pattern-graceful-cli-degradation) -- agents default ambiguous components to Process (broadest coverage) rather than failing
 
 ---
 

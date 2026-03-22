@@ -1,6 +1,6 @@
 # Technology Stack - tachi
 
-**Last Updated**: 2026-03-21
+**Last Updated**: 2026-03-22
 **Owner**: Architect
 
 ---
@@ -107,13 +107,20 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 | `schemas/output.yaml` | Output structure -- sections required in generated threat model | 7 sections: System Overview, Trust Boundaries, STRIDE Tables, AI Threat Tables, Coverage Matrix, Risk Summary, Recommended Actions |
 
 **Threat agent prompts**: `agents/` (11 agent prompt files + orchestrator)
-| Subdirectory | Count | Scope |
-|-------------|-------|-------|
-| `agents/stride/` | 6 agents | STRIDE categories: Spoofing, Tampering, Repudiation, Info Disclosure, Denial of Service, Privilege Escalation |
-| `agents/ai/` | 5 agents | AI-specific threats: Prompt Injection, Tool Abuse, Data Poisoning, Model Theft, Agent Autonomy |
-| `agents/orchestrator.md` | 1 agent | Central orchestrator implementing OWASP 4-phase workflow (Scope, Determine Threats, Determine Countermeasures, Assess) with STRIDE-per-Element dispatch and AI keyword dispatch (Feature 003) |
+| Subdirectory | Count | Scope | Status |
+|-------------|-------|-------|--------|
+| `agents/stride/` | 6 agents | STRIDE categories: Spoofing, Tampering, Repudiation, Info Disclosure, Denial of Service, Privilege Escalation | Validated end-to-end (Feature 005) |
+| `agents/ai/` | 5 agents | AI-specific threats: Prompt Injection, Tool Abuse, Data Poisoning, Model Theft, Agent Autonomy | Skeleton (Feature 001) |
+| `agents/orchestrator.md` | 1 agent | Central orchestrator implementing OWASP 4-phase workflow (Scope, Determine Threats, Determine Countermeasures, Assess) with STRIDE-per-Element dispatch and AI keyword dispatch (Feature 003) | Complete |
 
-**Standards**: OWASP 3x3 risk matrix (likelihood x impact), STRIDE-per-Element methodology (DFD element mapping), OWASP references (ASI-xx, MCP-xx, LLM0x:2025 for AI agents).
+**STRIDE agent capabilities** (Feature 005):
+- Each agent enforces STRIDE-per-Element matrix targeting (DFD element type filtering)
+- AI-specific threat patterns included per agent (e.g., credential theft of API keys for LLM services, model poisoning via tampered training data)
+- OWASP API Security 2023 cross-references (API1-API10) alongside OWASP Top 10 2021, CWE, and MITRE ATT&CK
+- Finding ID convention: S-N (Spoofing), T-N (Tampering), R-N (Repudiation), I-N (Info Disclosure), D-N (DoS), E-N (Privilege Escalation)
+- Component-specific findings enforced -- generic/untargeted threats rejected by agent prompts
+
+**Standards**: OWASP 3x3 risk matrix (likelihood x impact), STRIDE-per-Element methodology (DFD element mapping), OWASP API Security 2023 (API1-API10), OWASP Top 10 2021 (A01-A10), OWASP references (ASI-xx, MCP-xx, LLM0x:2025 for AI agents), CWE and MITRE ATT&CK cross-references.
 
 **Output template**: `templates/threats.md` -- canonical 7-section threat model template with `schema_version: "1.0"` frontmatter.
 
