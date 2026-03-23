@@ -700,6 +700,8 @@ flowchart TD
 
 ### Feature 018: Threat Infographic Agent
 
+**Status**: Delivered (2026-03-23) | PR #19 | 18/18 tasks complete
+
 ## Components
 
 ### Component 1: Infographic Agent Prompt (`agents/threat-infographic.md`)

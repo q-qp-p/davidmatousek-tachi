@@ -1,6 +1,6 @@
 # OKRs (Objectives and Key Results) - tachi
 
-**Last Updated**: 2026-03-22
+**Last Updated**: 2026-03-23
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -149,3 +149,5 @@ OKRs align the team around measurable goals. They answer:
 | 2026-03-22 | F-005: STRIDE Threat Agents | [005](../02_PRD/005-stride-threat-agents-2026-03-21.md) | 6 validated STRIDE threat agents (spoofing, tampering, repudiation, info-disclosure, denial-of-service, privilege-escalation) with AI-specific threat patterns, STRIDE-per-Element matrix targeting, and OWASP/CWE/MITRE ATT&CK references. Updated 3 example threat models. Unblocks F-004 (AI Agents). |
 | 2026-03-22 | F-010: Deduplication & Risk Rating | [010](../02_PRD/010-deduplication-risk-rating-2026-03-22.md) | Cross-agent finding correlation with 5 deterministic rules (STRIDE-to-AI pairs), deduplicated coverage matrix with three-state cell model, OWASP 3x3 risk calibration matrix in output, schema v1.1. Completes Phase 1 Foundation pipeline. Unblocks F-009 (Platform Adapters). |
 | 2026-03-22 | F-012: SARIF Output Generation | [012](../02_PRD/012-sarif-output-generation-2026-03-22.md) | SARIF 2.1.0 output co-generated with threats.md during Phase 4 (Assess). Finding IR mapped to SARIF results with 8 rule definitions (6 STRIDE + 2 AI), CVSS-aligned severity levels, correlated finding representation via relatedLocations, component navigation via logicalLocations, and stable partialFingerprints for cross-run tracking. Enables GitHub Code Scanning, VS Code SARIF Viewer, and Azure DevOps integration. Unblocks F-009 (Platform Adapters — SARIF upload automation). |
+| 2026-03-23 | F-015: Threat Report Agent & Attack Trees | [015](../02_PRD/015-threat-report-agent-attack-trees-2026-03-23.md) | Narrative threat report with executive summary, Mermaid attack trees for Critical/High findings, remediation roadmap. Phase 5 (Report) in orchestrator pipeline. |
+| 2026-03-23 | F-018: Threat Infographic Agent | [018](../02_PRD/018-threat-infographic-agent-2026-03-23.md) | Visual infographic agent producing threat-infographic-spec.md with risk distribution, coverage heat map, top findings summary, and CVSS color palette. Optional Gemini API image generation. Phase 6 (Infographic) in orchestrator pipeline with opt-out support. Completes the reporting layer: structured analysis (F-005/F-007) -> narrative report (F-015) -> visual communication (F-018). |

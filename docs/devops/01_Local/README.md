@@ -1,6 +1,6 @@
 # Local Development Environment - tachi
 
-**Last Updated**: 2026-03-21
+**Last Updated**: 2026-03-23
 **Owner**: DevOps Agent
 
 ---
@@ -98,9 +98,15 @@ FRONTEND_URL=http://localhost:{{FRONTEND_PORT}}
 **Optional Variables**:
 ```
 AOD_LOG_FILE=.aod/logs/aod.log
+GEMINI_API_KEY=your-gemini-api-key
+TACHI_SKIP_INFOGRAPHIC=true
 ```
 
 The `AOD_LOG_FILE` variable controls where the logging utility writes its output. If not specified, it defaults to `.aod/logs/aod.log`. You can override this to write logs to a different location.
+
+The `GEMINI_API_KEY` variable enables AI-generated threat infographic images via the Gemini API (`gemini-3-pro-image-preview` model). This is used by the threat infographic agent (Phase 6 of the orchestrator pipeline). If not set, the agent produces Mermaid-based visual specifications without rasterized image output. No local infrastructure is required -- the agent calls the external Gemini API directly.
+
+The `TACHI_SKIP_INFOGRAPHIC` variable, when set to `true`, skips Phase 6 (threat infographic generation) entirely during orchestrator runs. This is equivalent to passing the `--skip-infographic` CLI flag. Useful when iterating on earlier pipeline phases without waiting for infographic generation.
 
 ---
 

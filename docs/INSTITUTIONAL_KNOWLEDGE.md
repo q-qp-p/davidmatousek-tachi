@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-03-22
+**Last Updated**: 2026-03-23
 
-**Entry Count**: 4 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 5 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-21
 **Status**: ✅ Manual mode (file-based)
 
@@ -102,6 +102,26 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #delivery #architecture #pattern
 
 **Quality Score**: 7/10
+
+---
+
+### PAT-005: Spec-First Architecture Enables Clean External API Degradation
+
+**Date**: 2026-03-23
+**Feature**: 018 — Threat Infographic Agent
+**Category**: Architecture / Graceful Degradation
+
+**Context**: Feature 018 introduced tachi's first external API dependency (Gemini image generation). The team needed to integrate an optional external service without compromising the local-first, zero-dependency pipeline.
+
+**Pattern**: Design the specification as the primary deliverable and the external API output (image) as best-effort. The spec is always produced locally; the image is only attempted when the API key is present. Six failure conditions (missing key, rate limit, timeout, content policy, missing input, empty model) all resolve the same way: save the spec, log the reason, continue the pipeline.
+
+**Result**: The infographic agent produces a useful deliverable (spec) in all conditions. The Gemini API is purely additive — its absence is invisible to the pipeline. Triple opt-out (flag, env var, config) gives users control at every level.
+
+**When to Apply**: Any feature that integrates an external API where the API output is valuable but not essential. Design the local artifact first, make the API call optional, and ensure all failure modes produce the local artifact. This pattern preserves tachi's local-first principle.
+
+**Tags**: #retrospective #delivery #architecture #pattern #graceful-degradation
+
+**Quality Score**: 8/10
 
 ---
 
