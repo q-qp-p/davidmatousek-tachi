@@ -5,7 +5,7 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-03-22
 
-**Entry Count**: 3 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 4 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-21
 **Status**: ✅ Manual mode (file-based)
 
@@ -80,6 +80,28 @@ This file stores institutional knowledge for tachi development. It's used by:
 **When to Apply**: Any feature with multiple user stories where each story has independent validation criteria. Structure phases around stories, not technical layers. Less applicable when user stories are tightly coupled and cannot be validated independently.
 
 **Quality Score**: 8/10
+
+---
+
+### PAT-004: SARIF 2.1.0 Maps Naturally to STRIDE Threat Models
+
+**Date**: 2026-03-22
+**Context**: Delivery retrospective for Feature 012 — SARIF Output Generation. Estimated: 1-2 days, Actual: 1 day.
+
+**Problem**:
+Needed to convert STRIDE + AI threat model findings into SARIF 2.1.0 format for CI/CD pipeline integration (GitHub Code Scanning, Azure DevOps).
+
+**Solution**:
+The STRIDE category-to-rule mapping and severity-to-CVSS alignment translate directly into SARIF's `reportingDescriptor` and `result` objects. A well-defined intermediate representation (finding IR with category, severity, component, mitigation) makes the SARIF mapping mechanical. Correlated findings map to `relatedLocations`, component context maps to `logicalLocations`, and deterministic fingerprints enable stable tracking across runs.
+
+**Why This Matters**:
+Captured during structured delivery retrospective. Smooth sailing — everything went roughly as planned. When the IR is well-structured, adding new output formats is straightforward prompt engineering with no schema friction.
+
+**When to Apply**: Any future output format additions (e.g., CycloneDX, CSAF). Design the IR first, then map to the target schema. The IR-to-format mapping should be mechanical, not creative.
+
+**Tags**: #retrospective #delivery #architecture #pattern
+
+**Quality Score**: 7/10
 
 ---
 
