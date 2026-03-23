@@ -638,6 +638,8 @@ Output: threats.md + threats.sarif (same directory)
 
 ### Feature 015: Threat Report Agent & Attack Trees
 
+**Status**: Delivered (2026-03-23) | PR #16 | 29/29 tasks complete
+
 ## Components
 
 ### Component 1: Report Agent Prompt (`agents/threat-report.md`)
