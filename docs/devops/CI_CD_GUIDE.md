@@ -1,6 +1,6 @@
 # CI/CD Setup Guide - tachi
 
-**Last Updated**: 2026-03-21
+**Last Updated**: 2026-03-23
 **Owner**: DevOps Agent
 
 ---
@@ -158,6 +158,43 @@ deploy:
 
 ---
 
+### tachi Threat Model (GitHub Actions Adapter)
+
+**Best For**: Automated threat analysis on PRs that modify architecture files
+
+Feature 021 introduced a ready-to-use GitHub Actions workflow at `adapters/github-actions/tachi-threat-model.yml`. This is not a general CI/CD pipeline -- it is a specialized security workflow that runs tachi's 14 threat agents against architecture changes and uploads findings to GitHub Code Scanning.
+
+**Installation**:
+```bash
+cp adapters/github-actions/tachi-threat-model.yml .github/workflows/
+```
+
+**Required Secret**:
+| Secret | Description |
+|--------|-------------|
+| `LLM_API_KEY` | Anthropic API key (set in Settings > Secrets and variables > Actions) |
+
+**Prerequisites**:
+- GitHub Actions enabled on the repository
+- GitHub Advanced Security enabled (for SARIF upload to Code Scanning)
+
+**Triggers**:
+- **Automatic**: Pull requests modifying `docs/architecture/**`, `*.mermaid`, `*.puml`, or `*.drawio`
+- **Manual**: Workflow dispatch from the Actions tab with configurable inputs (architecture path, LLM model, max tokens)
+
+**Outputs**:
+- `threats.md` -- Full threat model analysis in markdown (downloadable artifact)
+- `threats.sarif` -- SARIF 2.1.0 findings uploaded to Code Scanning (visible in Security > Code scanning alerts)
+
+**How It Differs from Standard CI/CD**:
+Unlike linting or test workflows, this adapter invokes an LLM API at runtime. It reads source agent prompts from `agents/` and sends architecture input to the Anthropic API. No agent files are copied or transformed -- the orchestrator prompt is used as the system instruction.
+
+**Error Handling**: The workflow handles missing API keys, authentication failures, rate limiting (with retry), timeouts, and empty responses with actionable error messages.
+
+**Full Documentation**: See `adapters/github-actions/README.md` for detailed configuration, permissions, SARIF deduplication, and verification steps.
+
+---
+
 ## Essential CI/CD Components
 
 ### 1. Linting
@@ -199,6 +236,7 @@ deploy:
 env:
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
   API_KEY: ${{ secrets.API_KEY }}
+  LLM_API_KEY: ${{ secrets.LLM_API_KEY }}  # Required by tachi-threat-model workflow
 ```
 
 ### Vercel

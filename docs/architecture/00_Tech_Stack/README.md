@@ -97,7 +97,7 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 ### Threat Modeling Schemas (Feature 001)
 
 **Directory**: `schemas/` (machine-readable data contracts for threat analysis pipeline)
-- Architecture: Hub-and-spoke content model -- `agents/` (hub) produces findings conforming to schemas, `templates/` (format) consumes them, `adapters/` (configuration) tunes scoring/context (Feature 001)
+- Architecture: Hub-and-spoke content model -- `agents/` (hub) produces findings conforming to schemas, `templates/` (format) consumes them, `adapters/` serves dual role: knowledge-system configuration (scoring/context) and platform distribution (Feature 021) translating 14 hub agents into native formats for 5 target platforms
 - Interface contract: `docs/INTERFACE-CONTRACT.md` -- single integration reference for input formats, dispatch rules, and output structure
 
 | Schema | Purpose | Key Fields |
@@ -108,7 +108,7 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 | `schemas/report.yaml` | Report output structure -- sections required in generated threat report (Feature 015) | 7 sections: Executive Summary, Architecture Overview, Threat Analysis, Cross-Cutting Themes, Attack Trees, Remediation Roadmap, Appendix: Finding Reference; attack tree file naming convention `{finding-id}-attack-tree.md`; finding reference completeness rules |
 | `schemas/infographic.yaml` | Infographic output structure -- sections required in generated threat infographic specification (Feature 018) | 6 sections: Metadata, Risk Distribution, Coverage Heat Map, Top Critical Findings, Architecture Threat Overlay, Visual Design Directives; CVSS color palette (#DC2626/#F97316/#EAB308/#4169E1/#6B7280); 16:9 landscape layout with three-zone structure |
 
-**Threat agent prompts**: `agents/` (11 agent prompt files + orchestrator + report agent + infographic agent)
+**Threat agent prompts**: `agents/` (11 agent prompt files + orchestrator + report agent + infographic agent); distributed to 5 target platforms via `adapters/` hub-and-spoke pattern (Feature 021)
 | Subdirectory | Count | Scope | Status |
 |-------------|-------|-------|--------|
 | `agents/stride/` | 6 agents | STRIDE categories: Spoofing, Tampering, Repudiation, Info Disclosure, Denial of Service, Privilege Escalation | Validated end-to-end (Feature 005) |
@@ -155,6 +155,7 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 | `.aod/scripts/bash/run-state.sh` | Atomic read/write/validate for orchestrator state (`.aod/run-state.json`); includes compound helpers for incremental reads and governance caching | Feature 022, extended Feature 030 |
 | `.aod/scripts/bash/github-lifecycle.sh` | GitHub Issue label management for stage transitions | Pre-022 |
 | `.aod/scripts/bash/backlog-regenerate.sh` | Regenerate product backlog from GitHub Issues | Pre-022 |
+| `scripts/generate-adapter-version.sh` | Generate `VERSION` manifest for platform adapters with source commit SHA, timestamp, and per-agent SHA-256 checksums for drift detection | Feature 021 |
 
 ### CLI Dependencies
 
@@ -273,6 +274,26 @@ When adding a new user-facing template file to the kit, use `tachi` wherever the
 - Compound helpers: `aod_state_get_multi`, `aod_state_get_loop_context`, `aod_state_get_governance_cache` for incremental reads (Feature 030)
 - See ADR-001 for the design decision behind atomic state management
 - See ADR-006 for the design decision behind non-fatal error handling in observability operations
+
+---
+
+### Platform Adapter Output Formats (Feature 021)
+
+**Directory**: `adapters/` (5 platform-specific subdirectories)
+- Architecture: Hub-and-spoke distribution -- `agents/` is the immutable source of truth; each adapter transforms agents into a platform-native format
+- See [ADR-015](../02_ADRs/ADR-015-platform-adapter-hub-and-spoke-distribution.md) for the design decision
+
+| Adapter | Output Format | File Extension | Key Format Characteristics |
+|---------|---------------|----------------|---------------------------|
+| Claude Code | Markdown with Claude Code frontmatter | `.md` | `name` and `description` fields in YAML frontmatter; tachi metadata in `## Metadata` body section |
+| Generic | Self-contained numbered markdown prompts | `.md` | No frontmatter; `{{ARCHITECTURE_INPUT}}` placeholder; sequential numbering (`00-` through `13-`) |
+| Cursor | Cursor rule files | `.mdc` | `alwaysApply: true` (orchestrator) or Agent Requested (threat agents); `description` field for activation |
+| Copilot | Copilot agent files | `.agent.md` | Size-split pattern for agents >30K chars: compact `.agent.md` + `.github/instructions/*.md` companion |
+| GitHub Actions | GitHub Actions workflow | `.yml` | Workflow YAML triggering on architecture file changes; `codeql/upload-sarif@v3` for Code Scanning integration |
+
+**SARIF integration** (GitHub Actions adapter): The CI workflow produces `threats.sarif` (SARIF 2.1.0 format, see Feature 012 / ADR-013) and uploads it to GitHub Code Scanning via the official `codeql/upload-sarif@v3` action. Findings appear as security alerts with CVSS-aligned severity.
+
+**Drift detection**: Each adapter includes a `VERSION` manifest file (YAML format) containing source commit SHA, generation timestamp, and per-agent SHA-256 checksums. Generated by `scripts/generate-adapter-version.sh` (Bash 3.2 compatible).
 
 ---
 
