@@ -20,6 +20,7 @@
 tachi/
 ├── .claude/           → Agents, skills, commands
 ├── .aod/              → Active feature workspace (spec.md, plan.md, tasks.md)
+├── examples/          → Reference threat models (architecture + threats.md pairs)
 ├── specs/             → Archived feature artifacts (per-feature history)
 ├── docs/              → Product, architecture, devops docs
 ├── scripts/           → init.sh, check.sh

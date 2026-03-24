@@ -139,6 +139,8 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 
 **Full pipeline output**: `threats.md` + `threats.sarif` (Phase 4) + `threat-report.md` + `attack-trees/*.md` (Phase 5) + `threat-infographic-spec.md` + `threat-infographic.jpg` (Phase 6, image conditional on Gemini API key).
 
+**Example threat models**: `examples/` contains 3 standardized reference implementations (web-app, agentic-app, microservices) pairing Mermaid architecture diagrams with complete schema v1.1 threat model outputs (Feature 024). See `examples/README.md` for usage instructions and framework mapping.
+
 ---
 
 ### Shell Scripts
