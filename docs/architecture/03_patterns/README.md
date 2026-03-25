@@ -1,6 +1,6 @@
 # Design Patterns - tachi
 
-**Last Updated**: 2026-03-22
+**Last Updated**: 2026-03-25
 **Owner**: Architect
 
 ---
@@ -252,18 +252,18 @@ aod_state_get_governance_cache() {
 
 ### Pattern: On-Demand Reference File Segmentation
 
-**Added**: Feature 030 (Context Efficiency of /aod.run)
+**Added**: Feature 030 (Context Efficiency of /aod.run), extended to agent prompts in Feature 029 (Agent Refactoring -- Right-Size)
 **ADR**: [ADR-002](../02_ADRs/ADR-002-prompt-segmentation.md)
 
 #### Problem
-A monolithic SKILL.md file loads its entire content into the agent's context window at invocation, even when large sections are only needed conditionally (e.g., governance rules at stage boundaries, error recovery on failure). This wastes context tokens that could be used for implementation work.
+A monolithic skill or agent prompt file loads its entire content into the agent's context window at invocation, even when large sections are only needed conditionally (e.g., governance rules at stage boundaries, error recovery on failure, SARIF generation templates, attack tree formatting). This wastes context tokens that could be used for implementation work.
 
 #### Solution
-Split the monolithic skill file into a compact core (~400-500 lines) containing the always-needed execution loop, plus co-located reference files loaded via the Read tool only when their content is needed. Each branch point in the core file includes a MANDATORY Read instruction that loads the relevant reference file before proceeding.
+Split the monolithic file into a compact core containing the always-needed execution logic, plus co-located reference files loaded via the Read tool only when their content is needed. Each branch point in the core file includes a Read instruction that loads the relevant reference file before proceeding.
 
-A Navigation table in the core file maps every conditionally-needed section to its reference file, making the structure discoverable.
+A Reference Documents table in the core file maps every conditionally-needed section to its reference file path and loading trigger, making the structure discoverable.
 
-#### Example
+#### Example 1: Skill-Level Segmentation (Feature 030)
 ```
 # Directory structure
 .claude/skills/~aod-run/
@@ -280,13 +280,39 @@ before proceeding with governance gate detection. Do NOT rely on memory of
 prior governance content. If the file cannot be read, display an error and STOP.
 ```
 
+#### Example 2: Agent-Level Reference Extraction (Feature 029)
+```
+# Directory structure — agent prompts with co-located references
+adapters/claude-code/agents/
+  orchestrator.md              # Core prompt (1,273 lines, down from 2,085)
+  threat-report.md             # Core prompt (472 lines, down from 801)
+  threat-infographic.md        # Core prompt (414 lines, down from 592)
+  references/
+    sarif-generation.md        # Loaded at Phase 4 completion
+    validation-checklist.md    # Loaded at pipeline end
+    error-templates.md         # Loaded on error conditions
+    report-templates.md        # Loaded during attack tree generation
+    infographic-gemini-api.md  # Loaded during image generation
+    infographic-error-handling.md  # Loaded on infographic errors
+
+# In agent prompt — Reference Documents navigation table
+## Reference Documents
+| Reference | Path | Load When |
+|-----------|------|-----------|
+| SARIF Generation | adapters/claude-code/agents/references/sarif-generation.md | Phase 4 completion |
+| Error Templates  | adapters/claude-code/agents/references/error-templates.md  | Error condition     |
+```
+
+**Key difference from skill-level**: Agent reference documents contain consultation-only content (templates, checklists, detailed procedures) that the agent needs at specific pipeline phases. The core prompt retains the agent's mission, dispatch logic, and structural rules. This yielded 30-41% line reductions across three agents with zero regression on 11 threat agents.
+
 #### When to Use
 - Skill files exceeding ~500 lines where content divides into always-needed vs. conditionally-needed
-- Skills with distinct operational modes (e.g., normal vs. dry-run vs. error recovery)
+- Agent prompts exceeding ~500 lines with pipeline-phase-specific content (templates, checklists, error handling)
+- Skills or agents with distinct operational modes (e.g., normal vs. dry-run vs. error recovery)
 - When context window pressure limits the agent's ability to perform downstream work
 
 #### When NOT to Use
-- Skills under ~500 lines where the entire content is routinely needed
+- Files under ~500 lines where the entire content is routinely needed
 - Content that is heavily cross-referenced (splitting creates circular Read dependencies)
 - When Read tool latency is unacceptable for the use case
 

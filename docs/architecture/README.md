@@ -1,6 +1,6 @@
 # Architecture Documentation - tachi
 
-**Last Updated**: 2026-03-22
+**Last Updated**: 2026-03-25
 **Owner**: Architect
 **Status**: Template
 
@@ -37,6 +37,10 @@ Significant technical decisions with context and trade-offs
 - `ADR-009-template-variable-expansion-scope.md` - Expanding `tachi` placeholder to all user-facing template files (Feature 061)
 - `ADR-010-minimal-return-architecture.md` - Minimal return architecture for subagent→main token efficiency (Feature 073)
 - `ADR-011-multi-flag-opt-out-and-step-insertion-pattern.md` - Multi-flag opt-out pattern and step insertion convention for `/aod.build` (Feature 080)
+- `ADR-012-cross-agent-correlation-detection.md` - Deterministic cross-agent correlation detection algorithm (Feature 010)
+- `ADR-013-sarif-output-format-adoption.md` - SARIF 2.1.0 output format for GitHub Code Scanning integration (Feature 012)
+- `ADR-014-gemini-api-optional-image-generation.md` - Optional Gemini API image generation for infographic agent (Feature 018)
+- `ADR-015-platform-adapter-hub-and-spoke-distribution.md` - Hub-and-spoke distribution pattern for platform adapters (Feature 021)
 - `ADR-NNN-decision-title.md` - Individual ADRs
 
 ### 03_patterns/

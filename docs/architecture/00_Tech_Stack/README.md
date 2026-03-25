@@ -1,6 +1,6 @@
 # Technology Stack - tachi
 
-**Last Updated**: 2026-03-23
+**Last Updated**: 2026-03-25
 **Owner**: Architect
 
 ---
@@ -108,14 +108,34 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 | `schemas/report.yaml` | Report output structure -- sections required in generated threat report (Feature 015) | 7 sections: Executive Summary, Architecture Overview, Threat Analysis, Cross-Cutting Themes, Attack Trees, Remediation Roadmap, Appendix: Finding Reference; attack tree file naming convention `{finding-id}-attack-tree.md`; finding reference completeness rules |
 | `schemas/infographic.yaml` | Infographic output structure -- sections required in generated threat infographic specification (Feature 018) | 6 sections: Metadata, Risk Distribution, Coverage Heat Map, Top Critical Findings, Architecture Threat Overlay, Visual Design Directives; CVSS color palette (#DC2626/#F97316/#EAB308/#4169E1/#6B7280); 16:9 landscape layout with three-zone structure |
 
-**Threat agent prompts**: `agents/` (11 agent prompt files + orchestrator + report agent + infographic agent); distributed to 5 target platforms via `adapters/` hub-and-spoke pattern (Feature 021)
+**Threat agent prompts**: `agents/` (11 agent prompt files + orchestrator + report agent + infographic agent); distributed to 5 target platforms via `adapters/` hub-and-spoke pattern (Feature 021). Right-sized in Feature 029: orchestrator (2,085->1,273 lines, -39%), report (801->472 lines, -41%), infographic (592->414 lines, -30%) via reference-extraction pattern -- consultation-only content moved to co-located reference files loaded on-demand via Read tool.
 | Subdirectory | Count | Scope | Status |
 |-------------|-------|-------|--------|
 | `agents/stride/` | 6 agents | STRIDE categories: Spoofing, Tampering, Repudiation, Info Disclosure, Denial of Service, Privilege Escalation | Validated end-to-end (Feature 005) |
 | `agents/ai/` | 5 agents | AI-specific threats: Prompt Injection, Tool Abuse, Data Poisoning, Model Theft, Agent Autonomy; two-layer keyword dispatch (AG-prefixed agentic, LLM-prefixed LLM categories) | Validated end-to-end (Feature 007) |
-| `agents/orchestrator.md` | 1 agent | Central orchestrator implementing OWASP 4-phase workflow (Scope, Determine Threats, Determine Countermeasures, Assess) with Phase 5 (Report) and Phase 6 (Infographic) integration, STRIDE-per-Element dispatch, AI keyword dispatch (Feature 003), cross-agent correlation detection with deduplicated coverage matrix and risk summary (Feature 010), SARIF 2.1.0 output generation for GitHub Code Scanning integration (Feature 012), narrative report dispatch with Mermaid attack trees (Feature 015), and visual infographic specification dispatch with optional Gemini image generation (Feature 018) | Complete |
-| `agents/threat-report.md` | 1 agent | Report generation agent transforming `threats.md` into narrative threat report with executive summary, Mermaid attack trees for Critical/High findings, prioritized remediation roadmap with effort estimates, and complete finding traceability (Feature 015) | Validated end-to-end (Feature 015) |
-| `agents/threat-infographic.md` | 1 agent | Infographic agent transforming `threats.md` into a 6-section visual risk specification (`threat-infographic-spec.md`) with data extraction methodology, CVSS color palette, and optional Gemini API image generation (`threat-infographic.jpg`). Spec is primary deliverable; image is best-effort (Feature 018) | Validated end-to-end (Feature 018) |
+| `agents/orchestrator.md` | 1 agent | Central orchestrator implementing OWASP 4-phase workflow (Scope, Determine Threats, Determine Countermeasures, Assess) with Phase 5 (Report) and Phase 6 (Infographic) integration, STRIDE-per-Element dispatch, AI keyword dispatch (Feature 003), cross-agent correlation detection with deduplicated coverage matrix and risk summary (Feature 010), SARIF 2.1.0 output generation for GitHub Code Scanning integration (Feature 012), narrative report dispatch with Mermaid attack trees (Feature 015), and visual infographic specification dispatch with optional Gemini image generation (Feature 018). Right-sized to 1,273 lines with 3 reference documents (Feature 029) | Complete |
+| `agents/threat-report.md` | 1 agent | Report generation agent transforming `threats.md` into narrative threat report with executive summary, Mermaid attack trees for Critical/High findings, prioritized remediation roadmap with effort estimates, and complete finding traceability (Feature 015). Right-sized to 472 lines with 1 reference document (Feature 029) | Validated end-to-end (Feature 015) |
+| `agents/threat-infographic.md` | 1 agent | Infographic agent transforming `threats.md` into visual infographic specifications and images via Gemini API. Supports multiple templates: Baseball Card (risk summary dashboard) and System Architecture (annotated architecture diagram with attack surface badges). Right-sized to 414 lines with 2 reference documents (Feature 029) | Validated end-to-end (Feature 018) |
+
+**Agent reference documents** (Feature 029): Consultation-only content extracted from agent prompts into co-located reference files. Agents load references on-demand via Read tool at specific pipeline phases, keeping core prompts focused on always-needed execution logic. Applies the [On-Demand Reference File Segmentation](../03_patterns/README.md#pattern-on-demand-reference-file-segmentation) pattern at the agent level.
+
+| Reference | Agent | Path | Loaded When |
+|-----------|-------|------|-------------|
+| SARIF Generation | orchestrator | `adapters/claude-code/agents/references/sarif-generation.md` | Phase 4 completion |
+| Validation Checklist | orchestrator | `adapters/claude-code/agents/references/validation-checklist.md` | Pipeline end |
+| Error Templates | orchestrator | `adapters/claude-code/agents/references/error-templates.md` | Error condition |
+| Report Templates | threat-report | `adapters/claude-code/agents/references/report-templates.md` | Attack tree generation |
+| Gemini API Integration | threat-infographic | `adapters/claude-code/agents/references/infographic-gemini-api.md` | Image generation phase |
+| Error Handling | threat-infographic | `adapters/claude-code/agents/references/infographic-error-handling.md` | Error condition |
+
+**Infographic templates** (Feature 029): Template files for multi-template infographic generation, co-located with the portable agent set.
+
+| Template | Path | Purpose |
+|----------|------|---------|
+| Baseball Card | `.claude/agents/tachi/templates/infographic-baseball-card.md` | Risk summary dashboard with key metrics |
+| System Architecture | `.claude/agents/tachi/templates/infographic-system-architecture.md` | Annotated architecture diagram with attack surface badges |
+
+**Portable agent set** (Feature 029): `.claude/agents/tachi/` contains the complete threat agent set (11 threat agents + orchestrator + report + infographic + 2 infographic templates) in Claude Code native format. This set is the Claude Code platform adapter output, installed at `.claude/agents/tachi/` for direct invocation. The portable set mirrors the `adapters/claude-code/agents/` content with paths adjusted for the installation depth.
 
 **STRIDE agent capabilities** (Feature 005):
 - Each agent enforces STRIDE-per-Element matrix targeting (DFD element type filtering)
