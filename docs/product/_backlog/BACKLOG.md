@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-03-25T19:30:24Z.
+> Auto-generated from GitHub Issues on 2026-03-25T19:31:26Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -32,7 +32,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| #29 | Feature: Agent Refactoring — Right-Size Orchestrator, Report, and Infographic Agents | 2026-03-25 | — | 2026-03-25 |
+| — | *No items in this stage* | | |
 
 ## Untracked
 
