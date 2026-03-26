@@ -42,7 +42,13 @@ mkdir -p .claude/commands
 cp ~/Projects/tachi/adapters/claude-code/commands/threat-model.md .claude/commands/
 ```
 
-### 3. Create your architecture file
+### 3. Restart Claude Code
+
+After copying the files, **restart Claude Code** (close and reopen the VS Code window, or start a new CLI session) so it picks up the new agents and `/threat-model` command.
+
+If you want infographic images (`.jpg`), set the `GEMINI_API_KEY` environment variable with a key from [Google AI Studio](https://aistudio.google.com/apikey). This is optional — all text-based outputs work without it.
+
+### 4. Create your architecture file (or let Claude Code do it)
 
 Create `docs/security/architecture.md` describing your system. You can write it yourself or ask Claude Code:
 
@@ -54,7 +60,7 @@ with all major components, data flows, protocols, and trust boundaries.
 
 tachi auto-detects the format. Mermaid, free-text, ASCII, PlantUML, and C4 are all supported.
 
-### 4. Run your first threat model
+### 5. Run your first threat model
 
 ```
 /threat-model
@@ -62,7 +68,7 @@ tachi auto-detects the format. Mermaid, free-text, ASCII, PlantUML, and C4 are a
 
 That's it. One command. tachi validates the setup, reads your architecture, dispatches 14 threat agents, and writes everything to a timestamped folder under `docs/security/`.
 
-### 5. Review your results
+### 6. Review your results
 
 | File | What It Contains |
 |------|-----------------|
