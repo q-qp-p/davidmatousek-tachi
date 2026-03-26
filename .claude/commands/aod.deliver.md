@@ -133,7 +133,7 @@ Run the `~aod-deliver` skill's retrospective flow (Steps 2-8 from `.claude/skill
 
 ## Step 8: Upstream Sync (Template Repo Only)
 
-This step applies ONLY to the template project (product-led-spec-kit). Consumer projects will never have `scripts/extract.sh` — skip this step entirely with NO output, NO message, and NO mention in the closure report.
+This step applies ONLY to the upstream development repo. Consumer projects will never have `scripts/extract.sh` — skip this step entirely with NO output, NO message, and NO mention in the closure report.
 
 1. Check if `scripts/extract.sh` exists **and** `../agentic-oriented-development-kit/` exists
 2. **If both found**:

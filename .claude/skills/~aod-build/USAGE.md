@@ -255,8 +255,8 @@ python scripts/generate_checkpoint.py \
 ```bash
 # From skill directory
 python scripts/generate_checkpoint.py \
-  --tasks-file /Users/david/Documents/GitHub/tachi/specs/001-tachi/tasks.md \
-  --output-dir /Users/david/Documents/GitHub/tachi/specs/001-tachi \
+  --tasks-file specs/001-tachi/tasks.md \
+  --output-dir specs/001-tachi \
   --description "Phase1-2-Complete"
 ```
 

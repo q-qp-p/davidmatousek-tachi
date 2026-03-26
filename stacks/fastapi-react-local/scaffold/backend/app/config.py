@@ -24,7 +24,7 @@ class Settings(BaseSettings):
     )
 
     DATABASE_URL: str = "sqlite+aiosqlite:///./data/app.db"
-    SECRET_KEY: str = "change-this-to-a-random-secret-key"
+    SECRET_KEY: str  # Required — set via environment variable or .env file
     CORS_ORIGINS: list[str] = ["http://localhost:5173"]
     DEBUG: bool = False
 

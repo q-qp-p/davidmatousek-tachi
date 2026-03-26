@@ -376,7 +376,7 @@ sed -i 's/tachi/enterprise-app/g' .claude/agents/*.md .claude/skills/**/*.md .cl
 - **Version**: 2025-12-04 snapshot (after Feature 010)
 
 ### Target Repository
-- **Location**: `/Users/david/Documents/GitHub/agentic-oriented-development-kit/.claude/`
+- **Location**: `../agentic-oriented-development-kit/.claude/`
 - **Purpose**: General-purpose template for any project
 
 ### Templatization Method

@@ -9,8 +9,22 @@ Get from zero to your first threat model in 6 steps. No security background requ
 ## Prerequisites
 
 - **Claude Code** installed and working in your project
-- **A Gemini API key** (optional, for infographic image generation) stored as `GEMINI_API_KEY` environment variable -- never hardcoded in files
+- **A Gemini API key** (optional, for infographic image generation) — see [Setting Up GEMINI_API_KEY](#setting-up-gemini_api_key) below
 - **A project** with an architecture description (or you will create one below)
+
+### Setting Up GEMINI_API_KEY
+
+The Gemini key is only needed for generating infographic images (`.jpg`). All text-based outputs (threats.md, SARIF, report, attack trees) work without it.
+
+1. Get a key at [Google AI Studio](https://aistudio.google.com/apikey)
+2. Make it available to Claude Code using **one** of these methods:
+
+| Method | Best For | Setup |
+|--------|----------|-------|
+| `.env` file | Quick start | `cp .env.example .env` and edit with your key. File is gitignored. |
+| 1Password CLI | Security-conscious devs | Store key in 1Password, create `~/.claude/.env.tpl` with `op://` reference, launch VS Code via `op run`. See `.env.example` for details. |
+| Shell export | Simple, no file on disk | Add `export GEMINI_API_KEY=your_key` to `~/.zshrc` or `~/.bashrc`. |
+| CI/CD secret | GitHub Actions | Add `GEMINI_API_KEY` to repo secrets. The workflow reads it via `${{ secrets.GEMINI_API_KEY }}`. |
 
 ## Step 1: Clone Tachi (One-Time Global Setup)
 

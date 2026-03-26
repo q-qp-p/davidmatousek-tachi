@@ -3,7 +3,7 @@
 **Purpose**: Integrate the Tachi threat modeling toolkit into the AOD Kit as an optional, invocable capability.
 **When to execute**: After Tachi F-001 through F-009 are shipped (core agents + platform adapters).
 **Prerequisite**: A working Tachi installation with the Claude Code adapter (`adapters/claude-code/`).
-**Target repo**: This repo (product-led-spec-kit / agentic-oriented-development-kit).
+**Target repo**: This repo (agentic-oriented-development-kit).
 
 **Related documents**:
 - [CONSUMER_GUIDE_TACHI.md](CONSUMER_GUIDE_TACHI.md) — Main consumer guide with 10 seed features

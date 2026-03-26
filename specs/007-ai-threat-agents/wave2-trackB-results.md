@@ -124,7 +124,7 @@ Each section placed between Risk Level Computation and References sections for c
 
 ## Files Modified
 
-1. `/Users/david/Projects/tachi/agents/ai/prompt-injection.md` - 3 changes (cross-plugin pattern, LLM07:2025, empty results)
-2. `/Users/david/Projects/tachi/agents/ai/data-poisoning.md` - 2 changes (LLM04+LLM08:2025, empty results)
-3. `/Users/david/Projects/tachi/agents/ai/model-theft.md` - 4 changes (unbounded inference, supply chain, LLM03:2025, empty results)
-4. `/Users/david/Projects/tachi/specs/007-ai-threat-agents/tasks.md` - T019-T028 marked [X]
+1. `agents/ai/prompt-injection.md` - 3 changes (cross-plugin pattern, LLM07:2025, empty results)
+2. `agents/ai/data-poisoning.md` - 2 changes (LLM04+LLM08:2025, empty results)
+3. `agents/ai/model-theft.md` - 4 changes (unbounded inference, supply chain, LLM03:2025, empty results)
+4. `specs/007-ai-threat-agents/tasks.md` - T019-T028 marked [X]

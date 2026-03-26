@@ -22,9 +22,9 @@
 - **Status**: ALL 8 TASKS PASS
 - **Total changes**: 14 edits across 2 agent files + 1 tasks.md update
 - **Files modified**:
-  - `/Users/david/Projects/tachi/agents/ai/agent-autonomy.md`
-  - `/Users/david/Projects/tachi/agents/ai/tool-abuse.md`
-  - `/Users/david/Projects/tachi/specs/007-ai-threat-agents/tasks.md`
+  - `agents/ai/agent-autonomy.md`
+  - `agents/ai/tool-abuse.md`
+  - `specs/007-ai-threat-agents/tasks.md`
 
 ## Detailed Findings
 

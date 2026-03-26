@@ -31,9 +31,9 @@
 **Fix applied**: Moved Empty Results Guidance into Detection Scope as an H3 subsection in all 3 LLM agents, matching the agentic agent structure. Removed the duplicate standalone H2 sections.
 
 **Files modified**:
-- `/Users/david/Projects/tachi/agents/ai/prompt-injection.md` — moved Empty Results Guidance from H2 (line 147) to H3 within Detection Scope (after Detection Patterns)
-- `/Users/david/Projects/tachi/agents/ai/data-poisoning.md` — moved Empty Results Guidance from H2 (line 148) to H3 within Detection Scope (after Detection Patterns)
-- `/Users/david/Projects/tachi/agents/ai/model-theft.md` — moved Empty Results Guidance from H2 (line 165) to H3 within Detection Scope (after Detection Patterns)
+- `agents/ai/prompt-injection.md` — moved Empty Results Guidance from H2 (line 147) to H3 within Detection Scope (after Detection Patterns)
+- `agents/ai/data-poisoning.md` — moved Empty Results Guidance from H2 (line 148) to H3 within Detection Scope (after Detection Patterns)
+- `agents/ai/model-theft.md` — moved Empty Results Guidance from H2 (line 165) to H3 within Detection Scope (after Detection Patterns)
 
 **Post-fix section structure (all 5 agents now match)**:
 ```

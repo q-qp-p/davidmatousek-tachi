@@ -7,7 +7,7 @@
 
 ## Overview
 
-The AOD methodology is developed in a private "dogfooding" repo (`product-led-spec-kit`) and published to a public template repo (`agentic-oriented-development-kit`) via a manifest-driven extraction pipeline. Adopters fork/clone the public template and pull improvements back using a safe merge workflow.
+The AOD methodology is developed in an upstream development repo and published to a public template repo (`agentic-oriented-development-kit`) via a manifest-driven extraction pipeline. Adopters fork/clone the public template and pull improvements back using a safe merge workflow.
 
 ---
 
@@ -15,7 +15,7 @@ The AOD methodology is developed in a private "dogfooding" repo (`product-led-sp
 
 ```mermaid
 graph TB
-    subgraph DEV["product-led-spec-kit (Private — Dogfooding Repo)"]
+    subgraph DEV["Upstream Development Repo"]
         direction TB
         LIFECYCLE["/aod.define → /aod.plan → /aod.build → /aod.deliver"]
         AOD_FILES[".aod/ workspace<br/>.claude/ agents, skills, rules<br/>docs/ standards, architecture<br/>scripts/ tooling<br/>stacks/ stack packs"]
@@ -63,7 +63,7 @@ Triggered by `/aod.deliver` (Step 8) or standalone `/aod.sync-upstream`.
 
 ```mermaid
 sequenceDiagram
-    participant Dev as product-led-spec-kit
+    participant Dev as Upstream Dev Repo
     participant Extract as scripts/extract.sh
     participant Upstream as agentic-oriented-development-kit
 

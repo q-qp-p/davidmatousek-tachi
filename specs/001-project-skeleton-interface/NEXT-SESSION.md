@@ -2,7 +2,7 @@
 
 **Generated**: 2026-03-21 (after Wave 3)
 **Branch**: 001-project-skeleton-interface
-**Last Commit**: c972881 feat: sync template from product-led-spec-kit (github-lifecycle, sync-upstream, architecture docs)
+**Last Commit**: c972881 feat: sync template from upstream development repo (github-lifecycle, sync-upstream, architecture docs)
 
 ## Completed This Session
 

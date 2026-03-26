@@ -123,7 +123,6 @@ The project has been rebranded from "Product-Led Spec Kit" to "Agentic Oriented 
 - `/triad.specify` command name (unchanged — "specify" is a verb, not branding)
 - Historical specs (001-007) and their artifacts
 - Historical planning documents and prior CHANGELOG entries
-- Private GitHub repository name (`product-led-spec-kit`)
 
 **Migration**: Update any local scripts or documentation referencing `.specify/` paths to `.aod/`. Update any references to `docs/SPEC_KIT_TRIAD.md` to `docs/AOD_TRIAD.md`.
 
@@ -139,7 +138,7 @@ Added three new structured thinking lenses to `docs/core_principles/` and update
 - Content-only addition (no code, API, or infrastructure changes)
 - Updated `docs/core_principles/README.md` lens registry with all three lenses
 - Updated `.claude/skills/thinking-lens/SKILL.md` to reference new lenses
-- PR: [#8](https://github.com/davidmatousek/product-led-spec-kit/pull/8)
+- PR: #8 (upstream development repo)
 - Tasks completed: 26/26
 
 ---
@@ -328,9 +327,9 @@ See [MIGRATION.md](MIGRATION.md) for detailed upgrade instructions from v1.x to 
 
 ---
 
-[4.0.0]: https://github.com/davidmatousek/product-led-spec-kit/compare/v3.0.0...v4.0.0
-[3.0.0]: https://github.com/davidmatousek/product-led-spec-kit/compare/v2.1.0...v3.0.0
-[2.1.0]: https://github.com/davidmatousek/product-led-spec-kit/compare/v2.0.0...v2.1.0
-[2.0.0]: https://github.com/davidmatousek/product-led-spec-kit/compare/v1.1.0...v2.0.0
-[1.1.0]: https://github.com/davidmatousek/product-led-spec-kit/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/davidmatousek/product-led-spec-kit/releases/tag/v1.0.0
+[4.0.0]: https://github.com/davidmatousek/tachi/compare/v3.0.0...v4.0.0
+[3.0.0]: https://github.com/davidmatousek/tachi/compare/v2.1.0...v3.0.0
+[2.1.0]: https://github.com/davidmatousek/tachi/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/davidmatousek/tachi/compare/v1.1.0...v2.0.0
+[1.1.0]: https://github.com/davidmatousek/tachi/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/davidmatousek/tachi/releases/tag/v1.0.0

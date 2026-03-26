@@ -21,8 +21,8 @@
     ],
     "example": {
       "projectName": "my-awesome-app",
-      "projectPath": "/Users/yourname/projects/my-awesome-app",
-      "serverPath": "/Users/yourname/projects/my-awesome-app/backend/mcp/server.js"
+      "projectPath": "/path/to/my-awesome-app",
+      "serverPath": "/path/to/my-awesome-app/backend/mcp/server.js"
     },
     "notes": [
       "MCP servers enable AI agents to access project-specific context and tools",

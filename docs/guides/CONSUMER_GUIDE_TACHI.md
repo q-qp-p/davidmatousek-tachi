@@ -91,7 +91,7 @@ cp <aod-kit-path>/docs/guides/CONSUMER_GUIDE_TACHI_RESEARCH.md     docs/guides/
 cp <aod-kit-path>/docs/guides/CONSUMER_GUIDE_TACHI_AOD_INTEGRATION.md docs/guides/
 ```
 
-> **Note**: Replace `<aod-kit-path>` with the path to your local `product-led-spec-kit` or `agentic-oriented-development-kit` clone (e.g., `~/Projects/product-led-spec-kit`).
+> **Note**: Replace `<aod-kit-path>` with the path to your local `agentic-oriented-development-kit` clone (e.g., `~/Projects/agentic-oriented-development-kit`).
 
 ---
 
