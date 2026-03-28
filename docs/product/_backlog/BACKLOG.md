@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-03-28T15:39:07Z.
+> Auto-generated from GitHub Issues on 2026-03-28T15:39:53Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -32,7 +32,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| #39 | Standalone /infographic command — decouple visualization from analysis pipeline | 2026-03-28 | — | 2026-03-28 |
+| — | *No items in this stage* | | |
 
 ## Untracked
 
