@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-03-23
+**Last Updated**: 2026-03-27
 
-**Entry Count**: 5 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 6 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-21
 **Status**: ✅ Manual mode (file-based)
 
@@ -120,6 +120,26 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **When to Apply**: Any feature that integrates an external API where the API output is valuable but not essential. Design the local artifact first, make the API call optional, and ensure all failure modes produce the local artifact. This pattern preserves tachi's local-first principle.
 
 **Tags**: #retrospective #delivery #architecture #pattern #graceful-degradation
+
+**Quality Score**: 8/10
+
+---
+
+### PAT-006: Post-Pipeline Enrichment via Schema-Driven Scoring
+
+**Date**: 2026-03-27
+**Feature**: 035 — Quantitative Risk Scoring
+**Category**: Architecture / Pipeline Extension
+
+**Context**: Feature 035 needed to add quantitative risk scoring to the existing `/threat-model` pipeline without modifying the threat agents or their output. The scoring agent consumes threat model output (threats.md or threats.sarif) and produces enriched output (risk-scores.md and risk-scores.sarif).
+
+**Pattern**: Design post-pipeline enrichment as a separate command and agent that reads existing output and produces new artifacts. Use a dedicated schema (risk-scoring.yaml) to define scoring dimensions, weights, and severity bands — making the scoring methodology configurable and transparent. The enrichment agent references the existing finding schema via an optional extension block, preserving backward compatibility. SARIF fingerprints and taxonomies are preserved from source to enriched output for tracking continuity.
+
+**Result**: 29 tasks completed same-day across 9 phases. The scoring agent operates independently of threat agents — no modifications to existing commands, agents, or schemas were needed (only an optional extension reference added to finding.yaml). Dual-format output reused the established SARIF generation pattern (PAT-004), and the weighted composite formula with severity band mapping made scoring reproducible (+/- 0.5 tolerance).
+
+**When to Apply**: Any feature that enriches existing pipeline output with new dimensions (e.g., compensating controls, compliance mapping, cost estimation). Design as a separate command consuming existing output, use a dedicated schema for the enrichment logic, and preserve source identifiers for traceability. Avoid modifying upstream agents or schemas — extend via optional references.
+
+**Tags**: #retrospective #delivery #architecture #pattern #pipeline-extension
 
 **Quality Score**: 8/10
 
