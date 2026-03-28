@@ -2,6 +2,24 @@
 
 ---
 
+## Complete Lifecycle Overview
+
+```
+Discovery                       Delivery                                        Quality
+─────────────────────         ──────────────────────────────────              ──────────
+
+Stage 1      Stage 2      Stage 3        Stage 4      Stage 5      Stage 6
+Discover  →  Define    →  Plan        →  Build     →  Deliver   →  Document
+    │            │            │              │            │              │
+    ▼            ▼            ▼              ▼            ▼              ▼
+GitHub       PRD doc     spec.md +      Implemented  Closed feature  Simplified code +
+Issue +                  plan.md +      feature      + retrospective docstrings +
+evidence                 tasks.md                    + KB entry      CHANGELOG +
+                                                                     API docs
+```
+
+---
+
 # Part 1: Quick Start
 
 Get from zero to your first threat model in 6 steps. No security background required.

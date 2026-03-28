@@ -5,7 +5,7 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-03-28
 
-**Entry Count**: 8 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 9 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-21
 **Status**: ✅ Manual mode (file-based)
 
@@ -182,6 +182,26 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #delivery #process #velocity #same-day
 
 **Quality Score**: 8/10
+
+---
+
+### PAT-009: Documentation Features Require Source Material Audit Before Writing
+
+**Date**: 2026-03-28
+**Feature**: 045 — End-to-End tachi Instruction Manual
+**Category**: Process / Documentation
+
+**Context**: Feature 045 created a comprehensive developer guide covering tachi's 4-command threat modeling pipeline. During implementation, existing source documentation (command specs, interface contracts) was found to be incomplete — requiring additional research to fill gaps before guide content could be written accurately.
+
+**Pattern**: For documentation-heavy features, always run a source material audit in Phase 1 that explicitly reads every file the guide will reference and flags gaps. The research.md output should note not just what was found, but what was missing or ambiguous. This prevents mid-implementation surprises where writers discover they cannot document behavior that was never specified.
+
+**Result**: 31 tasks completed same-day despite the incomplete source material. The mandatory read-first phase (T001-T006) caught the gaps early enough that they could be resolved during writing rather than causing rework.
+
+**When to Apply**: Any feature where the primary deliverable is documentation that references existing command specs, API contracts, or architecture docs. Budget extra time for source material gaps — they are the norm, not the exception.
+
+**Tags**: #retrospective #documentation #process #source-material
+
+**Quality Score**: 7/10
 
 ---
 

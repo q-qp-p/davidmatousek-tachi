@@ -268,3 +268,12 @@ Each PRD should include relevant user stories:
 - **US-039-3** (P0): Template Selection - Select which template(s) to generate (`--template baseball-card|system-architecture|all`) to produce exactly the output needed
 - **US-039-4** (P1): Regenerate After Enrichment - Regenerate infographics after running `/compensating-controls` or `/risk-score` to reflect quantitative composite scores and residual risk rather than inherent risk
 - **US-039-5** (P0): Pipeline Cleanup - `/threat-model` pipeline produces phases 1-5 only (Phase 6 removed), with all platform adapter documentation updated to reflect the 5-phase pipeline
+
+### Feature 045: End-to-End tachi Instruction Manual
+
+**PRD**: [045-instruction-manual](../02_PRD/045-instruction-manual-2026-03-28.md)
+**Delivered**: 2026-03-28 | **PR**: #47 | **Tasks**: 31/31 complete | **Stories**: 3/3 passing
+
+- **US-045-1** (P0): Complete Workflow Guide - Step-by-step instruction manual walking users through the complete 4-command workflow (`/threat-model` -> `/risk-score` -> `/compensating-controls` -> `/infographic`) from architecture description to visual infographics, producing all 12+ output artifacts
+- **US-045-2** (P0): Output Interpretation - Each command's output explained with annotated examples covering all 7 threats.md sections plus Section 4a, 4 risk scoring dimensions, residual risk calculation, and missing control recommendations
+- **US-045-3** (P0): Quick Start - Quick Start section at the top of the guide gets a new user from zero to first threat model in 5 steps under 5 minutes, with copy-pasteable commands and clear pointers to comprehensive guide sections
