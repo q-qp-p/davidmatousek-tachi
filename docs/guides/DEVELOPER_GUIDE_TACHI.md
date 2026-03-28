@@ -2,21 +2,22 @@
 
 ---
 
-## Complete Lifecycle Overview
+## Complete Pipeline Overview
 
 ```
-Discovery                       Delivery                                        Quality
-─────────────────────         ──────────────────────────────────              ──────────
+Prerequisite: Architecture description (Mermaid, prose, YAML, JSON, or C4 DSL)
 
-Stage 1      Stage 2      Stage 3        Stage 4      Stage 5      Stage 6
-Discover  →  Define    →  Plan        →  Build     →  Deliver   →  Document
-    │            │            │              │            │              │
-    ▼            ▼            ▼              ▼            ▼              ▼
-GitHub       PRD doc     spec.md +      Implemented  Closed feature  Simplified code +
-Issue +                  plan.md +      feature      + retrospective docstrings +
-evidence                 tasks.md                    + KB entry      CHANGELOG +
-                                                                     API docs
+Step 1               Step 2               Step 3                      Step 4
+/threat-model    →   /risk-score      →   /compensating-controls  →   /infographic
+     │                    │                       │                        │
+     ▼                    ▼                       ▼                        ▼
+threats.md           risk-scores.md       compensating-controls.md   baseball-card.jpg
+threats.sarif        risk-scores.sarif    compensating-controls.sarif system-arch.jpg
+threat-report.md                          + residual risk scores     + spec files
+attack-trees/
 ```
+
+Each step enriches the previous step's output. Steps 2-4 are optional and independently useful.
 
 ---
 
