@@ -269,6 +269,15 @@ Each PRD should include relevant user stories:
 - **US-039-4** (P1): Regenerate After Enrichment - Regenerate infographics after running `/compensating-controls` or `/risk-score` to reflect quantitative composite scores and residual risk rather than inherent risk
 - **US-039-5** (P0): Pipeline Cleanup - `/threat-model` pipeline produces phases 1-5 only (Phase 6 removed), with all platform adapter documentation updated to reflect the 5-phase pipeline
 
+### Feature 048: Infographic Tiered Pipeline Auto-Detection & Residual Risk
+
+**PRD**: [048-infographic-tiered-detection-residual-risk](../02_PRD/048-infographic-tiered-detection-residual-risk-2026-03-28.md)
+**Delivered**: 2026-03-28 | **PR**: #49 | **Tasks**: 27/27 complete | **Stories**: 3/3 passing
+
+- **US-048-1** (P0): Tiered Auto-Detection with Residual Risk - Auto-detect `compensating-controls.md` as the richest data source in a 3-tier hierarchy (compensating-controls.md > risk-scores.md > threats.md), extracting residual risk scores from the Coverage Matrix for infographics that reflect actual security posture after existing defenses
+- **US-048-2** (P0): Enhancement Tips at Each Pipeline Tier - Display progressive enhancement tips at each detection tier informing users which pipeline command would upgrade their visualization to the next tier, with tips suppressed when an explicit file path is provided
+- **US-048-3** (P1): Risk Labels and Template Adaptations - Distinguish risk labels across data sources (Residual Risk / Inherent Risk / Severity) in both baseball-card and system-architecture templates, with residual severity distribution and risk reduction percentage in the baseball-card summary zone
+
 ### Feature 045: End-to-End tachi Instruction Manual
 
 **PRD**: [045-instruction-manual](../02_PRD/045-instruction-manual-2026-03-28.md)

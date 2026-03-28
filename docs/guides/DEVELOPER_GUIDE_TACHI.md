@@ -903,7 +903,7 @@ Generate visual reports for stakeholders:
 /infographic docs/security/ --template all
 ```
 
-The command auto-detects `risk-scores.md` (the richest data source) and generates both templates:
+The command auto-detects `compensating-controls.md` (the richest data source, containing residual risk after control analysis) and generates both templates:
 
 - **`threat-baseball-card-spec.md` + `threat-baseball-card.jpg`**: A compact risk summary dashboard showing the donut chart (4 Critical, 14 High, 12 Medium, 3 Low), a STRIDE+AI coverage heat map highlighting the Skill Runner and Orchestrator as highest-risk components, and critical finding cards for AG-2, E-1, LLM-1, and AG-1.
 
@@ -1195,7 +1195,7 @@ Running `/threat-model` gives you a complete threat assessment. Three additional
 /compensating-controls (risk-scores.md + target codebase)
     ├── compensating-controls.md, compensating-controls.sarif
     ▼
-/infographic (auto-detects richest: risk-scores.md > threats.md)
+/infographic (auto-detects richest: compensating-controls.md > risk-scores.md > threats.md)
     ├── threat-{template}-spec.md, threat-{template}.jpg
 ```
 
@@ -1205,7 +1205,7 @@ Running `/threat-model` gives you a complete threat assessment. Three additional
 |---------|-------------|--------------|
 | `/risk-score` | **Recommended** after every `/threat-model` run | Replaces qualitative severity with composite risk scores (0-10). Enables governance fields (owner, SLA, disposition). |
 | `/compensating-controls` | **Recommended** when you have a codebase to scan | Detects existing security controls, calculates residual risk, recommends missing controls. Most valuable for established projects. |
-| `/infographic` | **Optional** for visual reporting | Produces presentation-ready images for stakeholders. Requires a Gemini API key for image generation; produces spec files without it. |
+| `/infographic` | **Optional** for visual reporting | Produces presentation-ready images for stakeholders. Auto-detects richest data source (compensating-controls.md > risk-scores.md > threats.md). Uses residual risk when compensating controls data is available. Requires a Gemini API key for image generation; produces spec files without it. |
 
 You do not need to run all three. Each command is independently useful:
 - Run `/risk-score` alone to get quantitative scores for prioritization.
@@ -1385,20 +1385,36 @@ Run `/infographic` to generate visual risk summary images for stakeholders, or b
 
 ### What It Does
 
-Generates visual threat infographic specifications and presentation-ready images. The command auto-detects the richest available data source, preferring `risk-scores.md` (quantitative composite scores) over `threats.md` (qualitative severity counts).
+Generates visual threat infographic specifications and presentation-ready images. The command auto-detects the richest available data source using a three-tier priority hierarchy: `compensating-controls.md` (residual risk after control analysis) over `risk-scores.md` (quantitative composite scores) over `threats.md` (qualitative severity counts).
 
 ### Prerequisites
 
-- At least one data source must exist: `risk-scores.md` (preferred) or `threats.md` (fallback).
-- When using `risk-scores.md`, the command requires a co-located `threats.md` in the same directory for structural data (project metadata, trust zones, data flows).
+- At least one data source must exist: `compensating-controls.md` (preferred), `risk-scores.md`, or `threats.md` (fallback).
+- When using `compensating-controls.md` or `risk-scores.md`, the command requires a co-located `threats.md` in the same directory for structural data (project metadata, trust zones, data flows).
+- When using `compensating-controls.md`, `risk-scores.md` is NOT required -- residual risk scores are self-contained in the compensating controls output.
 - A **Gemini API key** is required for image generation. Without it, the command produces specification files but skips image generation. See [Setting Up GEMINI_API_KEY](#setting-up-gemini_api_key) in the Quick Start.
 
 ### Auto-Detection Behavior
 
 When you run `/infographic` without specifying a data source:
-1. The command scans the working directory for `risk-scores.md` — if found, uses it as the primary source (quantitative composite scores give richer infographics).
-2. Falls back to `threats.md` if `risk-scores.md` is absent (qualitative severity counts).
-3. If neither file is found, the command halts with an error.
+1. The command scans the working directory for `compensating-controls.md` -- if found, uses it as the primary source (residual risk after control analysis gives the most accurate infographics).
+2. Falls back to `risk-scores.md` if `compensating-controls.md` is absent (quantitative inherent risk scores).
+3. Falls back to `threats.md` if neither is present (qualitative severity counts).
+4. If no data source file is found, the command halts with an error listing all three expected files and the pipeline command that produces each.
+
+After auto-detection, the command displays a single-line **enhancement tip** suggesting the next pipeline command for richer data. Tips are suppressed when you provide an explicit file path.
+
+### Risk Labels
+
+Infographic risk labels change based on the data source to prevent stakeholder confusion:
+
+| Data Source | Risk Label | Meaning |
+|-------------|------------|---------|
+| `compensating-controls.md` | **Residual Risk** | Post-control exposure after accounting for existing defenses |
+| `risk-scores.md` | **Inherent Risk** | Unmitigated risk before control analysis |
+| `threats.md` | **Severity** | Qualitative severity rating (existing behavior) |
+
+When `compensating-controls.md` is the data source, the baseball-card template also includes a **risk reduction percentage** line in the summary zone showing overall control effectiveness.
 
 ### Running the Command
 
@@ -1406,7 +1422,8 @@ When you run `/infographic` without specifying a data source:
 # Auto-detect data source in current directory (recommended)
 /infographic
 
-# Use a specific file
+# Use a specific file (explicit path — no enhancement tip displayed)
+/infographic path/to/compensating-controls.md
 /infographic path/to/risk-scores.md
 
 # Select a specific template

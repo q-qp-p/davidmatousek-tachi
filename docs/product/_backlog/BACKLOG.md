@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-03-28T19:26:24Z.
+> Auto-generated from GitHub Issues on 2026-03-28T20:10:22Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -40,7 +40,6 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #48 | Enhance /infographic with tiered pipeline auto-detection and residual risk support | OPEN | 2026-03-28 |
 | #46 | Sync upstream AOD Kit — merge new skills, commands, rules, and guides | OPEN | 2026-03-28 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
 | #18 | Feature: Threat Infographic Agent | CLOSED | 2026-03-23 |

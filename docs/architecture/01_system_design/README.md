@@ -706,7 +706,7 @@ flowchart TD
 
 ### Component 1: Infographic Agent Prompt (`agents/threat-infographic.md`)
 
-**Purpose**: Markdown prompt file that defines the infographic agent's data extraction methodology, specification format, Gemini API prompt construction, and graceful fallback behavior. Invoked via the standalone `/infographic` command (Feature 039); no longer dispatched by the orchestrator pipeline. Supports dual-path data extraction: when `risk-scores.md` is the primary source, the agent reads quantitative composite scores from risk-scores and structural/spatial data from co-located `threats.md`.
+**Purpose**: Markdown prompt file that defines the infographic agent's data extraction methodology, specification format, Gemini API prompt construction, and graceful fallback behavior. Invoked via the standalone `/infographic` command (Feature 039); no longer dispatched by the orchestrator pipeline. Supports three data source extraction paths (Feature 048): `compensating-controls.md` (residual risk from Coverage Matrix sub-tables + co-located `threats.md`), `risk-scores.md` (inherent risk composite scores + co-located `threats.md`), or `threats.md` standalone (qualitative severity counts). Risk labels adapt to source type: "Residual Risk", "Inherent Risk", or "Severity".
 
 **Follows Existing Pattern**: 8-section YAML+Markdown structure matching `agents/threat-report.md` (F-015).
 
@@ -716,20 +716,24 @@ flowchart TD
 
 ### Component 3: Standalone `/infographic` Command (Feature 039)
 
-**Purpose**: Infographic generation extracted from the orchestrator pipeline into a standalone `/infographic` command (Feature 039). The command auto-detects the richest available data source (`risk-scores.md` preferred over `threats.md`), supports explicit file override, and template selection. The orchestrator pipeline now runs 5 phases only (Phases 1-5). See Feature 039 section below for the standalone command architecture.
+**Purpose**: Infographic generation extracted from the orchestrator pipeline into a standalone `/infographic` command (Feature 039). The command auto-detects the richest available data source using a three-tier hierarchy: `compensating-controls.md` > `risk-scores.md` > `threats.md` (Feature 048). Supports explicit file override with content-based type detection and template selection. Enhancement tips guide users toward richer pipeline tiers. The orchestrator pipeline now runs 5 phases only (Phases 1-5). See Feature 039 section below for the standalone command architecture.
 
 ## Data Flow
 
 ```mermaid
 flowchart TD
-    TM["threats.md<br/>(Phase 4 Output)"] --> IA["Infographic Agent<br/>(agents/threat-infographic.md)"]
-    IA --> IS["threat-infographic-spec.md<br/>(6 Sections)"]
-    IA -->|"GEMINI_API_KEY set"| IMG["threat-infographic.jpg<br/>(Optional)"]
+    CC["compensating-controls.md<br/>(Tier 1: Residual Risk)"] --> DET["Three-Tier<br/>Auto-Detection"]
+    RS["risk-scores.md<br/>(Tier 2: Inherent Risk)"] --> DET
+    TM["threats.md<br/>(Tier 3: Severity)"] --> DET
+    DET --> IA["Infographic Agent<br/>(agents/threat-infographic.md)"]
+    TM -.->|"co-located structural data"| IA
+    IA --> IS["threat-{template}-spec.md<br/>(6 Sections)"]
+    IA -->|"GEMINI_API_KEY set"| IMG["threat-{template}.jpg<br/>(Optional)"]
     IA -->|"No API key or error"| SKIP["Spec saved as<br/>standalone deliverable"]
 
     subgraph Infographic Agent Processing
-        Parse["Parse threats.md<br/>Sections 1-7 + 4a"] --> Meta["1. Metadata<br/>(Project, Date, Counts)"]
-        Parse --> Risk["2. Risk Distribution<br/>(Severity Counts + %)"]
+        Parse["Parse data source<br/>+ co-located threats.md"] --> Meta["1. Metadata<br/>(Project, Date, Counts)"]
+        Parse --> Risk["2. Risk Distribution<br/>(Residual/Inherent/Severity)"]
         Parse --> Heat["3. Coverage Heat Map<br/>(Component × Severity)"]
         Parse --> Top["4. Top Critical Findings<br/>(Up to 5)"]
         Parse --> Arch["5. Architecture<br/>Threat Overlay"]
@@ -944,12 +948,12 @@ risk-scores.md/sarif → Parse → Group by Component → Detect Controls (per-c
 **File**: `.claude/commands/infographic.md`
 **Pattern**: Follows `/risk-score` command structure (Step 0 → Step 1 → Step 2 → Step 3)
 
-Steps: Parse flags (`--template`, `--output-dir`) → Detect richest data source (`risk-scores.md` > `threats.md`) → Invoke infographic agent in fresh context → Report results.
+Steps: Parse flags (`--template`, `--output-dir`) → Detect richest data source via three-tier hierarchy (`compensating-controls.md` > `risk-scores.md` > `threats.md`) → Display enhancement tip for next tier → Invoke infographic agent in fresh context → Report results.
 
 ### Component 2: Infographic Agent Enhancement (MODIFY)
 
 **File**: `.claude/agents/tachi/threat-infographic.md`
-**Change**: Dual-path data extraction — when `risk-scores.md` is primary, parse Section 1 for aggregate distribution, Section 2 for per-finding composite scores, and read co-located `threats.md` for structural/spatial data.
+**Change**: Three-path data extraction (Feature 048) — supports `compensating-controls.md` (residual risk from Coverage Matrix sub-tables), `risk-scores.md` (inherent risk composite scores), or `threats.md` (qualitative severity). When `compensating-controls.md` or `risk-scores.md` is primary, reads co-located `threats.md` for structural/spatial data. Risk labels adapt to source type ("Residual Risk" / "Inherent Risk" / "Severity").
 
 ### Component 3: /threat-model Pipeline Cleanup (MODIFY)
 
@@ -968,19 +972,24 @@ Update all adapter variants (Claude Code, Copilot, Cursor, Generic) for orchestr
 ## Data Flow
 
 ```
-User → /infographic → Parse flags → Detect data source
+User → /infographic → Parse flags → Three-Tier Auto-Detection
          │
-    ┌────┴─────┐
-    ▼          ▼
-threats.md   risk-scores.md + co-located threats.md
-    │          │
-    └────┬─────┘
-         ▼
+    ┌────┼────────────┐
+    ▼    ▼            ▼
+ compensating-   risk-scores.md   threats.md
+ controls.md     + threats.md     (standalone)
+ + threats.md        │                │
+    │                │                │
+    └────────┬───────┘                │
+             └────────┬───────────────┘
+                      ▼
+  Enhancement Tip (next tier suggestion, suppressed for explicit paths)
+                      ▼
   Infographic Agent (fresh context)
-  → Extract data → Apply template → Generate spec → Attempt Gemini image
-         │
-         ▼
-  threat-{name}-spec.md + threat-{name}.jpg (optional)
+  → Extract data (residual/inherent/severity) → Apply template → Generate spec → Attempt Gemini image
+                      ▼
+  threat-{name}-spec.md (labels: Residual Risk / Inherent Risk / Severity)
+  + threat-{name}.jpg (optional)
 ```
 
 #### Tech Stack
@@ -990,3 +999,59 @@ threats.md   risk-scores.md + co-located threats.md
 | Markdown | Command and agent prompt files | Follows `/risk-score` command pattern |
 | YAML | Infographic schema | Existing `schemas/infographic.yaml` unchanged |
 | Gemini API | Optional image generation | Existing integration preserved (ADR-014) |
+
+---
+
+### Feature 048: Infographic Tiered Pipeline Auto-Detection & Residual Risk
+
+**Status**: Delivered (2026-03-28) | PR #49 | 27/27 tasks complete
+
+## Components
+
+### Component 1: `/infographic` Command — Three-Tier Detection (MODIFY)
+
+**File**: `.claude/commands/infographic.md`
+**Change**: Extended two-tier auto-detection to three-tier hierarchy (`compensating-controls.md` > `risk-scores.md` > `threats.md`). Added content-based type detection for explicit paths (Coverage Matrix header + Residual Score column). Added tiered enhancement tips guiding users toward richer pipeline tiers. Updated error messages to list all three expected file formats. Extended co-location check to trigger for `compensating-controls.md` (same pattern as `risk-scores.md`). Detection-level failures fall through gracefully; extraction-level failures halt with warning.
+
+### Component 2: Infographic Agent — Compensating Controls Extraction Path (MODIFY)
+
+**File**: `.claude/agents/tachi/threat-infographic.md`
+**Change**: Added third data source extraction path for `compensating-controls.md`. Residual risk scores extracted from Coverage Matrix sub-tables (Critical, High, Medium, Low severity bands). Risk labels adapt to source type: "Residual Risk" (compensating-controls), "Inherent Risk" (risk-scores), "Severity" (threats). Baseball-card template includes risk reduction percentage in summary zone when compensating-controls is the source. Agent metadata updated with `compensating-controls` data source type declaration.
+
+## Data Flow
+
+```
+User → /infographic [--template] [--output-dir] [explicit-path]
+         │
+         ▼
+  Three-Tier Auto-Detection (or content-based detection for explicit paths)
+  Priority: compensating-controls.md > risk-scores.md > threats.md
+         │
+         ├── Tier 1: compensating-controls.md → residual risk from Coverage Matrix
+         ├── Tier 2: risk-scores.md → inherent risk composite scores
+         └── Tier 3: threats.md → qualitative severity counts
+         │
+         ▼
+  Enhancement Tip (auto-detect only, suppressed for explicit paths)
+  - Tier 3 → "Run /risk-score for quantitative scores"
+  - Tier 2 → "Run /compensating-controls for residual risk"
+  - Tier 1 → "Full pipeline detected — visualizing residual risk"
+         │
+         ▼
+  Co-location check (Tier 1 & 2: threats.md required for structural data)
+         │
+         ▼
+  Infographic Agent (fresh context, primary + secondary files)
+  → Extract data → Apply risk labels → Apply template → Generate spec → Attempt Gemini image
+         │
+         ▼
+  threat-{template}-spec.md (labels match source tier)
+  + threat-{template}.jpg (optional, Gemini API)
+```
+
+#### Tech Stack
+
+| Technology | Purpose | Justification |
+|------------|---------|---------------|
+| Markdown | Command and agent prompt files | No new technologies; extends existing prompt files |
+| Content-based detection | Three-tier hierarchy with header/column markers | Enables explicit path type detection without filename dependency |

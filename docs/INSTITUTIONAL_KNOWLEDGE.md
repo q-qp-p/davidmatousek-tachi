@@ -5,7 +5,7 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-03-28
 
-**Entry Count**: 9 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 10 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-21
 **Status**: ✅ Manual mode (file-based)
 
@@ -200,6 +200,26 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **When to Apply**: Any feature where the primary deliverable is documentation that references existing command specs, API contracts, or architecture docs. Budget extra time for source material gaps — they are the norm, not the exception.
 
 **Tags**: #retrospective #documentation #process #source-material
+
+**Quality Score**: 7/10
+
+---
+
+### KB-010: Docs-Only Prompt Engineering Features Deliver in a Single Session
+
+**Date**: 2026-03-28
+**Feature**: 048 — Infographic Tiered Pipeline Auto-Detection & Residual Risk
+**Category**: Process / Velocity
+
+**Context**: Feature 048 extended the `/infographic` command with three-tier data source detection and residual risk extraction. All 27 tasks edited markdown prompt files (`.claude/commands/infographic.md` and `.claude/agents/tachi/threat-infographic.md`) — zero application code. The feature was designed, planned, built, and delivered in a single session.
+
+**Pattern**: Features that modify only agent prompts and command files (no application code, no tests, no infrastructure) can complete the full AOD lifecycle in one session. The absence of build/test/deploy cycles eliminates the usual bottlenecks. Same-day delivery is achievable when: (1) all changes are markdown/YAML, (2) validation is manual walkthrough, and (3) the feature extends existing patterns rather than creating new ones.
+
+**Result**: 27 tasks completed same-day. PRD → spec → plan → tasks → build → deliver all in one session. No surprises or blockers.
+
+**When to Apply**: When scoping features that modify agent prompts, command orchestration, or documentation only. Set expectations for single-session delivery and avoid over-engineering the task breakdown.
+
+**Tags**: #retrospective #velocity #prompt-engineering #process
 
 **Quality Score**: 7/10
 
