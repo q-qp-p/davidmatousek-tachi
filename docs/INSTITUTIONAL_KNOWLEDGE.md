@@ -5,7 +5,7 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-03-28
 
-**Entry Count**: 7 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 8 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-21
 **Status**: ✅ Manual mode (file-based)
 
@@ -160,6 +160,26 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **When to Apply**: When adding successive enrichment stages to an existing pipeline. If the previous stage validated the schema-driven extension pattern, subsequent stages can follow the same template with high confidence. The key enabler is a well-structured finding IR that carries forward all fields needed by downstream stages.
 
 **Tags**: #retrospective #delivery #architecture #pattern #pipeline-extension
+
+**Quality Score**: 8/10
+
+---
+
+### PAT-008: Well-Structured Specs with Atomic Tasks Enable Same-Day Delivery
+
+**Date**: 2026-03-28
+**Feature**: 039 — Standalone /infographic Command
+**Category**: Process / Delivery Velocity
+
+**Context**: Feature 039 decoupled infographic generation from the `/threat-model` pipeline into a standalone `/infographic` command. The change touched 32 files across 5 platform adapters, required dual-path data extraction logic, and removed Phase 6 from the orchestrator — all delivered same-day with 30 tasks across 5 user stories.
+
+**Pattern**: When specifications decompose cleanly into atomic, independently testable tasks with clear acceptance criteria, same-day delivery is achievable even for cross-cutting changes touching 30+ files. The key enablers are: (1) each task maps to a single file or a single logical change, (2) adapter mirror tasks (T017-T027) follow a repeatable pattern from the primary implementation, and (3) validation tasks (T028-T030) are defined upfront so testing is not an afterthought.
+
+**Result**: 30 tasks completed same-day. Zero blockers, zero rework. The adapter matrix (5 platforms × 2 agents + 1 command + orchestrator changes) was the largest surface area, but systematic mirror tasks made it mechanical rather than complex. Clean same-day delivery from spec to merged PR.
+
+**When to Apply**: When planning features that are primarily command reorganization or pipeline restructuring (not greenfield architecture). If the change follows established patterns and the adapter matrix is well-understood, invest in atomic task decomposition — the upfront planning cost pays back in execution speed and zero-defect delivery.
+
+**Tags**: #retrospective #delivery #process #velocity #same-day
 
 **Quality Score**: 8/10
 

@@ -1,6 +1,6 @@
 # OKRs (Objectives and Key Results) - tachi
 
-**Last Updated**: 2026-03-23
+**Last Updated**: 2026-03-28
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -152,3 +152,6 @@ OKRs align the team around measurable goals. They answer:
 | 2026-03-23 | F-015: Threat Report Agent & Attack Trees | [015](../02_PRD/015-threat-report-agent-attack-trees-2026-03-23.md) | Narrative threat report with executive summary, Mermaid attack trees for Critical/High findings, remediation roadmap. Phase 5 (Report) in orchestrator pipeline. |
 | 2026-03-23 | F-018: Threat Infographic Agent | [018](../02_PRD/018-threat-infographic-agent-2026-03-23.md) | Visual infographic agent producing threat-infographic-spec.md with risk distribution, coverage heat map, top findings summary, and CVSS color palette. Optional Gemini API image generation. Phase 6 (Infographic) in orchestrator pipeline with opt-out support. Completes the reporting layer: structured analysis (F-005/F-007) -> narrative report (F-015) -> visual communication (F-018). |
 | 2026-03-23 | F-024: Example Threat Models | [024](../02_PRD/024-example-threat-models-2026-03-23.md) | 3 end-to-end example threat models (web-app, agentic-app, microservices) with architecture diagrams and complete threat model outputs matching schema v1.1. Demonstrates STRIDE, AI threat agents, and OWASP cross-references. 5 user stories delivered. |
+| 2026-03-27 | F-035: Quantitative Risk Scoring | [035](../02_PRD/035-quantitative-risk-scoring-2026-03-27.md) | Four-dimensional quantitative risk scoring (CVSS base + exploitability + scalability + reachability) with composite scores, governance fields, dual output formats (risk-scores.md + risk-scores.sarif). |
+| 2026-03-28 | F-036: Compensating Controls Analysis | [036](../02_PRD/036-compensating-controls-2026-03-27.md) | Codebase control detection with file:line evidence, compensating control recommendations, coverage matrix, residual risk calculation, and control effectiveness assessment. |
+| 2026-03-28 | F-039: Standalone /infographic Command | [039](../02_PRD/039-standalone-infographic-command-2026-03-28.md) | Standalone `/infographic` command with auto-detection of richest data source (risk-scores.md preferred), explicit file path override, template selection. Phase 6 removed from `/threat-model` pipeline. All platform adapters updated to 5-phase pipeline. |

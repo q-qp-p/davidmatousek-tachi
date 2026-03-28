@@ -706,7 +706,7 @@ flowchart TD
 
 ### Component 1: Infographic Agent Prompt (`agents/threat-infographic.md`)
 
-**Purpose**: Markdown prompt file that defines the infographic agent's data extraction methodology, specification format, Gemini API prompt construction, and graceful fallback behavior. When invoked by the orchestrator or standalone, the LLM follows these instructions to transform `threats.md` into a visual risk specification.
+**Purpose**: Markdown prompt file that defines the infographic agent's data extraction methodology, specification format, Gemini API prompt construction, and graceful fallback behavior. Invoked via the standalone `/infographic` command (Feature 039); no longer dispatched by the orchestrator pipeline. Supports dual-path data extraction: when `risk-scores.md` is the primary source, the agent reads quantitative composite scores from risk-scores and structural/spatial data from co-located `threats.md`.
 
 **Follows Existing Pattern**: 8-section YAML+Markdown structure matching `agents/threat-report.md` (F-015).
 

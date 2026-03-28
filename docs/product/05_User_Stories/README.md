@@ -1,6 +1,6 @@
 # User Stories - tachi
 
-**Last Updated**: 2026-03-27
+**Last Updated**: 2026-03-28
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -257,3 +257,14 @@ Each PRD should include relevant user stories:
 - **US-036-3** (P0): Coverage Matrix - As a security manager, coverage matrix showing control status across all threats with summary statistics (% covered, % partial, % unmitigated) for at-a-glance security posture assessment
 - **US-036-4** (P0): Residual Risk Calculation - As a security manager, residual risk calculated for each threat accounting for existing controls, with total inherent vs. total residual risk summary
 - **US-036-5** (P0): Control Effectiveness Assessment - As an architect, control effectiveness assessed beyond mere existence — evaluating whether controls are adequate or need hardening
+
+### Feature 039: Standalone /infographic Command
+
+**PRD**: [039-standalone-infographic-command](../02_PRD/039-standalone-infographic-command-2026-03-28.md)
+**Delivered**: 2026-03-28 | **PR**: #42 | **Tasks**: 30/30 complete | **Stories**: 5/5 passing
+
+- **US-039-1** (P0): Auto-Select Richest Data Source - Run `/infographic` and have it automatically choose the best available data source (`risk-scores.md` preferred over `threats.md`) for the most accurate visual risk picture without remembering which file to pass
+- **US-039-2** (P0): Explicit Data Source Override - Pass an explicit file path to `/infographic` to control exactly which data is visualized, regardless of what files exist in the directory
+- **US-039-3** (P0): Template Selection - Select which template(s) to generate (`--template baseball-card|system-architecture|all`) to produce exactly the output needed
+- **US-039-4** (P1): Regenerate After Enrichment - Regenerate infographics after running `/compensating-controls` or `/risk-score` to reflect quantitative composite scores and residual risk rather than inherent risk
+- **US-039-5** (P0): Pipeline Cleanup - `/threat-model` pipeline produces phases 1-5 only (Phase 6 removed), with all platform adapter documentation updated to reflect the 5-phase pipeline

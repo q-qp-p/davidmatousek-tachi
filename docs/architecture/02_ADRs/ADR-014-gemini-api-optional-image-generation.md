@@ -1,9 +1,11 @@
 # ADR-014: Gemini API Optional Image Generation with Graceful Degradation
 
-**Status**: Accepted
+**Status**: Accepted (partially superseded by ADR-016)
 **Date**: 2026-03-23
 **Deciders**: Architect
 **Feature**: 018 (Threat Infographic Agent)
+
+> **Note (2026-03-28, Feature 039)**: Infographic generation was extracted from the orchestrator pipeline (Phase 6) into a standalone `/infographic` command. The Gemini API integration, spec-first architecture, and graceful degradation decisions in this ADR remain fully in effect. The Phase 6 references, opt-out flags (`--skip-infographic`, `TACHI_SKIP_INFOGRAPHIC`, `infographic: false`), and orchestrator dispatch are superseded by [ADR-016](ADR-016-infographic-pipeline-decoupling.md). The `/infographic` command now owns invocation control directly.
 
 ---
 
