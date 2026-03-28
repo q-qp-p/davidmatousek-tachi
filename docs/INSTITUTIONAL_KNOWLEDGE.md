@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-03-27
+**Last Updated**: 2026-03-28
 
-**Entry Count**: 6 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 7 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-21
 **Status**: ✅ Manual mode (file-based)
 
@@ -138,6 +138,26 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Result**: 29 tasks completed same-day across 9 phases. The scoring agent operates independently of threat agents — no modifications to existing commands, agents, or schemas were needed (only an optional extension reference added to finding.yaml). Dual-format output reused the established SARIF generation pattern (PAT-004), and the weighted composite formula with severity band mapping made scoring reproducible (+/- 0.5 tolerance).
 
 **When to Apply**: Any feature that enriches existing pipeline output with new dimensions (e.g., compensating controls, compliance mapping, cost estimation). Design as a separate command consuming existing output, use a dedicated schema for the enrichment logic, and preserve source identifiers for traceability. Avoid modifying upstream agents or schemas — extend via optional references.
+
+**Tags**: #retrospective #delivery #architecture #pattern #pipeline-extension
+
+**Quality Score**: 8/10
+
+---
+
+### PAT-007: Chained Pipeline Enrichment Validates Schema-Driven Extension Pattern
+
+**Date**: 2026-03-28
+**Feature**: 036 — Compensating Controls Analysis
+**Category**: Architecture / Pipeline Extension
+
+**Context**: Feature 036 added the third stage to tachi's threat analysis pipeline (`/threat-model` → `/risk-score` → `/compensating-controls`). It consumes risk-scores output and produces compensating-controls output with control detection, effectiveness classification, recommendations, and residual risk — extending the same schema-driven enrichment approach from PAT-006.
+
+**Pattern**: Successive pipeline stages can chain reliably when each stage follows the same contract: consume prior stage's dual output (MD + SARIF), extend via a dedicated schema (compensating-controls.yaml extending risk-scoring.yaml), and produce new dual output. The 6-phase agent design (parse → discover → detect → classify → recommend → output) decomposed cleanly because each phase has well-defined inputs and outputs. The 8 STRIDE + 2 AI control detection categories mapped directly to the existing threat taxonomy, requiring no upstream schema modifications.
+
+**Result**: 21 tasks completed in ~1 day across 6 waves. Smooth execution — the pipeline extension pattern from Feature 035 transferred directly. Schema extension (rather than modification) preserved backward compatibility. The coverage matrix and residual risk calculation were straightforward because the finding IR already carried all necessary fields from upstream stages.
+
+**When to Apply**: When adding successive enrichment stages to an existing pipeline. If the previous stage validated the schema-driven extension pattern, subsequent stages can follow the same template with high confidence. The key enabler is a well-structured finding IR that carries forward all fields needed by downstream stages.
 
 **Tags**: #retrospective #delivery #architecture #pattern #pipeline-extension
 
