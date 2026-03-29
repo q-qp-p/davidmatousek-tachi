@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-03-28
+**Last Updated**: 2026-03-29
 
-**Entry Count**: 12 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 13 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-21
 **Status**: ✅ Manual mode (file-based)
 
@@ -258,6 +258,22 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #estimation #pattern #docs-only
 
 **Quality Score**: 8/10
+
+---
+
+### PAT-013: Typst Template Modularity Requires Hub-First Architecture
+
+**Source**: Feature 060 — Professional PDF Security Assessment Report (Retrospective, 2026-03-29)
+
+**Pattern**: When building modular Typst template systems, the theme token layer (colors, fonts, spacing) and shared utility layer (reusable functions) must be fully stabilized before individual page templates are authored. Attempting to build page templates in parallel with the theme system leads to inconsistent token usage and repeated rework as the shared API changes.
+
+**Evidence**: Feature 060 required 5 implementation waves with Wave 1 dedicated entirely to theme.typ + shared.typ foundation before any new pages could begin. The spec explicitly marked Wave 1 as "CRITICAL: No user story work can begin until this phase is complete." Getting the import chain right (main.typ → theme → shared → pages) required iteration on the module boundary design.
+
+**When to Apply**: When designing multi-file Typst template systems with shared theming. Allocate a dedicated foundation phase for the theme token system and shared utilities. Only begin page-level work after the import chain and token API are frozen. This mirrors the hub-and-spoke content model from the knowledge system stack conventions.
+
+**Tags**: #retrospective #architecture #typst #template-design
+
+**Quality Score**: 7/10
 
 ---
 

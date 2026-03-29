@@ -1,6 +1,6 @@
 # Technology Stack - tachi
 
-**Last Updated**: 2026-03-28
+**Last Updated**: 2026-03-29
 **Owner**: Architect
 
 ---
@@ -198,8 +198,11 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 |------|-------------|---------|---------|
 | `jq` | `run-state.sh` | JSON parsing and atomic state manipulation | `brew install jq` (macOS) / `apt-get install jq` (Linux) |
 | `gh` | `github-lifecycle.sh`, `run-state.sh` (optional), `scripts/init.sh` (optional) | GitHub Issue/label management, Projects board creation during init | `brew install gh` / `gh auth login` |
+| `typst` | `/security-report` command (report-assembler agent) | PDF compilation from modular `.typ` templates; renders security assessment reports with brand assets, auto-generated TOC, and conditional page inclusion (Feature 054, extended Feature 060) | `brew install typst` (macOS) / `cargo install typst-cli` / [typst.app](https://github.com/typst/typst/releases) |
 
 **Note**: `gh` degrades gracefully -- the orchestrator falls back to artifact-only detection when `gh` is unavailable or unauthenticated. Similarly, `scripts/init.sh` skips GitHub Projects board creation when `gh` is missing, unauthenticated, or lacks the `project` OAuth scope, reporting status in the init summary with remediation guidance.
+
+**Note**: `typst` is required only for PDF report generation. The `/security-report` command validates Typst installation before compilation and reports a clear error if unavailable. All other tachi commands operate without Typst.
 
 ### External API Dependencies (Optional)
 
