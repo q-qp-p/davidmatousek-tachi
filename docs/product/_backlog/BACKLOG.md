@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-03-29T00:30:07Z.
+> Auto-generated from GitHub Issues on 2026-03-29T00:31:42Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -33,7 +33,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| #53 | Feature: Risk Reduction Funnel — 3D pipeline visualization from threats to residual risk | 2026-03-29 | — | 2026-03-29 |
+| — | *No items in this stage* | | |
 
 ## Untracked
 
