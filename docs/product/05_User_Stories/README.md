@@ -296,3 +296,13 @@ Each PRD should include relevant user stories:
 - **US-053-2** (P0): Partial Pipeline Funnel (3 Tiers) - Run `/infographic --template risk-funnel` with `risk-scores.md` to render 3 solid tiers plus a ghost tier with CTA to run `/compensating-controls` for the full funnel
 - **US-053-3** (P0): Minimal Pipeline Funnel (1 Tier) - Run `/infographic --template risk-funnel` with only `threats.md` to render a single wide tier with 3 grayed-out ghost tiers showing pipeline commands needed to unlock them
 - **US-053-4** (P1): Funnel Metrics Sidebar - Key metrics (total threats, risk reduction %, control coverage %) displayed alongside the funnel, adapting to the available tier mode
+
+### Feature 054: Security Assessment PDF Booklet
+
+**PRD**: [054-security-assessment-pdf-booklet](../02_PRD/054-security-assessment-pdf-booklet-2026-03-28.md)
+**Delivered**: 2026-03-28 | **PR**: #58 | **Tasks**: 34/34 complete | **Stories**: 4/4 passing
+
+- **US-054-1** (P0): Single PDF for Board Distribution - As a CISO, a single PDF combining all security analysis visuals and findings, so I can distribute one document to the board instead of multiple files
+- **US-054-2** (P0): Structured Audit Evidence - As a compliance officer, a structured security assessment report with cover page, executive summary, and detailed findings, so I can include it in audit evidence packages
+- **US-054-3** (P1): Professional Client Deliverable - As a security consultant, generate a professional, branded PDF deliverable from tachi's output, so I can deliver polished reports to clients
+- **US-054-4** (P1): Auto-Assembly from Available Artifacts - As a developer, the PDF auto-assembles from whatever artifacts exist in my security output directory, so I don't need to manually curate pages
