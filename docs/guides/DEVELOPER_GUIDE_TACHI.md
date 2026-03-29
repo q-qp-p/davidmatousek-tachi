@@ -7,29 +7,29 @@
 ```
 Prerequisite: Architecture description (Mermaid, prose, YAML, JSON, or C4 DSL)
 
- ┌─── THREATS ───┐  ┌── INHERENT RISK ──┐  ┌── RESIDUAL RISK ──┐  ┌── VISUALIZE ──┐
- │                │  │                    │  │                    │  │                │
- │  Step 1        │  │  Step 2            │  │  Step 3            │  │  Step 4        │
- │  /threat-model │→ │  /risk-score       │→ │  /compensating-    │→ │  /infographic  │
- │       │        │  │       │            │  │   controls         │  │       │        │
- │       ▼        │  │       ▼            │  │       │            │  │       ▼        │
- │  threats.md    │  │  risk-scores.md    │  │       ▼            │  │  baseball-     │
- │  threats.sarif │  │  risk-scores.sarif │  │  compensating-     │  │   card.jpg     │
- │  threat-       │  │                    │  │   controls.md      │  │  system-       │
- │   report.md    │  │  Scores each       │  │  compensating-     │  │   arch.jpg     │
- │  attack-trees/ │  │  threat before     │  │   controls.sarif   │  │  + spec files  │
- │                │  │  controls applied  │  │                    │  │                │
- │  Identifies    │  │                    │  │  Detects existing  │  │  Generates     │
- │  threats via   │  │                    │  │  controls, adjusts │  │  visual risk   │
- │  STRIDE + AI   │  │                    │  │  risk scores down  │  │  dashboards    │
- │  threat agents │  │                    │  │                    │  │                │
- └────────────────┘  └────────────────────┘  └────────────────────┘  └────────────────┘
+ ┌─── THREATS ───┐  ┌── INHERENT RISK ──┐  ┌── RESIDUAL RISK ──┐  ┌── VISUALIZE ──┐  ┌──── REPORT ────┐
+ │                │  │                    │  │                    │  │                │  │                 │
+ │  Step 1        │  │  Step 2            │  │  Step 3            │  │  Step 4        │  │  Step 5         │
+ │  /threat-model │→ │  /risk-score       │→ │  /compensating-    │→ │  /infographic  │→ │  /security-     │
+ │       │        │  │       │            │  │   controls         │  │       │        │  │   report        │
+ │       ▼        │  │       ▼            │  │       │            │  │       ▼        │  │       │         │
+ │  threats.md    │  │  risk-scores.md    │  │       ▼            │  │  baseball-     │  │       ▼         │
+ │  threats.sarif │  │  risk-scores.sarif │  │  compensating-     │  │   card.jpg     │  │  security-      │
+ │  threat-       │  │                    │  │   controls.md      │  │  system-       │  │   report.pdf    │
+ │   report.md    │  │  Scores each       │  │  compensating-     │  │   arch.jpg     │  │                 │
+ │  attack-trees/ │  │  threat before     │  │   controls.sarif   │  │  + spec files  │  │  Assembles all  │
+ │                │  │  controls applied  │  │                    │  │                │  │  artifacts into  │
+ │  Identifies    │  │                    │  │  Detects existing  │  │  Generates     │  │  a branded PDF  │
+ │  threats via   │  │                    │  │  controls, adjusts │  │  visual risk   │  │  with cover,    │
+ │  STRIDE + AI   │  │                    │  │  risk scores down  │  │  dashboards    │  │  TOC, findings, │
+ │  threat agents │  │                    │  │                    │  │                │  │  methodology    │
+ └────────────────┘  └────────────────────┘  └────────────────────┘  └────────────────┘  └─────────────────┘
 
- Threats            →  Inherent Risk        →  Residual Risk         →  Reporting
- (what can go wrong)   (unmitigated score)     (after controls)        (communicate)
+ Threats            →  Inherent Risk        →  Residual Risk         →  Visualize         →  Report
+ (what can go wrong)   (unmitigated score)     (after controls)        (communicate)        (PDF deliverable)
 ```
 
-Each step enriches the previous step's output. Steps 2-4 are optional and independently useful.
+Each step enriches the previous step's output. Steps 2-5 are optional and independently useful.
 
 ---
 
@@ -79,22 +79,31 @@ From your project root, copy the agents and command into your project's Claude C
 # Copy agents + infographic templates
 cp -r ~/Projects/tachi/adapters/claude-code/agents/ .claude/agents/tachi/
 
-# Copy the 4 command files
+# Copy the 5 command files
 mkdir -p .claude/commands
 cp ~/Projects/tachi/adapters/claude-code/commands/threat-model.md .claude/commands/
 cp ~/Projects/tachi/adapters/claude-code/commands/risk-score.md .claude/commands/
 cp ~/Projects/tachi/.claude/commands/compensating-controls.md .claude/commands/
 cp ~/Projects/tachi/adapters/claude-code/commands/infographic.md .claude/commands/
+cp ~/Projects/tachi/.claude/commands/security-report.md .claude/commands/
+
+# Copy PDF report templates, brand assets, and schema
+cp -r ~/Projects/tachi/templates/security-report/ templates/security-report/
+cp -r ~/Projects/tachi/brand/ brand/
+mkdir -p schemas
+cp ~/Projects/tachi/schemas/security-report.yaml schemas/
 ```
 
-Run this for each new codebase you want to add threat modeling to. Repeat it after pulling tachi updates to get the latest agents and commands.
+Run this for each new codebase you want to add threat modeling to. Repeat it after pulling tachi updates to get the latest agents, commands, and templates.
 
 ## Step 3: Verify
 
 ```bash
 ls .claude/agents/tachi/              # Should show 15 .md files + templates/ directory
-ls .claude/agents/tachi/templates/    # Should show infographic-baseball-card.md, infographic-system-architecture.md
-ls .claude/commands/                   # Should show threat-model.md, risk-score.md, compensating-controls.md, infographic.md
+ls .claude/agents/tachi/templates/    # Should show infographic-baseball-card.md, infographic-system-architecture.md, infographic-risk-funnel.md
+ls .claude/commands/                   # Should show threat-model.md, risk-score.md, compensating-controls.md, infographic.md, security-report.md
+ls templates/security-report/          # Should show main.typ, theme.typ, shared.typ, + 9 page templates
+ls brand/final/                        # Should show tachi logo PNGs (primary, horizontal, icon, dark variants)
 ```
 
 ## Step 4: Create Your Architecture File
@@ -169,6 +178,7 @@ Tachi writes these files to `docs/security/` (or your custom output directory):
 | `threat-baseball-card.jpg` | Baseball Card infographic (requires `GEMINI_API_KEY`) |
 | `threat-system-architecture-spec.md` | System Architecture diagram specification |
 | `threat-system-architecture.jpg` | System Architecture infographic (requires `GEMINI_API_KEY`) |
+| `security-report.pdf` | Professional branded PDF report (requires `typst` CLI -- see [Section 12](#section-12----generating-a-pdf-report)) |
 
 **Where to start**: Open `threats.md` and scroll to **Section 7 -- Recommended Actions**. This is your prioritized list of findings sorted by risk level. Start with Critical, then High.
 
@@ -187,6 +197,7 @@ Your threat model is just the beginning. Three additional commands enrich your r
 | `/risk-score` | Quantitative 0-10 composite scores for every finding, plus governance fields (owner, SLA, disposition) | [Section 9](#section-9----running-risk-score) |
 | `/compensating-controls` | Detects existing security controls in your codebase, calculates residual risk, recommends missing controls | [Section 10](#section-10----running-compensating-controls) |
 | `/infographic` | Visual risk summary images for presentations and stakeholder reports | [Section 11](#section-11----running-infographic-standalone) |
+| `/security-report` | Professional branded PDF assembling all artifacts into a single deliverable | [Section 12](#section-12----generating-a-pdf-report) |
 
 Each command is optional and independently useful. See [Section 8](#section-8----post-pipeline-enrichment) for the full pipeline overview.
 
@@ -1183,7 +1194,7 @@ Document your decisions. Future you (or an auditor) will want to know why specif
 
 ## Section 8 -- Post-Pipeline Enrichment
 
-Running `/threat-model` gives you a complete threat assessment. Three additional commands enrich those results with quantitative scores, control analysis, and visual reports. Each command consumes the previous command's output:
+Running `/threat-model` gives you a complete threat assessment. Four additional commands enrich those results with quantitative scores, control analysis, visual reports, and a professional PDF deliverable. Each command consumes the previous command's output:
 
 ```
 /threat-model (architecture.md)
@@ -1197,6 +1208,9 @@ Running `/threat-model` gives you a complete threat assessment. Three additional
     ▼
 /infographic (auto-detects richest: compensating-controls.md > risk-scores.md > threats.md)
     ├── threat-{template}-spec.md, threat-{template}.jpg
+    ▼
+/security-report (auto-detects all available artifacts)
+    ├── security-report.pdf
 ```
 
 ### When to Run Each Command
@@ -1206,13 +1220,15 @@ Running `/threat-model` gives you a complete threat assessment. Three additional
 | `/risk-score` | **Recommended** after every `/threat-model` run | Replaces qualitative severity with composite risk scores (0-10). Enables governance fields (owner, SLA, disposition). |
 | `/compensating-controls` | **Recommended** when you have a codebase to scan | Detects existing security controls, calculates residual risk, recommends missing controls. Most valuable for established projects. |
 | `/infographic` | **Optional** for visual reporting | Produces presentation-ready images for stakeholders. Auto-detects richest data source (compensating-controls.md > risk-scores.md > threats.md). Uses residual risk when compensating controls data is available. Requires a Gemini API key for image generation; produces spec files without it. |
+| `/security-report` | **Optional** for PDF deliverables | Assembles all available artifacts into a branded, multi-page PDF with cover, disclaimer, TOC, executive summary, methodology, scope, findings detail, remediation roadmap, control coverage, and full-bleed infographic pages. Requires Typst CLI. |
 
-You do not need to run all three. Each command is independently useful:
+You do not need to run all four. Each command is independently useful:
 - Run `/risk-score` alone to get quantitative scores for prioritization.
 - Run `/compensating-controls` alone to understand your current security posture against scored threats.
 - Run `/infographic` at any point to generate visuals from whatever data is available.
+- Run `/security-report` at any point to compile whatever exists into a PDF -- it adapts to available artifacts.
 
-The following three sections walk through each command in detail.
+The following four sections walk through each command in detail.
 
 ---
 
@@ -1459,7 +1475,90 @@ For each template, the command produces:
 
 ---
 
-## Section 12 -- Advanced Topics
+## Section 12 -- Generating a PDF Report
+
+### What It Does
+
+Assembles all available tachi pipeline artifacts into a professional, branded PDF security assessment report. The report auto-detects which artifacts exist and includes only the relevant pages. At minimum, it requires `threats.md`; additional artifacts add richer pages (quantitative scores, control analysis, infographic images).
+
+### Prerequisites
+
+- **Typst CLI** must be installed. Install via:
+  - macOS: `brew install typst`
+  - Linux/Windows: `cargo install typst-cli`
+  - Or download from [typst.app releases](https://github.com/typst/typst/releases)
+- **`threats.md`** must exist in the output directory (produced by `/threat-model`).
+- **Brand assets** should exist at `brand/final/` (copied during project setup). If missing, the report renders with text-only branding as a graceful fallback.
+- **Typst templates** should exist at `templates/security-report/` (copied during project setup).
+
+### What Gets Included
+
+The report auto-detects available artifacts and includes pages accordingly:
+
+| Artifact | Pages Added When Present |
+|----------|--------------------------|
+| `threats.md` (required) | Cover, Disclaimer, TOC, Executive Summary, Methodology (qualitative), Scope, Findings Detail, Remediation Roadmap |
+| `threat-report.md` | Enhanced executive summary narrative |
+| `risk-scores.md` | Methodology adds 4D quantitative scoring explanation; Findings Detail uses composite scores |
+| `compensating-controls.md` | Methodology adds control analysis explanation; Control Coverage page; Findings Detail shows residual risk |
+| `threat-*.jpg` infographics | Full-bleed infographic pages (landscape, edge-to-edge) |
+
+### Running the Command
+
+```bash
+# Auto-detect artifacts in the default output directory
+/security-report
+
+# Specify a custom output directory
+/security-report docs/security/2026-03-29/
+
+# The command will:
+# 1. Scan for available artifacts (threats.md, threat-report.md, risk-scores.md, etc.)
+# 2. Parse threats.md for scope data (components, data flows, trust boundaries)
+# 3. Detect brand assets in brand/final/
+# 4. Generate report-data.typ and report-config.typ
+# 5. Compile via: typst compile templates/security-report/main.typ security-report.pdf --root .
+```
+
+### Report Pages
+
+The PDF includes up to 12 page types in this sequence:
+
+| Page | Content | Source |
+|------|---------|--------|
+| **Cover** | tachi logo, project title, date, classification banner | Brand assets + metadata |
+| **Disclaimer** | Legal disclaimer: scope caveat, methodology notice, liability, confidentiality | Static template |
+| **Table of Contents** | Auto-generated from Typst `outline()` with accurate page numbers | All headings |
+| **Executive Summary** | Risk posture, severity distribution, key findings, recommendations | `threat-report.md` or `threats.md` |
+| **Methodology** | STRIDE + AI categories, risk matrix, scoring methodology | Adapts to available data |
+| **Scope** | Components analyzed, data flows, trust boundaries | `threats.md` Sections 1-2 |
+| **Findings Detail** | Individual finding cards with severity badges, component, threat, recommendation | Richest available source |
+| **Remediation Roadmap** | Prioritized recommendations grouped by effort tier | `threat-report.md` or `threats.md` |
+| **Control Coverage** | Control status matrix, coverage statistics | `compensating-controls.md` |
+| **Infographic pages** | Full-bleed landscape images | `threat-*.jpg` files |
+
+### Customization
+
+The report is controlled by two configuration files:
+
+- **`templates/security-report/theme.typ`** -- Brand colors, fonts, logo paths. Change the primary color and logo path here to customize branding for your organization.
+- **`templates/security-report/report-config.typ`** -- Page visibility toggles, metadata (project name, date, classification level). Toggle individual pages on/off.
+
+All templates use the hub-first architecture: `theme.typ` → `shared.typ` → individual pages. Changing a color in `theme.typ` propagates to every page automatically.
+
+### Output
+
+| File | Description |
+|------|-------------|
+| `security-report.pdf` | Multi-page branded PDF ready for distribution |
+
+### Without Typst
+
+If Typst is not installed, the command displays platform-specific installation instructions and halts. All other tachi commands (`/threat-model`, `/risk-score`, `/compensating-controls`, `/infographic`) work without Typst.
+
+---
+
+## Section 13 -- Advanced Topics
 
 ### Customizing Input for Better Findings
 
@@ -1580,7 +1679,7 @@ Start with what you have. If your architecture description does not mention AI c
 
 ---
 
-## Section 13 -- Troubleshooting and FAQ
+## Section 14 -- Troubleshooting and FAQ
 
 **"I got no AI findings."**
 Your architecture description does not contain AI-related keywords. Tachi looks for terms like "LLM", "agent", "model", "orchestrator", "prompt", "RAG", "knowledge base", "MCP server", "tool server", "plugin", and "function calling". Add component descriptions that mention these terms if your system includes AI capabilities.
@@ -1599,6 +1698,13 @@ No. Threat modeling and penetration testing find different types of issues. Thre
 
 **"Some findings seem like duplicates."**
 Check Section 4a (Correlated Findings). Tachi uses 5 correlation rules to detect when different threat categories produce overlapping findings on the same component. These are not duplicates -- they are compound risks where multiple threat categories amplify each other. For example, CR-2 correlates Elevation of Privilege with Agent Autonomy, because when both occur on the same component, the combined risk is greater than either finding alone.
+
+**"The PDF report failed to compile."**
+Ensure Typst CLI is installed (`typst --version`). Verify brand assets exist at `brand/final/` and templates at `templates/security-report/`. If brand assets are missing, the report falls back to text-only branding. If templates are missing, re-copy them:
+```bash
+cp -r ~/Projects/tachi/templates/security-report/ templates/security-report/
+cp -r ~/Projects/tachi/brand/ brand/
+```
 
 **"Tachi says it is not installed."**
 Verify that `.claude/agents/tachi/orchestrator.md` exists in your project. The agent files must be at that exact path. If you moved them, re-copy:
@@ -1766,6 +1872,23 @@ SARIF 2.1.0 JSON file extending `risk-scores.sarif` with control analysis. Each 
 - `properties.recommendation`: Suggested control (if gap exists)
 - Preserves all fingerprints from source `risk-scores.sarif` for traceability
 
+### `security-report.pdf` Page Sequence
+
+| Page | Condition | Source Data |
+|------|-----------|-------------|
+| Cover | Always included | Brand assets (`brand/final/`), project metadata |
+| Disclaimer | Always included | Static legal text in `disclaimer.typ` |
+| Table of Contents | Always included | Auto-generated from Typst `outline()` |
+| Executive Summary | Always included | `threat-report.md` (preferred) or `threats.md` Section 6-7 |
+| Methodology | Always included | Adapts sections based on available artifacts |
+| Scope | Always included | `threats.md` Sections 1-2 (components, data flows, trust boundaries) |
+| Findings Detail | Always included | Richest source: `compensating-controls.md` > `risk-scores.md` > `threats.md` |
+| Remediation Roadmap | Always included | `threat-report.md` Section 6 or `threats.md` Section 7 |
+| Control Coverage | Only if `compensating-controls.md` exists | Coverage matrix, control statistics |
+| Infographic (full-bleed) | Only if `threat-*.jpg` files exist | One landscape page per image |
+
+The report-assembler agent parses artifacts, generates `report-data.typ` (extracted data) and `report-config.typ` (page toggles), then invokes `typst compile templates/security-report/main.typ security-report.pdf --root .`.
+
 ### Infographic Spec Sections (Both Templates)
 
 | Section | Baseball Card | System Architecture |
@@ -1802,4 +1925,6 @@ SARIF 2.1.0 JSON file extending `risk-scores.sarif` with control analysis. Each 
 | **SARIF** | Static Analysis Results Interchange Format -- a JSON-based standard for representing the output of static analysis tools, supported by GitHub, Azure DevOps, and VS Code |
 | **Scalability** | A risk scoring dimension (0-10) measuring how many targets a single exploit can reach, from single-target to system-wide compromise |
 | **STRIDE** | A threat classification framework using six categories: Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege |
+| **Security Report** | A professional branded PDF assembling all tachi pipeline artifacts into a single deliverable document with cover, disclaimer, TOC, findings, and infographic pages, generated by `/security-report` using Typst |
 | **Trust Boundary** | A line in an architecture diagram separating components with different trust levels; data crossing a trust boundary requires security controls |
+| **Typst** | A markup-based typesetting system used by tachi for PDF report generation; templates in `templates/security-report/` are compiled via `typst compile` |
