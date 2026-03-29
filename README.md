@@ -6,6 +6,8 @@
 [![GitHub release](https://img.shields.io/github/v/release/davidmatousek/tachi)](https://github.com/davidmatousek/tachi/releases)
 [![Built with AOD Kit](https://img.shields.io/badge/built%20with-AOD%20Kit-blueviolet.svg)](https://github.com/davidmatousek/agentic-oriented-development-kit)
 
+**Get started**: [Quick Start](#quick-start) | [Developer Guide](docs/guides/DEVELOPER_GUIDE_TACHI.md) (full walkthrough with worked examples)
+
 ---
 
 ## What is tachi?
@@ -91,6 +93,8 @@ That's it. One command. tachi validates the setup, reads your architecture, disp
 | `threat-system-architecture.jpg` | `/infographic` | Architecture infographic with finding legend (requires `GEMINI_API_KEY`) |
 
 Start with `threats.md` Section 7 -- Recommended Actions. Then run `/risk-score` for quantitative prioritization, `/compensating-controls` to detect existing defenses, and `/infographic` for visual risk diagrams. Work through Critical findings first, then High.
+
+> **Full Walkthrough**: The [Developer Guide](docs/guides/DEVELOPER_GUIDE_TACHI.md) covers the complete 5-step risk lifecycle with worked examples, advanced options, and CI/CD integration.
 
 ---
 
@@ -235,7 +239,7 @@ The agentic-app example includes a [complete sample report](examples/agentic-app
 | Resource | Location | Purpose |
 |----------|----------|---------|
 | Interface Contract | [`docs/INTERFACE-CONTRACT.md`](docs/INTERFACE-CONTRACT.md) | Input formats, invocation protocol, output structure |
-| Output Templates | [`templates/`](templates/) | Canonical output structures ([threats.md](templates/threats.md), [risk-scores.md](templates/risk-scores.md), [risk-scores.sarif](templates/risk-scores.sarif), [compensating-controls.md](templates/compensating-controls.md), [compensating-controls.sarif](templates/compensating-controls.sarif)) |
+| Output Templates | [`templates/tachi/`](templates/tachi/) | Canonical output structures ([threats.md](templates/tachi/output-schemas/threats.md), [risk-scores.md](templates/tachi/output-schemas/risk-scores.md), [risk-scores.sarif](templates/tachi/output-schemas/risk-scores.sarif), [compensating-controls.md](templates/tachi/output-schemas/compensating-controls.md), [compensating-controls.sarif](templates/tachi/output-schemas/compensating-controls.sarif)) |
 | Schemas | [`schemas/`](schemas/) | Machine-readable contracts ([finding.yaml](schemas/finding.yaml), [input.yaml](schemas/input.yaml), [output.yaml](schemas/output.yaml), [risk-scoring.yaml](schemas/risk-scoring.yaml)) |
 | Threat Agents | [`agents/stride/`](agents/stride/) + [`agents/ai/`](agents/ai/) | Agent prompt definitions |
 | Developer Guide | [`docs/guides/DEVELOPER_GUIDE_TACHI.md`](docs/guides/DEVELOPER_GUIDE_TACHI.md) | Full walkthrough with worked examples |
