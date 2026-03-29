@@ -290,7 +290,7 @@ Every invocation produces a single structured threat model document following th
 
 ### Template Reference
 
-- **Structure template**: `templates/threats.md` -- defines all sections, field descriptions, and example values
+- **Structure template**: `templates/tachi/output-schemas/threats.md` -- defines all sections, field descriptions, and example values
 - **Machine-readable schema**: `schemas/output.yaml` -- validates output structure programmatically
 - **Schema version**: `1.1`
 
@@ -387,7 +387,7 @@ input:
 
 ### Output
 
-A single `threats.md` file following the structure defined in Section 4 and the template at `templates/threats.md`.
+A single `threats.md` file following the structure defined in Section 4 and the template at `templates/tachi/output-schemas/threats.md`.
 
 ### Side Effects
 
@@ -439,7 +439,7 @@ Every threat agent must include system-level prompt boundaries that:
 
 ### Structural Integrity Validation
 
-The output template (`templates/threats.md`) and output schema (`schemas/output.yaml`) serve as structural validators. Any generated output must conform to:
+The output template (`templates/tachi/output-schemas/threats.md`) and output schema (`schemas/output.yaml`) serve as structural validators. Any generated output must conform to:
 
 - YAML frontmatter with required fields (`schema_version`, `date`, `input_format`, `classification`)
 - All 7 required sections plus Section 4a present
@@ -518,7 +518,7 @@ error:
 | Input validation schema   | `schemas/input.yaml`      | Machine-readable format definitions |
 | Output structure schema   | `schemas/output.yaml`     | Machine-readable output validation  |
 | Finding IR schema         | `schemas/finding.yaml`    | Agent-to-template data contract     |
-| Output template           | `templates/threats.md`    | Canonical output structure          |
+| Output template           | `templates/tachi/output-schemas/threats.md`    | Canonical output structure          |
 | STRIDE agents             | `agents/stride/`          | 6 threat agent prompt files         |
 | AI agents                 | `agents/ai/`              | 5 threat agent prompt files         |
 | Example inputs            | `examples/`               | Sample inputs and expected outputs  |

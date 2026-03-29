@@ -23,9 +23,9 @@ data_source_types:
     files: [compensating-controls.md, threats.md]
     description: "Residual risk extraction with control effectiveness (dual-file)"
 templates:
-  baseball-card: .claude/agents/tachi/templates/infographic-baseball-card.md
-  system-architecture: .claude/agents/tachi/templates/infographic-system-architecture.md
-  risk-funnel: .claude/agents/tachi/templates/infographic-risk-funnel.md
+  baseball-card: templates/tachi/infographics/infographic-baseball-card.md
+  system-architecture: templates/tachi/infographics/infographic-system-architecture.md
+  risk-funnel: templates/tachi/infographics/infographic-risk-funnel.md
 aliases:
   corporate-white: baseball-card
 output_files:
@@ -662,9 +662,9 @@ Tier widths are proportional to finding count or risk volume at each stage:
 
 ### Section 6: Visual Design Directives
 
-**IMPORTANT**: Load the design template for the active template. Template files are stored alongside the agents at `.claude/agents/tachi/templates/infographic-{name}.md`.
+**IMPORTANT**: Load the design template for the active template. Template files are located at `templates/tachi/infographics/infographic-{name}.md`.
 
-- Load `.claude/agents/tachi/templates/infographic-{template-name}.md`
+- Load `templates/tachi/infographics/infographic-{template-name}.md`
 - If template is `corporate-white`, map to `baseball-card`
 - Default template: `baseball-card`
 - If the template file is not available: use the fallback directives below
@@ -765,7 +765,7 @@ After generating the specification (`threat-{template-name}-spec.md`), construct
 
 ### Design Template (Required)
 
-Load `.claude/agents/tachi/templates/infographic-{name}.md` and use its **Gemini Prompt Template** section. Replace all `{placeholders}` with actual data from the infographic spec. This ensures every infographic follows the same layout.
+Load `templates/tachi/infographics/infographic-{name}.md` and use its **Gemini Prompt Template** section. Replace all `{placeholders}` with actual data from the infographic spec. This ensures every infographic follows the same layout.
 
 If the design template is unavailable, construct the prompt following the fallback rules below.
 

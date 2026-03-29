@@ -124,8 +124,8 @@ Highest-Risk Component: {component_name} (composite: {max_composite})
 Next steps:
   1. Review Critical/High findings in risk-scores.md Section 2
   2. Assign risk owners in Section 4 (Governance Fields)
-  3. Upload risk-scores.sarif to GitHub Code Scanning (supersedes threats.sarif)
-  4. Share risk-scores.md with stakeholders for remediation planning
+  3. Run /compensating-controls --target <codebase> to detect existing security controls and calculate residual risk
+  4. Upload risk-scores.sarif to GitHub Code Scanning (supersedes threats.sarif)
 ```
 
 ## Usage Examples

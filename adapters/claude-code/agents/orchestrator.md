@@ -17,9 +17,9 @@ references:
     output: ../../../schemas/output.yaml
     report: ../../../schemas/report.yaml
   templates:
-    threats: ../../../templates/threats.md
-    sarif_template: ../../../templates/threats.sarif
-    threat_report: ../../../templates/threat-report.md
+    threats: ../../../templates/tachi/output-schemas/threats.md
+    sarif_template: ../../../templates/tachi/output-schemas/threats.sarif
+    threat_report: ../../../templates/tachi/output-schemas/threat-report.md
   agents:
     stride:
       - spoofing.md

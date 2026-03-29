@@ -8,7 +8,7 @@
 #
 # Producers: report-assembler agent (agents/tachi/report-assembler.md)
 # Consumers: security-report command (commands/security-report.md),
-#            Typst master orchestrator (templates/security-report/main.typ)
+#            Typst master orchestrator (templates/tachi/security-report/main.typ)
 #
 # Version: 1.1
 
@@ -139,7 +139,7 @@ security_report:
 
   # Theme Tokens
   #
-  # Brand color contract defined in templates/security-report/theme.typ.
+  # Brand color contract defined in templates/tachi/security-report/theme.typ.
   # Page templates consume these via shared.typ aliases.
   theme_tokens:
     colors:

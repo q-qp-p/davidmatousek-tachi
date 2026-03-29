@@ -17,7 +17,7 @@
 - **Postman/Insomnia**: API testing
 - **jq**: JSON processor, required by `.aod/scripts/bash/run-state.sh` for the Full Lifecycle Orchestrator (`brew install jq` on macOS, `apt-get install jq` on Linux)
 - **GitHub CLI (`gh`)**: Used by `make init` to auto-create a GitHub Projects board for backlog tracking. Requires the `project` OAuth scope (`gh auth refresh -s project`). If not installed or not authenticated, init continues without creating the board. Install via `brew install gh` on macOS or see [cli.github.com](https://cli.github.com)
-- **Typst CLI**: Required by `/security-report` for PDF generation. Install via `brew install typst` on macOS, `cargo install typst-cli` on Linux, or `winget install typst` on Windows. If not installed, the `/security-report` command displays platform-specific install instructions and halts. See `templates/security-report/` for Typst template sources
+- **Typst CLI**: Required by `/security-report` for PDF generation. Install via `brew install typst` on macOS, `cargo install typst-cli` on Linux, or `winget install typst` on Windows. If not installed, the `/security-report` command displays platform-specific install instructions and halts. See `templates/tachi/security-report/` for Typst template sources
 
 ### make init Personalization
 

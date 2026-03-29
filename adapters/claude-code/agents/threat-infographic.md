@@ -19,8 +19,8 @@ data_source_types:
     files: [risk-scores.md, threats.md]
     description: "Quantitative composite-score extraction (dual-file)"
 templates:
-  baseball-card: .claude/agents/tachi/templates/infographic-baseball-card.md
-  system-architecture: .claude/agents/tachi/templates/infographic-system-architecture.md
+  baseball-card: templates/tachi/infographics/infographic-baseball-card.md
+  system-architecture: templates/tachi/infographics/infographic-system-architecture.md
 aliases:
   corporate-white: baseball-card
 output_files:
@@ -479,9 +479,9 @@ Section 5 format depends on the active template:
 
 ### Section 6: Visual Design Directives
 
-**IMPORTANT**: Load the design template for the active template. Template files are stored alongside the agents at `.claude/agents/tachi/templates/infographic-{name}.md`.
+**IMPORTANT**: Load the design template for the active template. Template files are located at `templates/tachi/infographics/infographic-{name}.md`.
 
-- Load `.claude/agents/tachi/templates/infographic-{template-name}.md`
+- Load `templates/tachi/infographics/infographic-{template-name}.md`
 - If template is `corporate-white`, map to `baseball-card`
 - Default template: `baseball-card`
 - If the template file is not available: use the fallback directives below

@@ -106,7 +106,7 @@ Steps 1-8 (retrospective data collection)
 
 ### Component 4: Output Template
 
-**Location**: `templates/threats.md`
+**Location**: `templates/tachi/output-schemas/threats.md`
 **Type**: New file
 **Purpose**: Canonical template for threat model output with 7 sections: System Overview, Trust Boundaries, STRIDE Tables (6), AI Threat Tables (2), Coverage Matrix, Risk Summary, Recommended Actions.
 
@@ -145,7 +145,7 @@ Architecture Input (5 formats)
          │
          ▼
 ┌─────────────────────┐
-│  Template Engine     │ ◄── templates/threats.md
+│  Template Engine     │ ◄── templates/tachi/output-schemas/threats.md
 │  (IR → Output)       │     schemas/output.yaml
 └────────┬────────────┘
          │
@@ -484,17 +484,17 @@ Five deterministic correlation rules map STRIDE-to-AI category pairs:
 
 ### Component 2: Output Template — Correlated Findings Section (4a)
 
-**File**: `templates/threats.md`
+**File**: `templates/tachi/output-schemas/threats.md`
 **Type**: New Section 4a between AI Threat Tables and Coverage Matrix
 
 ### Component 3: Output Template — Enhanced Coverage Matrix
 
-**File**: `templates/threats.md` (Section 5)
+**File**: `templates/tachi/output-schemas/threats.md` (Section 5)
 **Type**: Modify existing — deduplicated counts, "—" for gaps, "n/a" for not-applicable
 
 ### Component 4: Output Template — Risk Calibration Matrix + Deduplicated Risk Summary
 
-**File**: `templates/threats.md` (Section 6)
+**File**: `templates/tachi/output-schemas/threats.md` (Section 6)
 **Type**: Add subsection + modify existing counts
 
 ### Component 5: Output Schema Update
@@ -592,7 +592,7 @@ Architecture Input
 
 ### Component 3: SARIF Reference Template
 
-**File**: `templates/threats.sarif`
+**File**: `templates/tachi/output-schemas/threats.sarif`
 **Type**: New file
 **Purpose**: Complete SARIF 2.1.0 reference structure with placeholder values for documentation and structural reference.
 
@@ -656,7 +656,7 @@ Output: threats.md + threats.sarif (same directory)
 **Type**: New file
 **Purpose**: Structural validation contract for `threat-report.md`. Defines 7 required sections, finding reference completeness rules, and attack tree file naming conventions.
 
-### Component 3: Report Template (`templates/threat-report.md`)
+### Component 3: Report Template (`templates/tachi/output-schemas/threat-report.md`)
 
 **Type**: New file
 **Purpose**: Canonical template for report output with section headings, field placeholders, and structural guidance.
@@ -694,7 +694,7 @@ flowchart TD
 | Report Agent | Markdown prompt file | Consistent with tachi agent architecture |
 | Output Schema | YAML | Matches existing schema patterns |
 | Attack Trees | Mermaid `flowchart TD` | Standard, GitHub-renderable |
-| Template | Markdown | Same format as `templates/threats.md` |
+| Template | Markdown | Same format as `templates/tachi/output-schemas/threats.md` |
 
 ---
 
@@ -874,7 +874,7 @@ graph LR
 
 ### Component 4: Output Templates
 
-**Files**: `templates/risk-scores.md`, `templates/risk-scores.sarif`
+**Files**: `templates/tachi/output-schemas/risk-scores.md`, `templates/tachi/output-schemas/risk-scores.sarif`
 **Type**: New files
 **Purpose**: Markdown template (executive summary, scored threat table, methodology section) and SARIF template (extended property bag with per-finding composite scores and governance fields).
 
@@ -919,8 +919,8 @@ Pipeline: Parse threats → Extract trust zones → Score 4 dimensions per findi
 | Command | `.claude/commands/compensating-controls.md` | User-facing command orchestrator |
 | Agent | `.claude/agents/tachi/control-analyzer.md` | 6-phase analysis agent |
 | Schema | `schemas/compensating-controls.yaml` | Control finding IR extension |
-| MD Template | `templates/compensating-controls.md` | Markdown output structure |
-| SARIF Template | `templates/compensating-controls.sarif` | SARIF 2.1.0 output structure |
+| MD Template | `templates/tachi/output-schemas/compensating-controls.md` | Markdown output structure |
+| SARIF Template | `templates/tachi/output-schemas/compensating-controls.sarif` | SARIF 2.1.0 output structure |
 
 #### Data Flow
 
@@ -1064,7 +1064,7 @@ User → /infographic [--template] [--output-dir] [explicit-path]
 
 ### Component 1: Design Template (`infographic-risk-funnel.md`)
 
-**File**: `.claude/agents/tachi/templates/infographic-risk-funnel.md`
+**File**: `templates/tachi/infographics/infographic-risk-funnel.md`
 **Type**: New file
 **Purpose**: Complete visual specification for 4-tier risk reduction funnel — layout, colors, typography, zone specs, Gemini prompt.
 
@@ -1143,7 +1143,7 @@ Parses markdown artifacts (YAML frontmatter, markdown tables, section content), 
 
 Declarative page assembly rules defining artifact detection patterns, page sequence, page dimensions (US Letter portrait + custom 16:9 landscape), data source tiers with tier-specific columns, and conditional inclusion rules.
 
-### Component 4: Typst Templates (`templates/security-report/`)
+### Component 4: Typst Templates (`templates/tachi/security-report/`)
 
 Modular rendering templates: `main.typ` (orchestrator with conditional page inclusion), `shared.typ` (severity colors, typography, headers/footers), and per-page modules (`cover.typ`, `executive-summary.typ`, `full-bleed.typ`, `findings-detail.typ`, `control-coverage.typ`, `remediation-roadmap.typ`).
 

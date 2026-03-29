@@ -15,11 +15,11 @@ references:
     scoring: ../../../schemas/risk-scoring.yaml
     output: ../../../schemas/output.yaml
   templates:
-    risk_scores_md: ../../../templates/risk-scores.md
-    risk_scores_sarif: ../../../templates/risk-scores.sarif
+    risk_scores_md: ../../../templates/tachi/output-schemas/risk-scores.md
+    risk_scores_sarif: ../../../templates/tachi/output-schemas/risk-scores.sarif
   upstream:
-    threats_template: ../../../templates/threats.md
-    threats_sarif_template: ../../../templates/threats.sarif
+    threats_template: ../../../templates/tachi/output-schemas/threats.md
+    threats_sarif_template: ../../../templates/tachi/output-schemas/threats.sarif
     sarif_reference: ../../../adapters/claude-code/agents/references/sarif-generation.md
 ```
 
@@ -61,7 +61,7 @@ When both `threats.md` and `threats.sarif` exist in the input directory:
 
 ### 1a. Parsing threats.md
 
-Extract findings from three sections of `threats.md` following the structure defined in `schemas/output.yaml` and `templates/threats.md`:
+Extract findings from three sections of `threats.md` following the structure defined in `schemas/output.yaml` and `templates/tachi/output-schemas/threats.md`:
 
 **STRIDE Tables (Sections 3.1-3.6)**:
 
@@ -192,7 +192,7 @@ Extract trust zone data from `threats.md` Section 2 to build a component-to-zone
 
 ### Input Source
 
-Trust zone data lives in `threats.md` under the `## 2. Trust Boundaries` heading, within the `### Trust Zones` subsection. The canonical table structure is defined in `templates/threats.md`.
+Trust zone data lives in `threats.md` under the `## 2. Trust Boundaries` heading, within the `### Trust Zones` subsection. The canonical table structure is defined in `templates/tachi/output-schemas/threats.md`.
 
 ### 2a. Locating the Trust Zone Table
 
@@ -858,7 +858,7 @@ Combined with the scoring fields from Section 7, each finding now carries the co
 
 ## 9. Output Generation: Markdown (risk-scores.md)
 
-Generate a `risk-scores.md` file in the same directory as the input threat model. The output MUST conform to the structure defined in `templates/risk-scores.md`. All sections are required and MUST appear in the order specified below. Findings are sorted by composite score descending throughout the document.
+Generate a `risk-scores.md` file in the same directory as the input threat model. The output MUST conform to the structure defined in `templates/tachi/output-schemas/risk-scores.md`. All sections are required and MUST appear in the order specified below. Findings are sorted by composite score descending throughout the document.
 
 ### 9a. Frontmatter
 
@@ -1048,7 +1048,7 @@ Generate the scoring methodology section that documents how scores in this repor
 
 **Content to generate**:
 
-Reproduce the methodology content defined in `templates/risk-scores.md` Section 5, populated with the actual values used in this scoring run:
+Reproduce the methodology content defined in `templates/tachi/output-schemas/risk-scores.md` Section 5, populated with the actual values used in this scoring run:
 
 1. **Scoring Dimensions**: Table listing the four dimensions (CVSS Base, Exploitability, Scalability, Reachability) with their weights and descriptions
 2. **Default Weights and Rationale**: Explanation of why each dimension receives its assigned weight
@@ -1087,7 +1087,7 @@ If any inconsistency is detected during generation, treat it as a scoring pipeli
 
 ## 10. Output Generation: SARIF (risk-scores.sarif)
 
-Generate a `risk-scores.sarif` file in the same directory as the input threat model. The output MUST conform to SARIF 2.1.0 (`$schema: https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json`) and follow the structure defined in `templates/risk-scores.sarif`. All scored findings MUST appear in the SARIF output, and all numeric values MUST be identical to those in `risk-scores.md` (Section 9h consistency mandate).
+Generate a `risk-scores.sarif` file in the same directory as the input threat model. The output MUST conform to SARIF 2.1.0 (`$schema: https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json`) and follow the structure defined in `templates/tachi/output-schemas/risk-scores.sarif`. All scored findings MUST appear in the SARIF output, and all numeric values MUST be identical to those in `risk-scores.md` (Section 9h consistency mandate).
 
 **Semantic shift from threats.sarif**: In `threats.sarif`, the rule-level `security-severity` is a static category value (e.g., `"9.0"` for Critical, `"5.0"` for Medium). In `risk-scores.sarif`, the result-level `security-severity` is the per-finding composite score and the rule-level `security-severity` is the MAX composite score among all findings for that rule. Task T023 documents this shift in the SARIF reference guide.
 
@@ -1163,7 +1163,7 @@ Populate `tool.driver.rules[]` with one entry per threat category that has at le
 
 This is a semantic shift from `threats.sarif`, where rule-level `security-severity` is a static value representing the category's general severity class. In `risk-scores.sarif`, rule-level `security-severity` reflects the actual worst-case finding within that category.
 
-**Rule descriptions and tags**: Copy `shortDescription`, `fullDescription`, `properties.tags`, and `relationships[]` from the corresponding rule in `templates/risk-scores.sarif`. These are static per category and do not change between scoring runs.
+**Rule descriptions and tags**: Copy `shortDescription`, `fullDescription`, `properties.tags`, and `relationships[]` from the corresponding rule in `templates/tachi/output-schemas/risk-scores.sarif`. These are static per category and do not change between scoring runs.
 
 ### 10c. Result Generation
 
@@ -1268,9 +1268,9 @@ Preserve all taxonomy declarations from the source input for downstream consumer
 
 | Element | Location in SARIF | Rule |
 |---------|-------------------|------|
-| `run.taxonomies[]` | Top-level run property | Copy the entire `taxonomies` array from the source `threats.sarif`. When input is `threats.md`, use the default taxonomy declarations from `templates/risk-scores.sarif` (OWASP 2021 and CWE 4.13). |
+| `run.taxonomies[]` | Top-level run property | Copy the entire `taxonomies` array from the source `threats.sarif`. When input is `threats.md`, use the default taxonomy declarations from `templates/tachi/output-schemas/risk-scores.sarif` (OWASP 2021 and CWE 4.13). |
 | `tool.driver.supportedTaxonomies[]` | Tool driver property | Copy from source `threats.sarif`. When input is `threats.md`, use the default declarations: `[{"name": "OWASP", "index": 0}, {"name": "CWE", "index": 1}]` |
-| Rule `relationships[]` | Per-rule in `tool.driver.rules[]` | Copy the `relationships` array from the corresponding rule in the source `threats.sarif`. When input is `threats.md`, use the default relationships from `templates/risk-scores.sarif` which map each STRIDE/AI category to its primary OWASP Top 10 and CWE entries. |
+| Rule `relationships[]` | Per-rule in `tool.driver.rules[]` | Copy the `relationships` array from the corresponding rule in the source `threats.sarif`. When input is `threats.md`, use the default relationships from `templates/tachi/output-schemas/risk-scores.sarif` which map each STRIDE/AI category to its primary OWASP Top 10 and CWE entries. |
 
 **Default taxonomy declarations** (used when input is `threats.md`):
 

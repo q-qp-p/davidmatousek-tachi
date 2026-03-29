@@ -423,13 +423,13 @@ cp ~/Projects/tachi/adapters/claude-code/commands/infographic.md .claude/command
 
 # Verify installation
 ls .claude/agents/tachi/              # Should show 15 .md files + templates/ directory
-ls .claude/agents/tachi/templates/    # Should show infographic-baseball-card.md, infographic-system-architecture.md
+ls templates/tachi/infographics/      # Should show infographic-baseball-card.md, infographic-system-architecture.md
 ls .claude/commands/                   # Should show threat-model.md, risk-score.md, compensating-controls.md, infographic.md
 ```
 
 This installs three things:
 1. **15 agent files** in `.claude/agents/tachi/` — Claude Code auto-discovers these as dispatchable agents
-2. **Infographic templates** in `.claude/agents/tachi/templates/` — design templates for Gemini image generation (`baseball-card` and `system-architecture`)
+2. **Infographic templates** in `templates/tachi/infographics/` — design templates for Gemini image generation (`baseball-card` and `system-architecture`)
 3. **4 command files** in `.claude/commands/` — `/threat-model`, `/risk-score`, `/compensating-controls`, `/infographic`
 
 **Additional setup for infographic image generation:**
@@ -464,7 +464,7 @@ cp .claude/commands/compensating-controls.md ~/Projects/my-app/.claude/commands/
 cp adapters/claude-code/commands/infographic.md ~/Projects/my-app/.claude/commands/
 ```
 
-**Custom infographic templates are preserved** — the `cp -r` overwrites the default template but won't delete custom templates you've added to `.claude/agents/tachi/templates/`.
+**Custom infographic templates are preserved** — the `cp -r` overwrites the default template but won't delete custom templates you've added to `templates/tachi/infographics/`.
 
 Tachi serves multiple projects — clone once, copy adapters into each project that needs threat modeling.
 

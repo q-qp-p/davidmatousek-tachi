@@ -26,7 +26,7 @@ Five specialized agent files provide granular threat detection. For concise repo
 ### Rationale
 
 - **5 agents for detection**: Each agent file operates independently with a focused threat class. This separation enables precise, non-overlapping analysis. An agent examining tool-abuse attacks does not need to reason about model extraction, and vice versa.
-- **2 tables for reporting**: The output template (`templates/threats.md`) groups findings into AG (agentic) and LLM tables. Consumers of the threat model see two concise tables rather than five fragmented ones, making risk assessment and prioritization straightforward.
+- **2 tables for reporting**: The output template (`templates/tachi/output-schemas/threats.md`) groups findings into AG (agentic) and LLM tables. Consumers of the threat model see two concise tables rather than five fragmented ones, making risk assessment and prioritization straightforward.
 
 ### How It Works
 
@@ -34,7 +34,7 @@ Five specialized agent files provide granular threat detection. For concise repo
 2. The orchestrator collects findings from all 5 agents.
 3. Findings from `agent-autonomy.md` and `tool-abuse.md` are grouped under the **AG** column in the output.
 4. Findings from `prompt-injection.md`, `data-poisoning.md`, and `model-theft.md` are grouped under the **LLM** column in the output.
-5. The output template (`templates/threats.md`) renders both tables with the AG/LLM column labels.
+5. The output template (`templates/tachi/output-schemas/threats.md`) renders both tables with the AG/LLM column labels.
 
 ## Relationship to STRIDE
 

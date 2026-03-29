@@ -50,8 +50,8 @@ Run tachi threat analysis on my architecture. Generate only the baseball-card in
 
 1. Copy an existing template as a starting point:
    ```bash
-   cp .claude/agents/tachi/templates/infographic-baseball-card.md \
-      .claude/agents/tachi/templates/infographic-my-design.md
+   cp templates/tachi/infographics/infographic-baseball-card.md \
+      templates/tachi/infographics/infographic-my-design.md
    ```
 
 2. Edit the following sections in your new template:

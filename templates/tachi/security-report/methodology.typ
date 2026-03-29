@@ -439,7 +439,10 @@
     #v(0.2in)
 
     // Section 2: Probability x Impact Matrix (always).
-    #_risk-matrix()
+    // Keep the entire matrix together — push to next page if it doesn't fit.
+    #block(breakable: false)[
+      #_risk-matrix()
+    ]
 
     // Section 3: Quantitative Scoring (conditional).
     #if has-risk-scores {

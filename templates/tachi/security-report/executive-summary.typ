@@ -201,7 +201,8 @@
         fill: brand-primary,
       )[Assessment Summary]
       v(0.5em)
-      text(size: 10pt)[#narrative]
+      set par(leading: 0.55em)
+      text(size: 9pt)[#narrative]
     },
   )
 }
@@ -260,7 +261,7 @@
         columns: (45%, 55%),
         column-gutter: 0.3in,
 
-        // Left column: severity distribution metrics.
+        // Left column: severity distribution + component breakdown.
         {
           _severity-panel(
             critical-count,
@@ -269,6 +270,9 @@
             low-count,
             total-findings,
           )
+          if component-distribution != none and component-distribution.len() > 0 {
+            _component-panel(component-distribution)
+          }
         },
 
         // Right column: narrative summary.
