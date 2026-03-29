@@ -11,7 +11,7 @@ After generating the specification (`threat-{template-name}-spec.md`), construct
 
 ### Design Template (Required)
 
-Load `.claude/agents/tachi/templates/infographic-{name}.md` and use its **Gemini Prompt Template** section. Replace all `{placeholders}` with actual data from the infographic spec. This ensures every infographic follows the same layout.
+Load `templates/tachi/infographics/infographic-{name}.md` and use its **Gemini Prompt Template** section. Replace all `{placeholders}` with actual data from the infographic spec. This ensures every infographic follows the same layout.
 
 If the design template is unavailable, construct the prompt following the fallback rules below.
 

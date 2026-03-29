@@ -22,8 +22,8 @@ references:
     input_risk_scores: ../../../schemas/risk-scoring.yaml
     input_compensating_controls: ../../../schemas/compensating-controls.yaml
   templates:
-    directory: ../../../templates/security-report/
-    entry_point: ../../../templates/security-report/main.typ
+    directory: ../../../templates/tachi/security-report/
+    entry_point: ../../../templates/tachi/security-report/main.typ
 ```
 
 # Report Assembler Agent
@@ -38,7 +38,7 @@ Your inputs are:
 3. **Title override** (optional) to replace the auto-detected project name on the cover page
 4. **Detected artifacts** list from the command's Step 1 detection
 
-Your output is a single `security-report.pdf` file assembled from Typst templates in `templates/security-report/`.
+Your output is a single `security-report.pdf` file assembled from Typst templates in `templates/tachi/security-report/`.
 
 You must not require any other input. The command file handles prerequisite validation (Typst installation, threats.md existence) before invoking you.
 
@@ -319,7 +319,7 @@ Check for tachi brand logo files:
 
 1. Check if `brand/final/tachi-logo-primary.png` exists and is non-zero size
 2. Check if `brand/final/tachi-logo-horizontal.png` exists and is non-zero size
-3. If found: set `has-logo-primary = true` / `has-logo-horizontal = true` and compute relative paths using the `../../brand/final/` pattern (same relative path strategy as infographic images — relative from `templates/security-report/`)
+3. If found: set `has-logo-primary = true` / `has-logo-horizontal = true` and compute relative paths using the `../../brand/final/` pattern (same relative path strategy as infographic images — relative from `templates/tachi/security-report/`)
 4. If not found: set flags to `false`, paths to `none`. Log info: `"Brand assets not found — report will use text-only branding"`
 
 **Note**: Brand asset files have `.png` extensions but may contain JPEG-encoded data. The Typst templates handle format detection via `logo-format` token in `theme.typ`.
@@ -329,10 +329,10 @@ Check for tachi brand logo files:
 Check for a user-provided `report-config.typ` in the target directory:
 
 1. If `{target_dir}/report-config.typ` exists:
-   - Copy it to `templates/security-report/report-config.typ`, overwriting the default
+   - Copy it to `templates/tachi/security-report/report-config.typ`, overwriting the default
    - Log: `"Using custom report-config.typ from {target_dir}"`
 2. If not present:
-   - Ensure the default `templates/security-report/report-config.typ` exists (it ships with the templates)
+   - Ensure the default `templates/tachi/security-report/report-config.typ` exists (it ships with the templates)
    - Log: `"Using default report configuration"`
 
 The default `report-config.typ` defines:
@@ -347,7 +347,7 @@ The default `report-config.typ` defines:
 
 ## Step 3: Typst Data Generation
 
-Generate `report-data.typ` in the `templates/security-report/` directory containing all extracted data as Typst `#let` variable bindings. This file is imported by `main.typ` at compile time.
+Generate `report-data.typ` in the `templates/tachi/security-report/` directory containing all extracted data as Typst `#let` variable bindings. This file is imported by `main.typ` at compile time.
 
 ### 3a. File Header
 
@@ -403,12 +403,12 @@ Where `classification_value` is either `"{value}"` (quoted string) or `none` (Ty
 
 ### 3f. Image Paths
 
-For each image that exists, provide a **relative path from `templates/security-report/`** to the image file. Typst resolves `#image()` paths relative to the `.typ` file that calls it (which is `full-bleed.typ` in `templates/security-report/`), NOT relative to the `--root` flag.
+For each image that exists, provide a **relative path from `templates/tachi/security-report/`** to the image file. Typst resolves `#image()` paths relative to the `.typ` file that calls it (which is `full-bleed.typ` in `templates/tachi/security-report/`), NOT relative to the `--root` flag.
 
 Use `../../` to navigate from the template directory back to the project root, then append the path to the target directory:
 
 ```typst
-// --- Image Paths (relative to templates/security-report/) --------------------
+// --- Image Paths (relative to templates/tachi/security-report/) --------------------
 #let funnel-image-path = "../../{target_dir}/threat-risk-funnel.jpg"
 #let baseball-image-path = "../../{target_dir}/threat-baseball-card.jpg"
 #let architecture-image-path = "../../{target_dir}/threat-system-architecture.jpg"
@@ -580,7 +580,7 @@ Where paths use the `../../brand/final/` relative path pattern, or `none` if not
 
 ### 3q. Write the File
 
-Write the complete `report-data.typ` to `templates/security-report/report-data.typ`.
+Write the complete `report-data.typ` to `templates/tachi/security-report/report-data.typ`.
 
 Display: `"report-data.typ generated ({N} findings, Tier {tier}, {M} pages enabled)"`
 
@@ -593,7 +593,7 @@ Display: `"report-data.typ generated ({N} findings, Tier {tier}, {M} pages enabl
 Run the Typst compiler with the `--root` flag pointing to the project root so that absolute image paths resolve correctly:
 
 ```bash
-typst compile templates/security-report/main.typ "{output_path}/security-report.pdf" --root .
+typst compile templates/tachi/security-report/main.typ "{output_path}/security-report.pdf" --root .
 ```
 
 Where `{output_path}` is the resolved output directory from the command.
@@ -612,7 +612,7 @@ If `typst compile` exits with a non-zero status:
    {stderr output}
 
    The report-data.typ file has been preserved for debugging at:
-     templates/security-report/report-data.typ
+     templates/tachi/security-report/report-data.typ
 
    Common causes:
    - Unescaped special characters in finding text
@@ -634,7 +634,7 @@ After successful compilation:
 
 After successful verification:
 
-1. Delete `templates/security-report/report-data.typ`
+1. Delete `templates/tachi/security-report/report-data.typ`
 2. This file is intermediate and should not be committed to version control
 
 ### 4e. Report Results

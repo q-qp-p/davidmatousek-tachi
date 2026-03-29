@@ -157,8 +157,9 @@ Next steps:
   1. Review Critical/High unmitigated findings in compensating-controls.md Section 4
   2. Implement recommended controls starting from highest-risk gaps
   3. Upload compensating-controls.sarif to GitHub Code Scanning (supersedes risk-scores.sarif)
-  4. Share compensating-controls.md with stakeholders for remediation planning
-  5. Re-run /compensating-controls after implementing controls to measure improvement
+  4. Run /infographic to generate visual threat infographics (uses compensating-controls.md as richest data source)
+  5. Run /security-report to generate the PDF assessment booklet (auto-includes infographic images)
+  6. Re-run /compensating-controls after implementing controls to measure improvement
 ```
 
 ## Usage Examples

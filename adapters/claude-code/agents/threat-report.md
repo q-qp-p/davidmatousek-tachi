@@ -18,7 +18,7 @@ references:
     output: ../../../schemas/report.yaml
     finding: ../../../schemas/finding.yaml
   templates:
-    report: ../../../templates/threat-report.md
+    report: ../../../templates/tachi/output-schemas/threat-report.md
 ```
 
 # Threat Report Agent
@@ -28,7 +28,7 @@ references:
 Transform `threats.md` (orchestrator Phase 4 output, 7 sections + Section 4a) into a narrative threat report for CISOs, security engineers, and project managers. Runs in a fresh context with only `threats.md` as input.
 
 **Output**:
-1. **`threat-report.md`** — 7-section narrative report conforming to `../../../schemas/report.yaml` and `../../../templates/threat-report.md`
+1. **`threat-report.md`** — 7-section narrative report conforming to `../../../schemas/report.yaml` and `../../../templates/tachi/output-schemas/threat-report.md`
 2. **`attack-trees/{finding-id}-attack-tree.md`** — Standalone Mermaid attack trees for every Critical and High finding
 
 Platform-neutral. Works with any LLM capable of following structured markdown prompts.

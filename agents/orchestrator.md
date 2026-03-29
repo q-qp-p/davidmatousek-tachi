@@ -19,9 +19,9 @@ references:
     report: schemas/report.yaml
     infographic: schemas/infographic.yaml
   templates:
-    threats: templates/threats.md
-    sarif_template: templates/threats.sarif
-    threat_report: templates/threat-report.md
+    threats: templates/tachi/output-schemas/threats.md
+    sarif_template: templates/tachi/output-schemas/threats.sarif
+    threat_report: templates/tachi/output-schemas/threat-report.md
   agents:
     stride:
       - agents/stride/spoofing.md
@@ -1698,7 +1698,7 @@ The generated `threats.sarif` file MUST use this exact top-level JSON structure 
 - `results` array contains one entry per finding after deduplication — correlated peers do NOT appear as separate top-level results
 - Empty findings: If the threat model produces zero findings, `results` is an empty array `[]` and `rules` is an empty array `[]`
 
-See `templates/threats.sarif` for a complete structural reference with example values.
+See `templates/tachi/output-schemas/threats.sarif` for a complete structural reference with example values.
 
 #### JSON Structural Self-Check
 

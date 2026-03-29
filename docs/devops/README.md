@@ -108,7 +108,7 @@ The command checks for Typst availability at runtime and displays platform-speci
 
 ### Typst Templates
 
-PDF page templates live in `templates/security-report/` at the repository root. These are Typst source files (`.typ`) that define the layout for each page type (cover, executive summary, findings detail, infographic full-bleed pages, control coverage, remediation roadmap). The templates are compiled locally -- no build service, container, or CI step is involved.
+PDF page templates live in `templates/tachi/security-report/` at the repository root. These are Typst source files (`.typ`) that define the layout for each page type (cover, executive summary, findings detail, infographic full-bleed pages, control coverage, remediation roadmap). The templates are compiled locally -- no build service, container, or CI step is involved.
 
 ### Infrastructure Impact
 

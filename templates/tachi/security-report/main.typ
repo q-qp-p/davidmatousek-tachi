@@ -38,7 +38,7 @@
 #import "methodology.typ": methodology-page
 #import "scope.typ": scope-page
 #import "executive-summary.typ": executive-summary-page
-#import "full-bleed.typ": full-bleed-page
+#import "full-bleed.typ": infographic-page, full-bleed-page
 #import "findings-detail.typ": findings-detail-page
 #import "control-coverage.typ": control-coverage-page
 #import "remediation-roadmap.typ": remediation-roadmap-page
@@ -166,26 +166,51 @@
 )
 
 
-// --- Page 3: Risk Reduction Funnel (conditional) ---------------------------
-// Full-bleed landscape infographic. Only included when the funnel image exists.
+// --- Page 7: Risk Reduction Funnel (conditional) ---------------------------
+// Portrait infographic with explanatory text. Only when funnel image exists.
 #if has-funnel-image {
-  full-bleed-page(funnel-image-path, section-name: "Risk Reduction Funnel")
+  infographic-page(
+    funnel-image-path,
+    section-name: "Risk Reduction Funnel",
+    classification: classification,
+    description: [
+      The Risk Reduction Funnel illustrates how the overall risk profile transforms through each stage of the assessment pipeline. The top tier shows all threats identified during the initial STRIDE and AI-specific threat analysis. The second tier reflects severity recalibration after quantitative scoring, where composite scores incorporating CVSS, exploitability, scalability, and reachability may shift initial severity ratings.
+
+      The third tier shows the impact of compensating controls detected in the codebase --- existing mitigations that reduce effective risk. The bottom tier presents the final residual risk posture, representing the organization's actual exposure after accounting for all identified defenses. The sidebar provides key metrics at a glance, including the total risk reduction percentage, control coverage rate, and the highest-residual-risk finding requiring priority attention.
+    ],
+  )
 }
 
 
-// --- Page 4: Baseball Card (conditional) -----------------------------------
-// Full-bleed landscape infographic. Only included when the baseball card image
-// exists.
+// --- Page 8: Risk Summary Dashboard (conditional) -------------------------
+// Portrait infographic with explanatory text. Only when baseball card exists.
 #if has-baseball-image {
-  full-bleed-page(baseball-image-path, section-name: "Risk Summary Dashboard")
+  infographic-page(
+    baseball-image-path,
+    section-name: "Risk Summary Dashboard",
+    classification: classification,
+    description: [
+      The Risk Summary Dashboard consolidates assessment results into three complementary views. The left panel displays the residual risk distribution across severity levels, showing how findings are distributed after compensating controls are applied.
+
+      The center panel presents a component-by-threat-category heat map, where each cell indicates the highest residual severity for that intersection of system component and STRIDE or AI threat category. This enables rapid identification of which components carry the highest concentration of risk. The right panel highlights the top findings by residual risk score, listing the specific threats that require the most immediate attention with their affected components and residual scores.
+    ],
+  )
 }
 
 
-// --- Page 5: System Architecture (conditional) -----------------------------
-// Full-bleed landscape infographic. Only included when the architecture diagram
-// image exists.
+// --- Page 9: System Architecture (conditional) ----------------------------
+// Portrait infographic with explanatory text. Only when architecture image exists.
 #if has-architecture-image {
-  full-bleed-page(architecture-image-path, section-name: "System Architecture")
+  infographic-page(
+    architecture-image-path,
+    section-name: "System Architecture",
+    classification: classification,
+    description: [
+      The System Architecture diagram maps identified threats directly onto the assessed system's component topology. Components are grouped within their trust boundaries --- external/untrusted, application layer, and infrastructure/platform zones --- with color coding reflecting the concentration and severity of findings at each location.
+
+      Threat badges on each component show the specific threat identifiers and their severity classifications. Data flow arrows illustrate the assessed communication paths between components, with trust boundary crossings highlighted as key attack surface areas where threats are most likely to be exploited. This spatial view complements the tabular findings detail by showing how threats cluster around specific architectural chokepoints.
+    ],
+  )
 }
 
 

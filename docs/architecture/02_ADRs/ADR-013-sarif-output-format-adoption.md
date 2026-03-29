@@ -135,5 +135,5 @@ Encode findings as vulnerability entries in a CycloneDX SBOM document.
 - GitHub Code Scanning SARIF support: https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning/sarif-support-for-code-scanning
 - Feature 012 spec: `specs/012-sarif-output-generation/spec.md`
 - Feature 012 plan: `specs/012-sarif-output-generation/plan.md`
-- SARIF reference template: `templates/threats.sarif`
+- SARIF reference template: `templates/tachi/output-schemas/threats.sarif`
 - Output schema (severity mapping): `schemas/output.yaml`

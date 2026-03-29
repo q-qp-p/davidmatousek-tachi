@@ -978,11 +978,11 @@ Freeze the theme token API and shared utility layer in a dedicated foundation ph
 #### Files Using This Pattern
 | File | Role |
 |------|------|
-| `templates/security-report/theme.typ` | Hub — brand colors, fonts, logo paths |
-| `templates/security-report/shared.typ` | Utilities — imports theme, provides layout functions |
-| `templates/security-report/report-config.typ` | Configuration — page visibility toggles, metadata |
-| `templates/security-report/main.typ` | Orchestrator — imports all, assembles pages |
-| `templates/security-report/*.typ` (pages) | Spokes — import shared, use theme tokens |
+| `templates/tachi/security-report/theme.typ` | Hub — brand colors, fonts, logo paths |
+| `templates/tachi/security-report/shared.typ` | Utilities — imports theme, provides layout functions |
+| `templates/tachi/security-report/report-config.typ` | Configuration — page visibility toggles, metadata |
+| `templates/tachi/security-report/main.typ` | Orchestrator — imports all, assembles pages |
+| `templates/tachi/security-report/*.typ` (pages) | Spokes — import shared, use theme tokens |
 
 #### When to Use
 - Multi-file Typst template systems with 5+ page templates

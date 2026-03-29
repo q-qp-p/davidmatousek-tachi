@@ -18,11 +18,11 @@ references:
     controls: ../../../schemas/compensating-controls.yaml
     output: ../../../schemas/output.yaml
   templates:
-    controls_md: ../../../templates/compensating-controls.md
-    controls_sarif: ../../../templates/compensating-controls.sarif
+    controls_md: ../../../templates/tachi/output-schemas/compensating-controls.md
+    controls_sarif: ../../../templates/tachi/output-schemas/compensating-controls.sarif
   upstream:
-    risk_scores_md_template: ../../../templates/risk-scores.md
-    risk_scores_sarif_template: ../../../templates/risk-scores.sarif
+    risk_scores_md_template: ../../../templates/tachi/output-schemas/risk-scores.md
+    risk_scores_sarif_template: ../../../templates/tachi/output-schemas/risk-scores.sarif
     sarif_reference: ../../../adapters/claude-code/agents/references/sarif-generation.md
 ```
 
@@ -1072,7 +1072,7 @@ classified_threats:
 
 ## Phase 6: Generate Output
 
-Produce the dual-format output files. `compensating-controls.md` follows the template structure from `templates/compensating-controls.md` and contains an executive summary, per-threat control assessment table, control evidence details, residual risk analysis, and prioritized recommendations. `compensating-controls.sarif` follows the template structure from `templates/compensating-controls.sarif` and contains the same controlled findings in SARIF 2.1.0 format with extended property bags for control status, evidence, residual scores, and recommendations.
+Produce the dual-format output files. `compensating-controls.md` follows the template structure from `templates/tachi/output-schemas/compensating-controls.md` and contains an executive summary, per-threat control assessment table, control evidence details, residual risk analysis, and prioritized recommendations. `compensating-controls.sarif` follows the template structure from `templates/tachi/output-schemas/compensating-controls.sarif` and contains the same controlled findings in SARIF 2.1.0 format with extended property bags for control status, evidence, residual scores, and recommendations.
 
 ### 6a. Coverage Matrix Generation
 
@@ -1136,7 +1136,7 @@ Calculate these aggregate statistics from the coverage matrix:
 
 ### 6b. Markdown Output Generation
 
-Generate `compensating-controls.md` following the template structure in `templates/compensating-controls.md`. Load the template on demand (see Reference File Loading) and populate all placeholder fields with data from the analysis pipeline.
+Generate `compensating-controls.md` following the template structure in `templates/tachi/output-schemas/compensating-controls.md`. Load the template on demand (see Reference File Loading) and populate all placeholder fields with data from the analysis pipeline.
 
 #### Output File Structure
 
@@ -1202,7 +1202,7 @@ Write the complete `compensating-controls.md` to `{output_directory}/compensatin
 
 ### 6c. SARIF Output Generation
 
-Generate `compensating-controls.sarif` following the template structure in `templates/compensating-controls.sarif`. Load the template and SARIF generation reference (`adapters/claude-code/agents/references/sarif-generation.md`) on demand. Produce a valid SARIF 2.1.0 JSON document.
+Generate `compensating-controls.sarif` following the template structure in `templates/tachi/output-schemas/compensating-controls.sarif`. Load the template and SARIF generation reference (`adapters/claude-code/agents/references/sarif-generation.md`) on demand. Produce a valid SARIF 2.1.0 JSON document.
 
 #### SARIF Structure
 
@@ -1329,8 +1329,8 @@ Load reference files on demand as needed by each pipeline phase. Do not load all
 |-----------|-----------|---------|
 | `schemas/compensating-controls.yaml` | Phase 3 (Detect Controls), Phase 4 (Map & Classify) | Control category definitions, STRIDE-to-control mapping, reduction factor tables, validation rules |
 | `adapters/claude-code/agents/references/sarif-generation.md` | Phase 6 (Generate Output) | SARIF 2.1.0 structural conventions, property bag encoding, fingerprint generation |
-| `templates/compensating-controls.md` | Phase 6 (Generate Output) | Markdown output structure, section ordering, table formats |
-| `templates/compensating-controls.sarif` | Phase 6 (Generate Output) | SARIF output structure, tool driver configuration, rule definitions, result schema |
+| `templates/tachi/output-schemas/compensating-controls.md` | Phase 6 (Generate Output) | Markdown output structure, section ordering, table formats |
+| `templates/tachi/output-schemas/compensating-controls.sarif` | Phase 6 (Generate Output) | SARIF output structure, tool driver configuration, rule definitions, result schema |
 
 ---
 

@@ -1,5 +1,12 @@
 # Tachi Developer Guide: Automated Threat Modeling for Your Architecture
 
+> **Quick Links**
+> - [Step 1: /threat-model](#step-5-run-your-first-analysis)
+> - [Step 2: /risk-score](#section-9----running-risk-score)
+> - [Step 3: /compensating-controls](#section-10----running-compensating-controls)
+> - [Step 4: /infographic](#section-11----running-infographic-standalone)
+> - [Step 5: /security-report](#section-12----generating-a-pdf-report)
+
 ---
 
 ## Tachi Risk Lifecycle
@@ -88,7 +95,7 @@ cp ~/Projects/tachi/adapters/claude-code/commands/infographic.md .claude/command
 cp ~/Projects/tachi/.claude/commands/security-report.md .claude/commands/
 
 # Copy PDF report templates, brand assets, and schema
-cp -r ~/Projects/tachi/templates/security-report/ templates/security-report/
+cp -r ~/Projects/tachi/templates/tachi/security-report/ templates/tachi/security-report/
 cp -r ~/Projects/tachi/brand/ brand/
 mkdir -p schemas
 cp ~/Projects/tachi/schemas/security-report.yaml schemas/
@@ -100,9 +107,9 @@ Run this for each new codebase you want to add threat modeling to. Repeat it aft
 
 ```bash
 ls .claude/agents/tachi/              # Should show 15 .md files + templates/ directory
-ls .claude/agents/tachi/templates/    # Should show infographic-baseball-card.md, infographic-system-architecture.md, infographic-risk-funnel.md
+ls templates/tachi/infographics/    # Should show infographic-baseball-card.md, infographic-system-architecture.md, infographic-risk-funnel.md
 ls .claude/commands/                   # Should show threat-model.md, risk-score.md, compensating-controls.md, infographic.md, security-report.md
-ls templates/security-report/          # Should show main.typ, theme.typ, shared.typ, + 9 page templates
+ls templates/tachi/security-report/          # Should show main.typ, theme.typ, shared.typ, + 9 page templates
 ls brand/final/                        # Should show tachi logo PNGs (primary, horizontal, icon, dark variants)
 ```
 
@@ -946,7 +953,7 @@ cp ~/Projects/tachi/adapters/claude-code/commands/infographic.md .claude/command
 
 # Verify
 ls .claude/agents/tachi/              # 15 .md files + templates/
-ls .claude/agents/tachi/templates/    # infographic-baseball-card.md, infographic-system-architecture.md
+ls templates/tachi/infographics/    # infographic-baseball-card.md, infographic-system-architecture.md
 ls .claude/commands/                   # threat-model.md, risk-score.md, compensating-controls.md, infographic.md
 ```
 
@@ -1489,7 +1496,7 @@ Assembles all available tachi pipeline artifacts into a professional, branded PD
   - Or download from [typst.app releases](https://github.com/typst/typst/releases)
 - **`threats.md`** must exist in the output directory (produced by `/threat-model`).
 - **Brand assets** should exist at `brand/final/` (copied during project setup). If missing, the report renders with text-only branding as a graceful fallback.
-- **Typst templates** should exist at `templates/security-report/` (copied during project setup).
+- **Typst templates** should exist at `templates/tachi/security-report/` (copied during project setup).
 
 ### What Gets Included
 
@@ -1517,7 +1524,7 @@ The report auto-detects available artifacts and includes pages accordingly:
 # 2. Parse threats.md for scope data (components, data flows, trust boundaries)
 # 3. Detect brand assets in brand/final/
 # 4. Generate report-data.typ and report-config.typ
-# 5. Compile via: typst compile templates/security-report/main.typ security-report.pdf --root .
+# 5. Compile via: typst compile templates/tachi/security-report/main.typ security-report.pdf --root .
 ```
 
 ### Report Pages
@@ -1541,8 +1548,8 @@ The PDF includes up to 12 page types in this sequence:
 
 The report is controlled by two configuration files:
 
-- **`templates/security-report/theme.typ`** -- Brand colors, fonts, logo paths. Change the primary color and logo path here to customize branding for your organization.
-- **`templates/security-report/report-config.typ`** -- Page visibility toggles, metadata (project name, date, classification level). Toggle individual pages on/off.
+- **`templates/tachi/security-report/theme.typ`** -- Brand colors, fonts, logo paths. Change the primary color and logo path here to customize branding for your organization.
+- **`templates/tachi/security-report/report-config.typ`** -- Page visibility toggles, metadata (project name, date, classification level). Toggle individual pages on/off.
 
 All templates use the hub-first architecture: `theme.typ` → `shared.typ` → individual pages. Changing a color in `theme.typ` propagates to every page automatically.
 
@@ -1659,8 +1666,8 @@ Both are generated on every run. To generate only one template, use the standalo
 **Creating a custom template**:
 
 ```bash
-cp .claude/agents/tachi/templates/infographic-baseball-card.md \
-   .claude/agents/tachi/templates/infographic-my-design.md
+cp templates/tachi/infographics/infographic-baseball-card.md \
+   templates/tachi/infographics/infographic-my-design.md
 ```
 
 Edit the new file to change the layout, color palette, typography, and Gemini prompt template. The file name must follow the pattern `infographic-{name}.md`. See the default templates for the required sections.
@@ -1700,9 +1707,9 @@ No. Threat modeling and penetration testing find different types of issues. Thre
 Check Section 4a (Correlated Findings). Tachi uses 5 correlation rules to detect when different threat categories produce overlapping findings on the same component. These are not duplicates -- they are compound risks where multiple threat categories amplify each other. For example, CR-2 correlates Elevation of Privilege with Agent Autonomy, because when both occur on the same component, the combined risk is greater than either finding alone.
 
 **"The PDF report failed to compile."**
-Ensure Typst CLI is installed (`typst --version`). Verify brand assets exist at `brand/final/` and templates at `templates/security-report/`. If brand assets are missing, the report falls back to text-only branding. If templates are missing, re-copy them:
+Ensure Typst CLI is installed (`typst --version`). Verify brand assets exist at `brand/final/` and templates at `templates/tachi/security-report/`. If brand assets are missing, the report falls back to text-only branding. If templates are missing, re-copy them:
 ```bash
-cp -r ~/Projects/tachi/templates/security-report/ templates/security-report/
+cp -r ~/Projects/tachi/templates/tachi/security-report/ templates/tachi/security-report/
 cp -r ~/Projects/tachi/brand/ brand/
 ```
 
@@ -1887,7 +1894,7 @@ SARIF 2.1.0 JSON file extending `risk-scores.sarif` with control analysis. Each 
 | Control Coverage | Only if `compensating-controls.md` exists | Coverage matrix, control statistics |
 | Infographic (full-bleed) | Only if `threat-*.jpg` files exist | One landscape page per image |
 
-The report-assembler agent parses artifacts, generates `report-data.typ` (extracted data) and `report-config.typ` (page toggles), then invokes `typst compile templates/security-report/main.typ security-report.pdf --root .`.
+The report-assembler agent parses artifacts, generates `report-data.typ` (extracted data) and `report-config.typ` (page toggles), then invokes `typst compile templates/tachi/security-report/main.typ security-report.pdf --root .`.
 
 ### Infographic Spec Sections (Both Templates)
 
@@ -1927,4 +1934,4 @@ The report-assembler agent parses artifacts, generates `report-data.typ` (extrac
 | **STRIDE** | A threat classification framework using six categories: Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege |
 | **Security Report** | A professional branded PDF assembling all tachi pipeline artifacts into a single deliverable document with cover, disclaimer, TOC, findings, and infographic pages, generated by `/security-report` using Typst |
 | **Trust Boundary** | A line in an architecture diagram separating components with different trust levels; data crossing a trust boundary requires security controls |
-| **Typst** | A markup-based typesetting system used by tachi for PDF report generation; templates in `templates/security-report/` are compiled via `typst compile` |
+| **Typst** | A markup-based typesetting system used by tachi for PDF report generation; templates in `templates/tachi/security-report/` are compiled via `typst compile` |

@@ -122,9 +122,9 @@ Risk Summary:
 
 Next steps:
   1. Review Critical/High findings in {output_dir}/threats.md Section 7
-  2. Upload threats.sarif to GitHub Code Scanning
-  3. Share threat-report.md with stakeholders
-  4. Run '/infographic' to generate visual risk diagrams from your threat analysis
+  2. Run /risk-score to add quantitative risk scoring (CVSS, exploitability, scalability, reachability)
+  3. Upload threats.sarif to GitHub Code Scanning
+  4. Share threat-report.md with stakeholders
 ```
 
 ## Usage Examples

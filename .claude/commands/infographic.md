@@ -193,6 +193,7 @@ Templates generated:
 
 {if type is "compensating-controls" AND no explicit data_source_path:}
 ✅ Full pipeline — visualizing residual risk (richest data available).
+Run /security-report to generate the PDF assessment booklet (auto-includes infographic images).
 {end if}
 ```
 

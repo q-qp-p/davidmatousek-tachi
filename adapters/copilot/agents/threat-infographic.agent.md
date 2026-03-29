@@ -20,8 +20,8 @@ data_source_types:
     files: [risk-scores.md, threats.md]
     description: "Quantitative composite-score extraction (dual-file)"
 templates:
-  baseball-card: .claude/agents/tachi/templates/infographic-baseball-card.md
-  system-architecture: .claude/agents/tachi/templates/infographic-system-architecture.md
+  baseball-card: templates/tachi/infographics/infographic-baseball-card.md
+  system-architecture: templates/tachi/infographics/infographic-system-architecture.md
 aliases:
   corporate-white: baseball-card
 output_files:

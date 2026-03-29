@@ -28,9 +28,7 @@
       "Bash(.aod/scripts/bash/*)",
       "Edit",
       "Write",
-      "Bash(cp adapters/claude-code/agents/templates/infographic-baseball-card.md .claude/agents/tachi/templates/)",
-      "Bash(cp adapters/claude-code/agents/templates/infographic-system-architecture.md .claude/agents/tachi/templates/)",
-      "Bash(wc -l adapters/claude-code/agents/templates/*.md)",
+      "Bash(wc -l templates/tachi/infographics/*.md)",
       "Edit(/.claude/skills/code-execution-helper/**)"
     ],
     "additionalDirectories": [

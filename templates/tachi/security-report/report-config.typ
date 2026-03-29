@@ -5,7 +5,7 @@
 // customize the report without modifying any template files.
 //
 // The report assembler copies a user-provided report-config.typ from the
-// target directory into templates/security-report/ before compilation.
+// target directory into templates/tachi/security-report/ before compilation.
 // If no user config exists, this default file is used.
 //
 // Variables:

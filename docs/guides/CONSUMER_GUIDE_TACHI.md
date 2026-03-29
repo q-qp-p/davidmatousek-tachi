@@ -254,14 +254,14 @@ For each remaining feature (F-002 through F-010), copy the feature block from th
    - Examples of valid inputs for each supported format included
 
 3. **As a developer, I want an output template for threats.md**, so that all agents produce findings in a consistent, structured format.
-   - `templates/threats.md` defines the complete output schema: system overview, trust boundaries, STRIDE tables, AI tables, coverage matrix, risk summary, recommended actions
+   - `templates/tachi/output-schemas/threats.md` defines the complete output schema: system overview, trust boundaries, STRIDE tables, AI tables, coverage matrix, risk summary, recommended actions
    - Template includes field descriptions and example values for each section
    - Output naming convention documented: `YYYY-MM-DD-{phase}/` with immutable retention
 
 **Interface Contract (produces)**:
 - Repository structure with `agents/`, `adapters/`, `templates/`, `examples/`, `docs/`
 - `docs/INTERFACE-CONTRACT.md` — input/output specification for standalone consumers
-- `templates/threats.md` — output template for structured threat model
+- `templates/tachi/output-schemas/threats.md` — output template for structured threat model
 
 **Definition of Done**: Repository structure matches PRD Section 7, interface contract is testable against sample inputs, output template covers all required sections from PRD Section 4.5.
 
