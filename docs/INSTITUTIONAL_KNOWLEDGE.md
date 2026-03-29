@@ -5,7 +5,7 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-03-28
 
-**Entry Count**: 10 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 11 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-21
 **Status**: ✅ Manual mode (file-based)
 
@@ -220,6 +220,26 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **When to Apply**: When scoping features that modify agent prompts, command orchestration, or documentation only. Set expectations for single-session delivery and avoid over-engineering the task breakdown.
 
 **Tags**: #retrospective #velocity #prompt-engineering #process
+
+**Quality Score**: 7/10
+
+---
+
+### PAT-011: 9-Section Template Pattern Enables Predictable Infographic Extension
+
+**Date**: 2026-03-28
+**Feature**: 053 — Risk Reduction Funnel
+**Category**: Architecture / Template Extensibility
+
+**Context**: Feature 053 added a third infographic template (risk-funnel) to the existing baseball-card and system-architecture templates. The 9-section template pattern (frontmatter, ASCII layout, style table, color palette, typography, zone specs, Gemini prompt, API config, accessibility) established by the first two templates made adding the third straightforward and predictable.
+
+**Pattern**: The 9-section template pattern provides a stable contract for infographic templates. Each new template follows the same structure, making it possible to add new visualization types without modifying the agent's core logic — only the template file and registry entries change. The pattern also enables same-day delivery because the author knows exactly which sections to fill and can reuse established style conventions (dark theme, severity colors, Gemini prompt format).
+
+**Result**: 24 tasks completed same-day. Template, agent, and command updates followed a predictable path with no architectural surprises. Graceful degradation (4-tier, 3-tier, 1-tier) added naturally through the Section 5 data extraction pattern.
+
+**When to Apply**: When designing extensible template systems. Establish a numbered-section contract early (ideally with the first 2 templates), then each subsequent template becomes a fill-in-the-blanks exercise. The contract should cover layout, styling, data mapping, and external API integration.
+
+**Tags**: #retrospective #architecture #pattern #template-extensibility
 
 **Quality Score**: 7/10
 

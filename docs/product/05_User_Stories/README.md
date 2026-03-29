@@ -286,3 +286,13 @@ Each PRD should include relevant user stories:
 - **US-045-1** (P0): Complete Workflow Guide - Step-by-step instruction manual walking users through the complete 4-command workflow (`/threat-model` -> `/risk-score` -> `/compensating-controls` -> `/infographic`) from architecture description to visual infographics, producing all 12+ output artifacts
 - **US-045-2** (P0): Output Interpretation - Each command's output explained with annotated examples covering all 7 threats.md sections plus Section 4a, 4 risk scoring dimensions, residual risk calculation, and missing control recommendations
 - **US-045-3** (P0): Quick Start - Quick Start section at the top of the guide gets a new user from zero to first threat model in 5 steps under 5 minutes, with copy-pasteable commands and clear pointers to comprehensive guide sections
+
+### Feature 053: Risk Reduction Funnel
+
+**PRD**: [053-risk-reduction-funnel](../02_PRD/053-risk-reduction-funnel-2026-03-28.md)
+**Delivered**: 2026-03-28 | **PR**: #56 | **Tasks**: 24/24 complete | **Stories**: 4/4 passing
+
+- **US-053-1** (P0): Full Pipeline Funnel (4 Tiers) - Run `/infographic --template risk-funnel` with `compensating-controls.md` as data source to render a 4-tier funnel showing threats identified, inherent risk scored, controls applied, and residual risk with progressively narrowing widths
+- **US-053-2** (P0): Partial Pipeline Funnel (3 Tiers) - Run `/infographic --template risk-funnel` with `risk-scores.md` to render 3 solid tiers plus a ghost tier with CTA to run `/compensating-controls` for the full funnel
+- **US-053-3** (P0): Minimal Pipeline Funnel (1 Tier) - Run `/infographic --template risk-funnel` with only `threats.md` to render a single wide tier with 3 grayed-out ghost tiers showing pipeline commands needed to unlock them
+- **US-053-4** (P1): Funnel Metrics Sidebar - Key metrics (total threats, risk reduction %, control coverage %) displayed alongside the funnel, adapting to the available tier mode
