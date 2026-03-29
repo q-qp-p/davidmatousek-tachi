@@ -44,7 +44,7 @@ CI/CD setup instructions for common platforms
 
 ## Platform Adapters (Feature 021)
 
-Feature 021 introduced platform adapters that package tachi's 14 threat agents for use across AI coding platforms and CI pipelines. These live in the `adapters/` directory at the repository root. Features 035, 036, and 039 extended the Claude Code adapter with command files for tachi's four product commands: `/threat-model`, `/risk-score`, `/compensating-controls`, and `/infographic`.
+Feature 021 introduced platform adapters that package tachi's 14 threat agents for use across AI coding platforms and CI pipelines. These live in the `adapters/` directory at the repository root. Features 035, 036, and 039 extended the Claude Code adapter with command files for tachi's four product commands: `/threat-model`, `/risk-score`, `/compensating-controls`, and `/infographic`. Feature 054 added the `/security-report` command for local PDF generation (see [Security Report PDF Generation](#security-report-pdf-generation-feature-054) below).
 
 ### Adapter Directory Structure
 
@@ -89,6 +89,30 @@ done
 ```
 
 VERSION files should be regenerated after any change to source agents in `agents/`.
+
+---
+
+## Security Report PDF Generation (Feature 054)
+
+Feature 054 introduced the `/security-report` command, which assembles tachi pipeline artifacts into a professional multi-page PDF booklet using Typst. This is a local-only capability with no infrastructure, deployment, or CI/CD impact.
+
+### External Dependency
+
+The `/security-report` command requires the **Typst CLI** to be installed on the user's machine. Typst is not bundled with tachi -- users install it via their platform's package manager:
+
+- **macOS**: `brew install typst`
+- **Linux**: `cargo install typst-cli`
+- **Windows**: `winget install typst`
+
+The command checks for Typst availability at runtime and displays platform-specific install instructions if it is not found.
+
+### Typst Templates
+
+PDF page templates live in `templates/security-report/` at the repository root. These are Typst source files (`.typ`) that define the layout for each page type (cover, executive summary, findings detail, infographic full-bleed pages, control coverage, remediation roadmap). The templates are compiled locally -- no build service, container, or CI step is involved.
+
+### Infrastructure Impact
+
+No new environment variables, Docker services, staging configuration, or production deployment changes. PDF generation runs entirely on the local machine.
 
 ---
 

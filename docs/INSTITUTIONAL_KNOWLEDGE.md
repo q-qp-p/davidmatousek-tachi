@@ -5,7 +5,7 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-03-28
 
-**Entry Count**: 11 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 12 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-21
 **Status**: ✅ Manual mode (file-based)
 
@@ -242,6 +242,22 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #architecture #pattern #template-extensibility
 
 **Quality Score**: 7/10
+
+---
+
+### PAT-012: Docs-Only Template Features Complete Faster Than Estimated
+
+**Source**: Feature 054 — Security Assessment PDF Booklet (Retrospective, 2026-03-28)
+
+**Pattern**: Features that consist entirely of documentation, templates, and agent/command definitions (no application code, no tests, no runtime dependencies) consistently complete in 1 session vs. 3-4 session estimates. The absence of compilation, test suites, and integration debugging eliminates the typical implementation friction.
+
+**Evidence**: Feature 054 estimated 3-4 sessions (team-lead assessment based on 34 tasks across 4 waves). Actual: 1 session. Feature 048 (infographic tiered pipeline) and Feature 053 (risk funnel template) showed similar compression. KB-010 documented a single prior instance; this entry upgrades it to a confirmed pattern with Feature 054 as third data point.
+
+**When to Apply**: When estimating timelines for features that produce only markdown, YAML, or Typst files with no runtime code. Reduce estimates by 50-70% from standard task-count-based projections. The key indicator is "no test suite required" — if the feature needs manual PDF/output review rather than automated tests, it's in this category.
+
+**Tags**: #retrospective #estimation #pattern #docs-only
+
+**Quality Score**: 8/10
 
 ---
 
