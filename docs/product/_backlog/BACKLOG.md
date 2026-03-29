@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-03-29T18:20:33Z.
+> Auto-generated from GitHub Issues on 2026-03-29T18:21:34Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -33,7 +33,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| #60 | Professional PDF Security Assessment Report with tachi Branding | 2026-03-29 | — | 2026-03-29 |
+| — | *No items in this stage* | | |
 
 ## Untracked
 
