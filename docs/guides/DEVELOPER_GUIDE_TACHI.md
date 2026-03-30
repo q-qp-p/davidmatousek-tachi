@@ -80,37 +80,39 @@ cd ~/Projects/tachi && git pull
 
 ## Step 2: Add Tachi to Your Project (Per-Project Setup)
 
-From your project root, copy the agents and command into your project's Claude Code directories:
+From your project root, copy agents, commands, schemas, and templates into your project:
 
 ```bash
-# Copy agents + infographic templates
-cp -r ~/Projects/tachi/adapters/claude-code/agents/ .claude/agents/tachi/
+# Agents (17 threat analysis agent definitions)
+cp -r ~/Projects/tachi/.claude/agents/tachi/ .claude/agents/tachi/
 
-# Copy the 5 command files
+# Commands (5 slash commands)
 mkdir -p .claude/commands
-cp ~/Projects/tachi/adapters/claude-code/commands/threat-model.md .claude/commands/
-cp ~/Projects/tachi/adapters/claude-code/commands/risk-score.md .claude/commands/
-cp ~/Projects/tachi/.claude/commands/compensating-controls.md .claude/commands/
-cp ~/Projects/tachi/adapters/claude-code/commands/infographic.md .claude/commands/
-cp ~/Projects/tachi/.claude/commands/security-report.md .claude/commands/
+for cmd in threat-model risk-score compensating-controls infographic security-report; do
+  cp ~/Projects/tachi/.claude/commands/$cmd.md .claude/commands/
+done
 
-# Copy PDF report templates, brand assets, and schema
-cp -r ~/Projects/tachi/templates/tachi/security-report/ templates/tachi/security-report/
+# Schemas, templates, references, and brand assets
+cp -r ~/Projects/tachi/schemas/ schemas/
+cp -r ~/Projects/tachi/templates/ templates/
+mkdir -p adapters/claude-code/agents
+cp -r ~/Projects/tachi/adapters/claude-code/agents/references/ adapters/claude-code/agents/references/
 cp -r ~/Projects/tachi/brand/ brand/
-mkdir -p schemas
-cp ~/Projects/tachi/schemas/security-report.yaml schemas/
 ```
 
-Run this for each new codebase you want to add threat modeling to. Repeat it after pulling tachi updates to get the latest agents, commands, and templates.
+Run this for each new codebase you want to add threat modeling to. Repeat it after pulling tachi updates to get the latest agents, commands, and templates. See [`INSTALL_MANIFEST.md`](../../INSTALL_MANIFEST.md) for the canonical list of distributable files.
 
 ## Step 3: Verify
 
 ```bash
-ls .claude/agents/tachi/              # Should show 15 .md files + templates/ directory
-ls templates/tachi/infographics/    # Should show infographic-baseball-card.md, infographic-system-architecture.md, infographic-risk-funnel.md
-ls .claude/commands/                   # Should show threat-model.md, risk-score.md, compensating-controls.md, infographic.md, security-report.md
-ls templates/tachi/security-report/          # Should show main.typ, theme.typ, shared.typ, + 9 page templates
-ls brand/final/                        # Should show tachi logo PNGs (primary, horizontal, icon, dark variants)
+ls .claude/agents/tachi/                       # 17 agent .md files
+ls .claude/commands/                            # threat-model.md, risk-score.md, compensating-controls.md, infographic.md, security-report.md
+ls schemas/                                     # 8 YAML schema files
+ls templates/tachi/output-schemas/              # 7 output format templates (.md + .sarif)
+ls templates/tachi/infographics/                # 3 infographic design templates
+ls templates/tachi/security-report/             # main.typ, theme.typ, shared.typ, + page templates
+ls adapters/claude-code/agents/references/      # 6 reference docs (SARIF, validation, error handling)
+ls brand/final/                                 # tachi logo PNGs (optional, for branded PDF reports)
 ```
 
 ## Step 4: Create Your Architecture File
@@ -943,26 +945,30 @@ From your project root:
 # Clone tachi (one-time setup)
 git clone https://github.com/davidmatousek/tachi.git ~/Projects/tachi
 
-# Copy agents, templates, and commands into your project
-cp -r ~/Projects/tachi/adapters/claude-code/agents/ .claude/agents/tachi/
+# Copy agents, commands, schemas, and templates into your project
+cp -r ~/Projects/tachi/.claude/agents/tachi/ .claude/agents/tachi/
 mkdir -p .claude/commands
-cp ~/Projects/tachi/adapters/claude-code/commands/threat-model.md .claude/commands/
-cp ~/Projects/tachi/adapters/claude-code/commands/risk-score.md .claude/commands/
-cp ~/Projects/tachi/.claude/commands/compensating-controls.md .claude/commands/
-cp ~/Projects/tachi/adapters/claude-code/commands/infographic.md .claude/commands/
+for cmd in threat-model risk-score compensating-controls infographic security-report; do
+  cp ~/Projects/tachi/.claude/commands/$cmd.md .claude/commands/
+done
+cp -r ~/Projects/tachi/schemas/ schemas/
+cp -r ~/Projects/tachi/templates/ templates/
+mkdir -p adapters/claude-code/agents
+cp -r ~/Projects/tachi/adapters/claude-code/agents/references/ adapters/claude-code/agents/references/
+cp -r ~/Projects/tachi/brand/ brand/
 
 # Verify
-ls .claude/agents/tachi/              # 15 .md files + templates/
-ls templates/tachi/infographics/    # infographic-baseball-card.md, infographic-system-architecture.md
-ls .claude/commands/                   # threat-model.md, risk-score.md, compensating-controls.md, infographic.md
+ls .claude/agents/tachi/                       # 17 agent .md files
+ls .claude/commands/                            # 5 command files
+ls schemas/                                     # 8 YAML schema files
+ls templates/tachi/                             # output-schemas/, infographics/, security-report/
 ```
 
 **Updating**: When tachi releases new agent versions, pull and re-copy:
 
 ```bash
 cd ~/Projects/tachi && git pull
-cp -r adapters/claude-code/agents/ ~/Projects/my-app/.claude/agents/tachi/
-cp adapters/claude-code/commands/threat-model.md ~/Projects/my-app/.claude/commands/
+# Re-run the copy commands above from your project root
 ```
 
 ### Using the `/threat-model` Command

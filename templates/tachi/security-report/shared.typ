@@ -174,35 +174,28 @@
     v(0.15in)
   }
 
-  // Page title bar with optional horizontal logo.
+  // Dark header band with gold left accent.
   if title != none {
-    if has-logo and logo-path != none {
-      // Logo + title layout.
-      grid(
-        columns: (auto, 1fr),
-        column-gutter: 0.3em,
-        align: (left + horizon, left + horizon),
-        image(logo-path, height: 0.25in, format: logo-format),
-        text(
-          font: font-heading,
-          size: 9pt,
-          fill: color-header-bg,
-          weight: "semibold",
-          title,
-        ),
-      )
-    } else {
-      // Text-only title (original behavior).
-      text(
-        font: font-heading,
-        size: 9pt,
-        fill: color-header-bg,
-        weight: "semibold",
-        title,
-      )
-    }
-    v(0.05in)
-    line(length: 100%, stroke: 0.5pt + color-rule)
+    block(
+      width: 100%,
+      inset: (x: 0.6em, y: 0.35em),
+      fill: brand-primary,
+      radius: 2pt,
+      stroke: (left: 3pt + brand-highlight),
+      {
+        if has-logo and logo-path != none {
+          grid(
+            columns: (auto, 1fr),
+            column-gutter: 0.3em,
+            align: (left + horizon, left + horizon),
+            image(logo-path, height: 0.2in, format: logo-format),
+            text(font: font-heading, size: 9pt, fill: white, weight: "semibold", title),
+          )
+        } else {
+          text(font: font-heading, size: 9pt, fill: white, weight: "semibold", title)
+        }
+      },
+    )
   }
 }
 
@@ -221,7 +214,7 @@
 //   footer: report-footer()
 
 #let report-footer() = {
-  line(length: 100%, stroke: 0.5pt + color-rule)
+  line(length: 100%, stroke: 0.5pt + brand-highlight.transparentize(50%))
   v(0.05in)
   context {
     let page-num = counter(page).display()
@@ -235,4 +228,64 @@
       text(size: 8pt, fill: color-footer-text)[#right-text],
     )
   }
+}
+
+
+// ---------------------------------------------------------------------------
+// 7. Section Divider Page
+// ---------------------------------------------------------------------------
+// Renders a full-bleed dark navy page with a centered section title in white.
+// Gold accent rules above and below the title connect visually to the cover.
+// Used to separate major report sections (e.g., Assessment, Findings).
+//
+// Usage:
+//   #section-divider("Assessment Overview", classification: "CONFIDENTIAL")
+
+#let section-divider(title, classification: none) = {
+  page(
+    width: page-width,
+    height: page-height,
+    margin: (
+      top: margin-top,
+      bottom: margin-bottom,
+      left: margin-left,
+      right: margin-right,
+    ),
+    fill: brand-primary,
+    header: none,
+    footer: none,
+  )[
+    #if classification != none {
+      place(top + center, dy: -margin-top,
+        block(
+          width: page-width,
+          inset: (x: 0.3em, y: 0.25em),
+          fill: color-classification-bg,
+          align(center,
+            text(
+              fill: color-classification-text,
+              size: 8pt,
+              weight: "bold",
+              tracking: 0.1em,
+              upper(classification),
+            ),
+          ),
+        ),
+      )
+    }
+    #align(center + horizon)[
+      #line(length: 40%, stroke: 1pt + brand-highlight)
+      #v(0.3in)
+      #text(
+        font: font-heading,
+        size: 24pt,
+        weight: "bold",
+        fill: white,
+        tracking: 0.05em,
+        title,
+      )
+      #v(0.3in)
+      #line(length: 40%, stroke: 0.5pt + brand-highlight)
+    ]
+  ]
 }

@@ -318,9 +318,11 @@ Parse threats.md Section 1 (System Overview / Architecture Description) and Sect
 Check for tachi brand logo files:
 
 1. Check if `brand/final/tachi-logo-primary.png` exists and is non-zero size
-2. Check if `brand/final/tachi-logo-horizontal.png` exists and is non-zero size
-3. If found: set `has-logo-primary = true` / `has-logo-horizontal = true` and compute relative paths using the `../../brand/final/` pattern (same relative path strategy as infographic images — relative from `templates/tachi/security-report/`)
-4. If not found: set flags to `false`, paths to `none`. Log info: `"Brand assets not found — report will use text-only branding"`
+2. Check if `brand/final/tachi-logo-primary-dark.png` exists and is non-zero size (dark variant for cover page)
+3. Check if `brand/final/tachi-logo-horizontal.png` exists and is non-zero size
+4. If found: set `has-logo-primary = true` / `has-logo-horizontal = true` and compute relative paths using the `../../brand/final/` pattern (same relative path strategy as infographic images — relative from `templates/tachi/security-report/`)
+5. For the dark variant: set `logo-primary-dark-path` to the resolved path if found, or `none` if not found
+6. If no brand assets found: set flags to `false`, paths to `none`. Log info: `"Brand assets not found — report will use text-only branding"`
 
 **Note**: Brand asset files have `.png` extensions but may contain JPEG-encoded data. The Typst templates handle format detection via `logo-format` token in `theme.typ`.
 
@@ -565,10 +567,11 @@ If no scope data was extracted, set arrays to empty `()` and counts to `0`.
 #let has-logo-primary = {true/false}
 #let has-logo-horizontal = {true/false}
 #let logo-primary-path = {path_or_none}
+#let logo-primary-dark-path = {path_or_none}
 #let logo-horizontal-path = {path_or_none}
 ```
 
-Where paths use the `../../brand/final/` relative path pattern, or `none` if not found.
+Where paths use the `../../brand/final/` relative path pattern, or `none` if not found. The `logo-primary-dark-path` is the dark-background variant used on the cover page to avoid white-box artifacts.
 
 ### 3p. Page Visibility Flags
 

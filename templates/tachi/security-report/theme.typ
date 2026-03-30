@@ -14,7 +14,8 @@
 // ---------------------------------------------------------------------------
 
 /// Tachi Indigo — headers, primary surfaces, cover title.
-#let brand-primary = rgb("#1B2A4A")
+/// Matched to tachi-logo-primary-dark.png background (#18223B).
+#let brand-primary = rgb("#18223B")
 
 /// Steel Blue — secondary/supporting elements.
 #let brand-secondary = rgb("#2D4A6F")
@@ -41,8 +42,11 @@
 // Defaults point to the standard brand directory. The report assembler
 // overrides these in report-data.typ at runtime with resolved relative paths.
 
-/// Vertical lockup — used on cover page.
+/// Vertical lockup — used on cover page (light background variant).
 #let logo-primary-path = "../../brand/final/tachi-logo-primary.png"
+
+/// Vertical lockup — dark background variant for dark cover page.
+#let logo-primary-dark-path = "../../brand/final/tachi-logo-primary-dark.png"
 
 /// Horizontal lockup — used in page headers.
 #let logo-horizontal-path = "../../brand/final/tachi-logo-horizontal.png"

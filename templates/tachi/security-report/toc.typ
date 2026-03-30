@@ -37,6 +37,6 @@
     footer: report-footer(),
   )[
     #heading(level: 1)[Table of Contents]
-    #outline(indent: auto, depth: 1)
+    #outline(title: none, indent: auto, depth: 1)
   ]
 }
