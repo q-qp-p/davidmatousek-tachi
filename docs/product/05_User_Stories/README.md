@@ -330,3 +330,13 @@ Each PRD should include relevant user stories:
 - **US-067-4** (P0): Agent Prompt Update - Report-assembler agent updated to invoke deterministic Python script instead of LLM-based inline parsing for Steps 2-3
 - **US-067-5** (P1): Consistent Recommendation Formatting - Finding recommendations preserved verbatim from source artifacts with uniform formatting across all severity levels
 - **US-067-6** (P1): Testing Against Example Datasets - Script validated against both OpenClaw and agentic-app example datasets for regression coverage
+
+### Feature 071: Deterministic Infographic Extraction
+
+**PRD**: [071-deterministic-infographic-extraction](../02_PRD/071-deterministic-infographic-extraction-2026-03-30.md)
+**Delivered**: 2026-03-30 | **PR**: #72 | **Tasks**: 46/46 complete | **Stories**: 4/4 passing
+
+- **US-071-1** (P0): Deterministic Baseball Card Specification - Running `/infographic --template baseball-card` on identical input produces byte-identical spec files with consistent severity counts, heat map values, and top findings
+- **US-071-2** (P0): Deterministic System Architecture Specification - Running `/infographic --template system-architecture` on identical input produces byte-identical spec files with consistent component annotations, data flow severity coloring, and finding overlays
+- **US-071-3** (P0): Deterministic Risk Funnel Specification - Running `/infographic --template risk-funnel` on identical input produces byte-identical spec files with consistent tier counts and reduction percentages
+- **US-071-4** (P0): Cross-Output Consistency - Security report and infographic severity counts match exactly when generated from the same threat model artifacts, enabling side-by-side use in briefings

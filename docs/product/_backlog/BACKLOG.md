@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-03-30T16:05:25Z.
+> Auto-generated from GitHub Issues on 2026-03-30T16:41:36Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -34,7 +34,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| — | *No items in this stage* | | |
+| #71 | Infographic agent produces non-deterministic data extraction from identical input | 2026-03-30 | — | 2026-03-30 |
 
 ## Untracked
 
@@ -42,7 +42,6 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #71 | Infographic agent produces non-deterministic data extraction from identical input | OPEN | 2026-03-30 |
 | #51 | fix: Gemini heat map renders incorrect severity labels for medium-risk components | OPEN | 2026-03-28 |
 | #46 | Sync upstream AOD Kit — merge new skills, commands, rules, and guides | OPEN | 2026-03-28 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |

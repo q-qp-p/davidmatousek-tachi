@@ -5,7 +5,7 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-03-29
 
-**Entry Count**: 14 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 15 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -290,6 +290,22 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #architecture #data-extraction #determinism #reporting
 
 **Quality Score**: 9/10
+
+---
+
+### PAT-015: Determinism by Design — Explicit Choices at Every Level
+
+**Source**: Feature 071 — Deterministic Infographic Extraction (Retrospective, 2026-03-30)
+
+**Pattern**: Byte-identical output from identical input requires explicit design choices at every level of data processing: `json.dumps(sort_keys=True)` for key ordering, deterministic tie-breaking rules (composite score descending, threat ID ascending), Largest Remainder Method for percentage rounding (guarantees integer percentages sum to 100%), and stable sort algorithms for all collections. Determinism cannot be retrofitted — it must be a first-class design constraint from the start.
+
+**Evidence**: Feature 071 built `scripts/extract-infographic-data.py` with determinism as a foundational requirement across 46 tasks. Every computation — severity percentages, heat map ordering, top-N finding selection, component risk weights — required an explicit deterministic strategy. The Largest Remainder Method was surfaced during the research phase as superior to naive `round()` which silently drops or adds percentage points. Pre-spec research directly improved the technical approach.
+
+**When to Apply**: Any time output must be reproducible across runs for compliance, audit, or trust reasons. Design determinism into the data model and algorithms from the start. Document tie-breaking rules in the spec. Use research phases to find mathematically sound approaches (like LRM) rather than naive implementations.
+
+**Tags**: #retrospective #architecture #determinism #data-extraction #infographic
+
+**Quality Score**: 8/10
 
 ---
 

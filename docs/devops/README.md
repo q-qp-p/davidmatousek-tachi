@@ -1,6 +1,6 @@
 # DevOps Documentation - tachi
 
-**Last Updated**: 2026-03-28
+**Last Updated**: 2026-03-30
 **Owner**: DevOps Agent
 **Status**: Active
 
@@ -113,6 +113,29 @@ PDF page templates live in `templates/tachi/security-report/` at the repository 
 ### Infrastructure Impact
 
 No new environment variables, Docker services, staging configuration, or production deployment changes. PDF generation runs entirely on the local machine.
+
+---
+
+## Deterministic Infographic Extraction (Feature 071)
+
+Feature 071 replaced LLM-based data extraction in the threat-infographic agent with deterministic Python scripts that produce byte-identical JSON output. This builds on the shared parser module introduced during Feature 067's report data extraction work.
+
+### New Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `scripts/tachi_parsers.py` | Shared parser module extracted from `extract-report-data.py`. Provides deterministic parsers for markdown tables, YAML frontmatter, severity distributions, and compensating controls |
+| `scripts/extract-infographic-data.py` | Reads `threats.md`, `risk-scores.md`, and `compensating-controls.md` to produce JSON data bindings for infographic templates (baseball-card, system-architecture, risk-funnel) |
+
+Both scripts use Python 3.9+ stdlib only -- zero external dependencies.
+
+### Infrastructure Impact
+
+No new environment variables, Docker services, CI/CD pipeline changes, staging configuration, or production deployment changes. The scripts run locally as part of the `/infographic` command workflow, invoked by the threat-infographic agent.
+
+### Relationship to Feature 067
+
+Feature 067 introduced `extract-report-data.py` for deterministic security report data extraction. Feature 071 extracted shared parsing logic into `tachi_parsers.py` so both `extract-report-data.py` and `extract-infographic-data.py` use identical parsers, ensuring cross-output consistency between security reports and infographics derived from the same pipeline artifacts.
 
 ---
 

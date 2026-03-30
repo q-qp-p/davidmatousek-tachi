@@ -13,7 +13,7 @@
 - **Git**: Version {{VERSION}}+
 
 ### Optional Software
-- **Python**: Version 3.9+ (stdlib only, no external packages). Required by `scripts/extract-report-data.py` for deterministic report data extraction during `/security-report` generation. Most macOS and Linux systems include Python 3.9+ by default; verify with `python3 --version`
+- **Python**: Version 3.9+ (stdlib only, no external packages). Required by the deterministic data extraction scripts in `scripts/`: `extract-report-data.py` (security report data for `/security-report`), `extract-infographic-data.py` (infographic template data for `/infographic`), and the shared `tachi_parsers.py` module. Most macOS and Linux systems include Python 3.9+ by default; verify with `python3 --version`
 - **VS Code**: Recommended IDE
 - **Postman/Insomnia**: API testing
 - **jq**: JSON processor, required by `.aod/scripts/bash/run-state.sh` for the Full Lifecycle Orchestrator (`brew install jq` on macOS, `apt-get install jq` on Linux)

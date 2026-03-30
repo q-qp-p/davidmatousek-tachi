@@ -1,6 +1,6 @@
 # Design Patterns - tachi
 
-**Last Updated**: 2026-03-25
+**Last Updated**: 2026-03-30
 **Owner**: Architect
 
 ---
@@ -66,6 +66,10 @@ This directory documents reusable design patterns for tachi.
 - [Orchestrator-Awareness Guard](#pattern-orchestrator-awareness-guard)
 - [Non-Fatal Observability Wrapper](#pattern-non-fatal-observability-wrapper)
 - [Built-in Skill Invocation from a Command](#pattern-built-in-skill-invocation-from-a-command)
+
+### Python Script Patterns (AOD Kit)
+- [Shared Parser Module Extraction](#pattern-shared-parser-module-extraction)
+- [Largest Remainder Method for Deterministic Percentages](#pattern-largest-remainder-method)
 
 ### Threat Modeling Patterns (AOD Kit)
 - [STRIDE-per-Element Matrix Targeting](#pattern-stride-per-element-matrix-targeting)
@@ -1404,6 +1408,112 @@ Coverage matrix uses deduplicated counts (CG-1 members count as 1 per cell). Thr
 #### Related Patterns
 - [STRIDE-per-Element Matrix Targeting](#pattern-stride-per-element-matrix-targeting) -- the dispatch mechanism that produces the findings being correlated
 - [On-Demand Reference File Segmentation](#pattern-on-demand-reference-file-segmentation) -- correlation rules are embedded in the orchestrator prompt, not loaded from external files
+
+---
+
+### Pattern: Shared Parser Module Extraction
+
+**Added**: Feature 071 (Deterministic Infographic Extraction)
+**ADR**: [ADR-017](../02_ADRs/ADR-017-deterministic-infographic-extraction.md)
+
+#### Problem
+Multiple scripts need to parse the same markdown artifacts (threats.md, risk-scores.md, compensating-controls.md) but were developed at different times. Feature 067 introduced `extract-report-data.py` with inline parsing logic. Feature 071 needed the same parsers for infographic data extraction. Duplicating ~750 lines of parsing code across scripts creates divergence risk where the same source artifact could be interpreted differently by different pipelines.
+
+#### Solution
+Extract shared parsing functions into a dedicated module (`tachi_parsers.py`) that both scripts import. The module provides all artifact-specific parsers (markdown tables, YAML frontmatter, severity distributions, findings, scope data, compensating controls) and shared constants (severity ordering, STRIDE prefix mapping, exit codes). Each consuming script imports only the functions it needs and adds its own output-format-specific logic (Typst for reports, JSON for infographics).
+
+#### Example
+```python
+# scripts/tachi_parsers.py — shared module
+SEVERITY_ORDER = ["Critical", "High", "Medium", "Low", "Note"]
+
+def parse_markdown_table(text, header_pattern):
+    """Parse a markdown table following a header matching the pattern."""
+    ...
+
+def parse_threats_severity(threats_content):
+    """Extract severity distribution from threats.md Section 6."""
+    ...
+
+# scripts/extract-report-data.py — report consumer
+from tachi_parsers import parse_threats_severity, parse_frontmatter, SEVERITY_ORDER
+
+# scripts/extract-infographic-data.py — infographic consumer
+from tachi_parsers import parse_threats_severity, parse_frontmatter, SEVERITY_ORDER
+```
+
+The `sys.path` insertion ensures the module is importable regardless of the working directory:
+```python
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from tachi_parsers import parse_markdown_table, parse_frontmatter
+```
+
+#### When to Use
+- Two or more scripts parse the same file formats or data structures
+- Parsing correctness is critical (security artifacts, audit data) and must be identical across consumers
+- Scripts share the same zero-dependency constraint (stdlib only)
+
+#### When NOT to Use
+- A single script consumes the parsing logic (no duplication to eliminate)
+- Parsers are trivial (one or two regexes) and not worth the module overhead
+- Different consumers intentionally need different interpretations of the same data
+
+#### Related Patterns
+- [Atomic File Write](#pattern-atomic-file-write) -- both patterns prioritize determinism and correctness in file operations
+
+---
+
+### Pattern: Largest Remainder Method for Deterministic Percentages
+
+**Added**: Feature 071 (Deterministic Infographic Extraction)
+**ADR**: [ADR-017](../02_ADRs/ADR-017-deterministic-infographic-extraction.md)
+
+#### Problem
+Converting raw counts to integer percentages using simple `round()` can produce values that do not sum to exactly 100. For example, three items with counts [1, 1, 1] produce exact percentages [33.33, 33.33, 33.33], and rounding each independently gives [33, 33, 33] = 99. In infographic visualizations (pie charts, severity distributions), percentages that do not sum to 100 create visual inconsistencies and undermine credibility with executive audiences.
+
+#### Solution
+Use the Largest Remainder Method (Hamilton method): compute exact percentages, take the floor of each, then distribute the remaining units (target minus sum of floors) to items with the largest fractional remainders. Break ties deterministically using lexicographic label order.
+
+#### Example
+```python
+def largest_remainder(percentages_map, target=100):
+    """Integer percentages summing to exactly `target`."""
+    total = sum(percentages_map.values())
+    if total == 0:
+        return {label: 0 for label in percentages_map}
+
+    exact = {label: (count / total) * target
+             for label, count in percentages_map.items()}
+    floored = {label: math.floor(v) for label, v in exact.items()}
+    remainder = target - sum(floored.values())
+
+    # Sort by fractional remainder descending, then label ascending for ties
+    by_remainder = sorted(
+        exact.keys(),
+        key=lambda k: (-(exact[k] - floored[k]), k)
+    )
+
+    for i in range(remainder):
+        floored[by_remainder[i]] += 1
+
+    return floored
+```
+
+Input: `{"Critical": 5, "High": 14, "Medium": 10, "Low": 4, "Note": 1}` (total=34)
+Output: `{"Critical": 15, "High": 41, "Medium": 29, "Low": 12, "Note": 3}` (sum=100)
+
+#### When to Use
+- Displaying integer percentages in charts, dashboards, or specifications where the total must be exact
+- Any scenario where multiple rounded values must sum to a fixed target
+- When determinism is required (same input must always produce the same output)
+
+#### When NOT to Use
+- Floating-point percentages are acceptable (no rounding needed)
+- A single percentage value (no summation constraint)
+- When the rounding method must match a specific regulatory or accounting standard (verify which method is required)
+
+#### Related Patterns
+- [Shared Parser Module Extraction](#pattern-shared-parser-module-extraction) -- the Largest Remainder Method is implemented in the infographic extraction script that imports from the shared module
 
 ---
 

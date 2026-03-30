@@ -1296,3 +1296,65 @@ threats.md + optional artifacts (risk-scores.md, compensating-controls.md, threa
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | Python | 3.9+ (stdlib only) | Deterministic markdown parsing and Typst data generation; zero external dependencies |
+
+---
+
+### Feature 071: Deterministic Infographic Data Extraction
+
+## Components
+
+### Component 1: Shared Parser Module (`scripts/tachi_parsers.py`)
+
+**Type**: New file (extracted from Feature 067's `extract-report-data.py`)
+**Purpose**: Shared parser module (~750 lines) providing deterministic parsers for markdown tables, YAML frontmatter, severity distributions, findings, scope data, and compensating controls. Both `extract-report-data.py` and `extract-infographic-data.py` import the same parsing functions, guaranteeing identical interpretation of the same source artifacts across report and infographic pipelines.
+
+Key exports:
+- **Table parsing**: `parse_markdown_table()`, `_find_table_with_column()`
+- **Frontmatter**: `parse_frontmatter()`, `parse_project_name()`
+- **Artifact detection**: `detect_artifacts()`, `determine_tier()`
+- **Severity**: `parse_threats_severity()`, `parse_risk_scores_severity()`
+- **Findings**: `parse_threats_findings()`, `parse_risk_scores_findings()`
+- **Scope/controls**: `parse_scope_data()`, `parse_compensating_controls_md()`, `parse_component_distribution()`
+- **Constants**: `SEVERITY_ORDER`, `STRIDE_PREFIXES`, exit codes
+
+### Component 2: Infographic Extraction Script (`scripts/extract-infographic-data.py`)
+
+**Type**: New file (~1,060 lines)
+**Purpose**: Deterministic, stdlib-only Python 3.9+ script that replaces LLM-based data extraction in the threat-infographic agent. Parses pipeline markdown artifacts and writes JSON data files with all variable bindings needed by infographic templates (baseball-card, system-architecture, risk-funnel).
+
+Key properties:
+- **Byte-identical output**: Same inputs always produce the same JSON (no LLM variance)
+- **3-tier data source auto-detection**: Tier 1 compensating-controls.md, Tier 2 risk-scores.md, Tier 3 threats.md
+- **Largest Remainder Method**: Integer percentage rounding guaranteeing sums equal exactly 100, with deterministic tie-breaking (lexicographic label order)
+- **Per-template data**: Generates template-specific `template_data` object (risk weights for baseball-card, architecture overlay for system-architecture, funnel stages for risk-funnel)
+- **Internal consistency validation**: Severity sum checks, finding ID cross-checks, heat map total consistency
+- **Exit codes**: 0 success, 1 missing required artifact, 2 validation failure
+
+### Component 3: Threat-Infographic Agent Update (`agents/threat-infographic.md`)
+
+**Type**: Modified
+**Purpose**: Updated to invoke the Python extraction script instead of performing inline LLM-based data extraction. The agent now runs `scripts/extract-infographic-data.py`, reads the resulting JSON, and generates the infographic specification. No manual fallback is permitted on script failure (exit code 1 or 2).
+
+### Component 4: Refactored Report Extraction Script (`scripts/extract-report-data.py`)
+
+**Type**: Modified
+**Purpose**: Refactored to import shared parsers from `tachi_parsers.py` instead of containing inline implementations. All parsing logic moved to the shared module; the script retains only Typst-specific output formatting.
+
+## Data Flow
+
+```
+threats.md + optional artifacts (risk-scores.md, compensating-controls.md)
+    → Infographic Agent (template selection)
+    → python3 scripts/extract-infographic-data.py --target-dir <dir> --template <name> --output <path>
+        → tachi_parsers.py (shared parsing: frontmatter, tables, severity, findings, scope)
+    → infographic-data.json (deterministic, byte-identical on same inputs)
+    → Agent reads JSON and generates specification
+    → threat-{template-name}-spec.md + optional threat-{template-name}.jpg (Gemini API)
+```
+
+## Tech Stack
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Python | 3.9+ (stdlib only) | Deterministic markdown parsing and JSON data generation; zero external dependencies |
+| JSON | N/A | Structured data interchange between extraction script and infographic agent |
