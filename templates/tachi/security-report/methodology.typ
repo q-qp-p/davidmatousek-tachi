@@ -436,7 +436,7 @@
     // Section 1: Threat Identification (always).
     #_threat-identification()
 
-    #v(0.2in)
+    #v(0.1in)
 
     // Section 2: Probability x Impact Matrix (always).
     // Keep the entire matrix together — push to next page if it doesn't fit.
@@ -446,13 +446,13 @@
 
     // Section 3: Quantitative Scoring (conditional).
     #if has-risk-scores {
-      v(0.2in)
+      v(0.1in)
       _quantitative-scoring()
     }
 
     // Section 4: Control Analysis (conditional).
     #if has-compensating-controls {
-      v(0.2in)
+      v(0.1in)
       _control-analysis()
     }
   ]

@@ -78,6 +78,10 @@
 #let logo-primary-path = if logo-primary-path != none { logo-primary-path } else { none }
 #let logo-horizontal-path = if logo-horizontal-path != none { logo-horizontal-path } else { none }
 
+// Dark logo variant for cover page.
+// Imported from theme.typ via shared.typ wildcard import.
+// The report assembler may override this in report-data.typ with a resolved path.
+
 // Page visibility — config overrides take precedence over report-data.typ defaults.
 #let show-disclaimer = cfg-show-disclaimer
 #let show-methodology = cfg-show-methodology
@@ -110,6 +114,7 @@
   total-findings: total-findings,
   has-logo-primary: has-logo-primary,
   logo-primary-path: logo-primary-path,
+  logo-primary-dark-path: logo-primary-dark-path,
 )
 
 
@@ -135,6 +140,10 @@
     has-compensating-controls: has-compensating-controls,
   )
 }
+
+
+// --- Section Divider: Assessment Overview -----------------------------------
+#section-divider("Assessment Overview", classification: classification)
 
 
 // --- Page 5: Assessment Scope (always) -------------------------------------
@@ -212,6 +221,10 @@
     ],
   )
 }
+
+
+// --- Section Divider: Detailed Findings -------------------------------------
+#section-divider("Detailed Findings", classification: classification)
 
 
 // --- Page 6: Findings Detail (always) --------------------------------------

@@ -63,6 +63,7 @@
   total-findings: 0,
   has-logo-primary: false,
   logo-primary-path: none,
+  logo-primary-dark-path: none,
 ) = {
   // Derive risk posture from severity counts.
   let posture = risk-posture(critical-count, high-count, medium-count, low-count)
@@ -76,6 +77,7 @@
       left: margin-left,
       right: margin-right,
     ),
+    fill: brand-primary,
     header: none,
     footer: none,
   )[
@@ -101,22 +103,25 @@
 
     // --- Vertically centered main content -----------------------------------
     #align(center + horizon)[
-      // Primary logo (when available) above the decorative rule.
-      #if has-logo-primary and logo-primary-path != none {
-        image(logo-primary-path, width: 2.5in, format: logo-format)
-        v(0.3in)
+      // Primary logo (dark variant preferred on dark cover).
+      #if has-logo-primary {
+        let cover-logo = if logo-primary-dark-path != none { logo-primary-dark-path } else { logo-primary-path }
+        if cover-logo != none {
+          image(cover-logo, width: 2.5in, format: logo-format)
+          v(0.3in)
+        }
       }
 
-      // Top decorative rule
-      #line(length: 60%, stroke: 1.5pt + color-header-bg)
+      // Top decorative rule — gold accent
+      #line(length: 60%, stroke: 1.5pt + brand-highlight)
       #v(0.4in)
 
-      // Project name — large sans-serif heading
+      // Project name — large sans-serif heading, white on dark
       #text(
         font: font-heading,
         size: 28pt,
         weight: "bold",
-        fill: color-header-bg,
+        fill: white,
         project-name,
       )
 
@@ -127,7 +132,7 @@
         font: font-heading,
         size: 14pt,
         weight: "regular",
-        fill: color-footer-text,
+        fill: white.darken(15%),
       )[Security Assessment Report]
 
       #v(0.1in)
@@ -136,14 +141,14 @@
       #text(
         font: font-body,
         size: 12pt,
-        fill: color-footer-text,
+        fill: white.darken(25%),
         assessment-date,
       )
 
       #v(0.4in)
 
-      // Bottom decorative rule
-      #line(length: 60%, stroke: 0.75pt + color-rule)
+      // Bottom decorative rule — gold accent
+      #line(length: 60%, stroke: 0.75pt + brand-highlight)
 
       #v(0.4in)
 
@@ -168,13 +173,15 @@
       #text(
         font: font-body,
         size: 11pt,
-        fill: color-footer-text,
+        fill: white.darken(25%),
       )[#total-findings findings identified]
 
       #v(0.35in)
 
       // --- Severity breakdown ------------------------------------------------
-      // Four colored count badges in a row: Critical, High, Medium, Low.
+      // Four colored count badges in a row on dark background.
+      // Badges use severity colors directly — high contrast against dark navy.
+      // Medium severity uses a slightly lightened yellow for readability.
       #grid(
         columns: (auto, auto, auto, auto),
         column-gutter: 0.3in,
@@ -182,60 +189,58 @@
         block(
           inset: (x: 0.8em, y: 0.5em),
           radius: 3pt,
-          fill: severity-critical.lighten(88%),
+          fill: severity-critical.transparentize(75%),
           [
-            #text(font: font-heading, size: 20pt, weight: "bold", fill: severity-critical)[#critical-count]
+            #text(font: font-heading, size: 20pt, weight: "bold", fill: severity-critical.lighten(30%))[#critical-count]
             #v(0.05in)
-            #text(font: font-heading, size: 8pt, weight: "semibold", fill: severity-critical, tracking: 0.05em)[CRITICAL]
+            #text(font: font-heading, size: 8pt, weight: "semibold", fill: severity-critical.lighten(30%), tracking: 0.05em)[CRITICAL]
           ],
         ),
         // High
         block(
           inset: (x: 0.8em, y: 0.5em),
           radius: 3pt,
-          fill: severity-high.lighten(88%),
+          fill: severity-high.transparentize(75%),
           [
-            #text(font: font-heading, size: 20pt, weight: "bold", fill: severity-high)[#high-count]
+            #text(font: font-heading, size: 20pt, weight: "bold", fill: severity-high.lighten(20%))[#high-count]
             #v(0.05in)
-            #text(font: font-heading, size: 8pt, weight: "semibold", fill: severity-high, tracking: 0.05em)[HIGH]
+            #text(font: font-heading, size: 8pt, weight: "semibold", fill: severity-high.lighten(20%), tracking: 0.05em)[HIGH]
           ],
         ),
         // Medium
         block(
           inset: (x: 0.8em, y: 0.5em),
           radius: 3pt,
-          fill: severity-medium.lighten(88%),
+          fill: severity-medium.transparentize(75%),
           [
-            #text(font: font-heading, size: 20pt, weight: "bold", fill: severity-medium)[#medium-count]
+            #text(font: font-heading, size: 20pt, weight: "bold", fill: severity-medium.lighten(10%))[#medium-count]
             #v(0.05in)
-            #text(font: font-heading, size: 8pt, weight: "semibold", fill: severity-medium, tracking: 0.05em)[MEDIUM]
+            #text(font: font-heading, size: 8pt, weight: "semibold", fill: severity-medium.lighten(10%), tracking: 0.05em)[MEDIUM]
           ],
         ),
         // Low
         block(
           inset: (x: 0.8em, y: 0.5em),
           radius: 3pt,
-          fill: severity-low.lighten(88%),
+          fill: severity-low.transparentize(75%),
           [
-            #text(font: font-heading, size: 20pt, weight: "bold", fill: severity-low)[#low-count]
+            #text(font: font-heading, size: 20pt, weight: "bold", fill: severity-low.lighten(30%))[#low-count]
             #v(0.05in)
-            #text(font: font-heading, size: 8pt, weight: "semibold", fill: severity-low, tracking: 0.05em)[LOW]
+            #text(font: font-heading, size: 8pt, weight: "semibold", fill: severity-low.lighten(30%), tracking: 0.05em)[LOW]
           ],
         ),
       )
     ]
 
     // --- tachi branding (bottom of page) ------------------------------------
-    // When the primary logo is already shown at the top of the cover, only
-    // show text branding at the bottom to avoid redundancy and overlap.
     // Offset into the bottom margin since the cover page has no footer.
     #place(bottom + center, dy: 0.5in)[
-      #line(length: 30%, stroke: 0.5pt + color-rule)
+      #line(length: 30%, stroke: 0.5pt + brand-highlight.transparentize(50%))
       #v(0.1in)
       #text(
         font: font-heading,
         size: 9pt,
-        fill: color-footer-text,
+        fill: white.darken(35%),
       )[Generated by *tachi*]
     ]
   ]

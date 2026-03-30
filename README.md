@@ -21,7 +21,7 @@ tachi is a threat modeling sidecar that you add to any project. It dispatches 14
 
 tachi is built with the [Agentic Oriented Development Kit (AOD Kit)](https://github.com/davidmatousek/agentic-oriented-development-kit), a governance framework for AI agent-assisted development.
 
-![Threat Baseball Card](examples/agentic-app/sample-report/threat-baseball-card.jpg)
+![Threat Risk Funnel](examples/agentic-app/sample-report/threat-risk-funnel.jpg)
 
 ---
 
@@ -38,16 +38,24 @@ git clone https://github.com/davidmatousek/tachi.git ~/Projects/tachi
 From your project root:
 
 ```bash
-# Copy agents + infographic templates
-cp -r ~/Projects/tachi/adapters/claude-code/agents/ .claude/agents/tachi/
+# Agents (threat analysis engine)
+cp -r ~/Projects/tachi/.claude/agents/tachi/ .claude/agents/tachi/
 
-# Copy commands
+# Commands (5 slash commands)
 mkdir -p .claude/commands
-cp ~/Projects/tachi/adapters/claude-code/commands/threat-model.md .claude/commands/
-cp ~/Projects/tachi/adapters/claude-code/commands/risk-score.md .claude/commands/
-cp ~/Projects/tachi/.claude/commands/compensating-controls.md .claude/commands/
-cp ~/Projects/tachi/adapters/claude-code/commands/infographic.md .claude/commands/
+for cmd in threat-model risk-score compensating-controls infographic security-report; do
+  cp ~/Projects/tachi/.claude/commands/$cmd.md .claude/commands/
+done
+
+# Schemas, templates, references, and brand assets
+cp -r ~/Projects/tachi/schemas/ schemas/
+cp -r ~/Projects/tachi/templates/ templates/
+mkdir -p adapters/claude-code/agents
+cp -r ~/Projects/tachi/adapters/claude-code/agents/references/ adapters/claude-code/agents/references/
+cp -r ~/Projects/tachi/brand/ brand/
 ```
+
+See [`INSTALL_MANIFEST.md`](INSTALL_MANIFEST.md) for the full list of distributable files.
 
 ### 3. Restart Claude Code
 

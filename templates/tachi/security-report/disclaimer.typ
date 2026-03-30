@@ -65,21 +65,21 @@
     [This security assessment was generated using tachi, an automated threat modeling toolkit. The analysis applies STRIDE methodology and AI-specific threat categories to the provided architecture description. Results reflect the automated analysis and should be validated by qualified security professionals.],
   )
 
-  v(0.3in)
+  v(0.15in)
 
   _notice-section(
     "Scope Limitation",
     [This assessment is limited to the architecture description provided at the time of analysis. It does not cover runtime behavior, implementation-level vulnerabilities, or threats arising from future system changes. The assessment scope is defined in the Assessment Scope section of this report.],
   )
 
-  v(0.3in)
+  v(0.15in)
 
   _notice-section(
     "Recommendation",
     [This automated assessment should complement, not replace, manual security review by qualified professionals. Organizations should conduct periodic penetration testing, code review, and architecture review in addition to automated threat modeling.],
   )
 
-  v(0.3in)
+  v(0.15in)
 
   _notice-section(
     "Confidentiality",
