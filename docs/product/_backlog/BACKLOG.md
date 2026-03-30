@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-03-30T13:08:17Z.
+> Auto-generated from GitHub Issues on 2026-03-30T14:11:42Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -8,6 +8,7 @@
 
 | # | Title | ICE | Evidence | Updated |
 |---|-------|-----|----------|---------|
+| #69 | Expand example datasets for broader test coverage | — | — | 2026-03-30 |
 | #62 | Custom brand presets — user-definable brand identity via config file | — | — | 2026-03-29 |
 | #55 | Feature: Security Progression Summary — multi-run trend comparison over time | | Dimension | Score | Rationale | | - Market research: no threat modeling tool provides multi... | 2026-03-28 |
 
@@ -41,7 +42,6 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #67 | Report assembler produces non-deterministic output from identical input data | OPEN | 2026-03-30 |
 | #51 | fix: Gemini heat map renders incorrect severity labels for medium-risk components | OPEN | 2026-03-28 |
 | #46 | Sync upstream AOD Kit — merge new skills, commands, rules, and guides | OPEN | 2026-03-28 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |

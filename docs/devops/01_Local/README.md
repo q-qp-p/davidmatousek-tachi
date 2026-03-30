@@ -1,6 +1,6 @@
 # Local Development Environment - tachi
 
-**Last Updated**: 2026-03-28
+**Last Updated**: 2026-03-30
 **Owner**: DevOps Agent
 
 ---
@@ -13,6 +13,7 @@
 - **Git**: Version {{VERSION}}+
 
 ### Optional Software
+- **Python**: Version 3.9+ (stdlib only, no external packages). Required by `scripts/extract-report-data.py` for deterministic report data extraction during `/security-report` generation. Most macOS and Linux systems include Python 3.9+ by default; verify with `python3 --version`
 - **VS Code**: Recommended IDE
 - **Postman/Insomnia**: API testing
 - **jq**: JSON processor, required by `.aod/scripts/bash/run-state.sh` for the Full Lifecycle Orchestrator (`brew install jq` on macOS, `apt-get install jq` on Linux)

@@ -176,6 +176,18 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 
 ---
 
+### Python Scripts
+
+**Python 3.9+** (stdlib only, no external dependencies)
+- All `scripts/*.py` files must use only Python standard library modules
+- Why: Zero-dependency deterministic processing; avoids pip/virtualenv overhead for adopters
+- Constraints: No third-party packages, no f-strings requiring >3.9, pathlib-based paths
+
+**Key scripts**:
+| Script | Purpose | Added |
+|--------|---------|-------|
+| `scripts/extract-report-data.py` | Deterministic extraction of structured data from tachi pipeline markdown artifacts (threats.md, risk-scores.md, compensating-controls.md, threat-report.md) into Typst data file (report-data.typ). Replaces LLM-based markdown parsing in the report-assembler agent. Supports 3-tier severity source hierarchy, validates internal consistency (severity sums, scope counts, unique finding IDs), and produces byte-identical output on identical inputs. | Feature 067 |
+
 ### Shell Scripts
 
 **Bash 3.2** (macOS default `/bin/bash`)
@@ -198,6 +210,7 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 |------|-------------|---------|---------|
 | `jq` | `run-state.sh` | JSON parsing and atomic state manipulation | `brew install jq` (macOS) / `apt-get install jq` (Linux) |
 | `gh` | `github-lifecycle.sh`, `run-state.sh` (optional), `scripts/init.sh` (optional) | GitHub Issue/label management, Projects board creation during init | `brew install gh` / `gh auth login` |
+| `python3` | `scripts/extract-report-data.py` (invoked by report-assembler agent) | Deterministic markdown-to-Typst data extraction for security report pipeline; stdlib only, no pip dependencies (Feature 067) | Pre-installed on macOS; `apt-get install python3` (Linux) |
 | `typst` | `/security-report` command (report-assembler agent) | PDF compilation from modular `.typ` templates; renders security assessment reports with brand assets, auto-generated TOC, and conditional page inclusion (Feature 054, extended Feature 060) | `brew install typst` (macOS) / `cargo install typst-cli` / [typst.app](https://github.com/typst/typst/releases) |
 
 **Note**: `gh` degrades gracefully -- the orchestrator falls back to artifact-only detection when `gh` is unavailable or unauthenticated. Similarly, `scripts/init.sh` skips GitHub Projects board creation when `gh` is missing, unauthenticated, or lacks the `project` OAuth scope, reporting status in the init summary with remediation guidance.

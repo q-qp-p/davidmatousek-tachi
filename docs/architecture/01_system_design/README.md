@@ -1137,7 +1137,7 @@ User-facing entry point following the 4-step command pattern (parse → validate
 
 ### Component 2: Agent File (`report-assembler.md`)
 
-Parses markdown artifacts (YAML frontmatter, markdown tables, section content), applies 3-tier data source preference for Findings Detail, generates Typst data file (`report-data.typ`), and invokes `typst compile` to produce `security-report.pdf`.
+Orchestrates the report generation pipeline: invokes `scripts/extract-report-data.py` for deterministic markdown-to-Typst data extraction (Feature 067 replaced inline LLM parsing), then invokes `typst compile` to produce `security-report.pdf`. The Python script handles all artifact parsing (YAML frontmatter, markdown tables, section content), 3-tier data source preference for Findings Detail, severity counting, scope extraction, and internal consistency validation.
 
 ### Component 3: Schema File (`security-report.yaml`)
 
@@ -1167,7 +1167,10 @@ graph LR
 
     subgraph Agent
         DET[Artifact Detection]
-        PARSE[Markdown Parsing]
+    end
+
+    subgraph Script["Python Script (deterministic)"]
+        PARSE["extract-report-data.py"]
         DATA[report-data.typ]
     end
 
@@ -1240,7 +1243,8 @@ graph LR
 
 ```
 threats.md + brand/*.png + optional artifacts
-    → Report Assembler (parses + detects)
+    → Report Assembler (detects artifacts)
+    → python3 scripts/extract-report-data.py (deterministic parsing, Feature 067)
     → report-data.typ + report-config.typ
     → Typst compile (main.typ orchestrates 12 page types)
     → security-report.pdf
@@ -1253,3 +1257,42 @@ threats.md + brand/*.png + optional artifacts
 | Typst | 0.11+ | PDF rendering with `outline()`, `image()`, `hide()` |
 | PNG | N/A | Brand logo assets (Typst auto-detects PNG vs JPEG from headers) |
 | YAML | N/A | Schema definitions (security-report.yaml v1.1) |
+
+---
+
+### Feature 067: Deterministic Report Data Extraction
+
+## Components
+
+### Component 1: Python Extraction Script (`scripts/extract-report-data.py`)
+
+**Type**: New file
+**Purpose**: Deterministic, stdlib-only Python 3.9+ script that replaces LLM-based markdown parsing in the report-assembler agent. Parses all 4 pipeline markdown artifacts (threats.md, risk-scores.md, compensating-controls.md, threat-report.md) using regex-based extraction and writes a complete Typst data file (report-data.typ) with all variable bindings.
+
+Key properties:
+- **Byte-identical output**: Same inputs always produce the same report-data.typ (no LLM variance)
+- **3-tier severity source**: Tier 1 compensating-controls.md, Tier 2 risk-scores.md, Tier 3 threats.md
+- **Internal consistency validation**: Severity sum checks, scope count checks, unique finding ID checks
+- **Exit codes**: 0 success, 1 missing required artifact, 2 validation failure
+
+### Component 2: Report Assembler Agent Update (`report-assembler.md`)
+
+**Type**: Modified
+**Purpose**: Updated to invoke the Python script instead of performing inline LLM parsing. The agent now handles artifact detection, script invocation, and Typst compilation, while all data extraction is delegated to the deterministic script.
+
+## Data Flow
+
+```
+threats.md + optional artifacts (risk-scores.md, compensating-controls.md, threat-report.md)
+    → Report Assembler (artifact detection)
+    → python3 scripts/extract-report-data.py --target-dir <dir> --output-dir <dir>
+    → report-data.typ (deterministic, byte-identical on same inputs)
+    → Typst compile (main.typ orchestrates page types)
+    → security-report.pdf
+```
+
+## Tech Stack
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Python | 3.9+ (stdlib only) | Deterministic markdown parsing and Typst data generation; zero external dependencies |

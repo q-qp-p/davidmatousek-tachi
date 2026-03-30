@@ -1,6 +1,6 @@
 # User Stories - tachi
 
-**Last Updated**: 2026-03-29
+**Last Updated**: 2026-03-30
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -318,3 +318,15 @@ Each PRD should include relevant user stories:
 - **US-060-4** (P1): Modular Theme Architecture - As a developer extending tachi, a single `theme.typ` file change for colors and logo path propagates to every page automatically via centralized token system
 - **US-060-5** (P1): Enhanced Findings Detail with Severity Visualization - As a security engineer, individual finding cards with severity color-coding, component badges, and structured recommendation sections replace flat table rows
 - **US-060-6** (P2): Remediation Roadmap with Effort Estimates - As a project manager, the remediation roadmap groups recommendations by effort tier (Quick Wins, Medium, High) with estimated implementation effort for sprint planning
+
+### Feature 067: Deterministic Report Data Extraction
+
+**PRD**: [067-deterministic-report-data-extraction](../02_PRD/067-deterministic-report-data-extraction-2026-03-30.md)
+**Delivered**: 2026-03-30 | **PR**: #68 | **Tasks**: 32/32 complete | **Stories**: 6/6 passing
+
+- **US-067-1** (P0): Reproducible Report Generation - Running `/security-report` on identical input artifacts produces byte-identical `report-data.typ` and PDF output every time, enabling compliance and executive communication use cases
+- **US-067-2** (P0): Validated Severity Counts - Parsing script validates internal consistency (critical + high + medium + low == total) across all three severity source tiers (compensating-controls.md, risk-scores.md, threats.md)
+- **US-067-3** (P0): Deterministic Scope Data Extraction - Script extracts exact component and data flow counts from threats.md Section 1, matching source file counts every time
+- **US-067-4** (P0): Agent Prompt Update - Report-assembler agent updated to invoke deterministic Python script instead of LLM-based inline parsing for Steps 2-3
+- **US-067-5** (P1): Consistent Recommendation Formatting - Finding recommendations preserved verbatim from source artifacts with uniform formatting across all severity levels
+- **US-067-6** (P1): Testing Against Example Datasets - Script validated against both OpenClaw and agentic-app example datasets for regression coverage

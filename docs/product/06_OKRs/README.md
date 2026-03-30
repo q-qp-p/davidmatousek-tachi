@@ -1,6 +1,6 @@
 # OKRs (Objectives and Key Results) - tachi
 
-**Last Updated**: 2026-03-28
+**Last Updated**: 2026-03-30
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -158,3 +158,4 @@ OKRs align the team around measurable goals. They answer:
 | 2026-03-28 | F-045: End-to-End tachi Instruction Manual | [045](../02_PRD/045-instruction-manual-2026-03-28.md) | Comprehensive developer guide covering the full 4-command pipeline (`/threat-model` -> `/risk-score` -> `/compensating-controls` -> `/infographic`). Includes Quick Start (first threat model in 5 minutes), pipeline walkthrough with OpenClaw worked example, output interpretation for all 12+ artifacts, and prompt spec for consistent regeneration. First documentation-focused deliverable after core pipeline completion. |
 | 2026-03-28 | F-048: Infographic Tiered Detection & Residual Risk | [048](../02_PRD/048-infographic-tiered-detection-residual-risk-2026-03-28.md) | Three-tier data source auto-detection for `/infographic` (compensating-controls.md > risk-scores.md > threats.md), residual risk extraction from compensating controls Coverage Matrix, progressive enhancement tips at each pipeline tier, and risk label distinction (Residual Risk / Inherent Risk / Severity) across both infographic templates. Completes the visualization layer of the composable pipeline. |
 | 2026-03-28 | F-053: Risk Reduction Funnel | [053](../02_PRD/053-risk-reduction-funnel-2026-03-28.md) | New `risk-funnel` infographic template visualizing progressive risk reduction through the tachi pipeline as a 4-tier vertical funnel (threats identified -> inherent risk scored -> controls applied -> residual risk). Supports graceful degradation: 4-tier from compensating-controls.md, 3-tier from risk-scores.md, 1-tier from threats.md. Metrics sidebar with risk reduction percentage and control coverage. |
+| 2026-03-30 | F-067: Deterministic Report Data Extraction | [067](../02_PRD/067-deterministic-report-data-extraction-2026-03-30.md) | Replaced LLM-based markdown parsing with deterministic Python script (scripts/extract-report-data.py) for `/security-report` data extraction. 3-tier severity source selection, internal consistency validation, scope data extraction. Report-assembler agent updated to invoke script instead of inline parsing. Fixes non-deterministic output where identical inputs produced varying severity counts (0-20 Critical) and risk levels (HIGH/CRITICAL). |

@@ -5,8 +5,8 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-03-29
 
-**Entry Count**: 13 / 20 (KB System Upgrade triggers at 20 — schedule review)
-**Last Review**: 2026-03-21
+**Entry Count**: 14 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
 ---
@@ -274,6 +274,22 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #architecture #typst #template-design
 
 **Quality Score**: 7/10
+
+---
+
+### PAT-014: Precision Data Extraction Requires Scripts, Not LLM Parsing
+
+**Source**: Feature 067 — Deterministic Report Data Extraction (Retrospective, 2026-03-30)
+
+**Pattern**: When extracting structured data from known, stable formats (markdown tables, YAML frontmatter) for report generation, deterministic script-based parsing (regex, line splitting) must be used instead of LLM-based parsing. LLM parsing introduces non-determinism — identical inputs produce different severity counts, scope data counts, and recommendation text across runs. This makes the output unsuitable for compliance, audit trails, or executive communication where reproducibility is required.
+
+**Evidence**: Feature 067 replaced inline LLM parsing in the report-assembler agent with a Python script (`scripts/extract-report-data.py`). The LLM-based approach produced 4 different severity distributions from 4 runs on identical input. The script produces byte-identical output every time. The script uses only Python stdlib (regex, argparse, pathlib) — zero external dependencies.
+
+**When to Apply**: Any time structured data must be extracted from known formats and the output must be reproducible. If the format is stable and documented, script it. Reserve LLM-based extraction for unstructured or highly variable formats where exact reproduction is not required.
+
+**Tags**: #retrospective #architecture #data-extraction #determinism #reporting
+
+**Quality Score**: 9/10
 
 ---
 
