@@ -1,6 +1,6 @@
 # User Stories - tachi
 
-**Last Updated**: 2026-03-30
+**Last Updated**: 2026-03-31
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -340,3 +340,13 @@ Each PRD should include relevant user stories:
 - **US-071-2** (P0): Deterministic System Architecture Specification - Running `/infographic --template system-architecture` on identical input produces byte-identical spec files with consistent component annotations, data flow severity coloring, and finding overlays
 - **US-071-3** (P0): Deterministic Risk Funnel Specification - Running `/infographic --template risk-funnel` on identical input produces byte-identical spec files with consistent tier counts and reduction percentages
 - **US-071-4** (P0): Cross-Output Consistency - Security report and infographic severity counts match exactly when generated from the same threat model artifacts, enabling side-by-side use in briefings
+
+### Feature 075: Tachi Agent Best Practices
+
+**PRD**: [075-tachi-agent-best-practices](../02_PRD/075-tachi-agent-best-practices-2026-03-31.md)
+**Delivered**: 2026-03-31 | **PR**: #76 | **Tasks**: 29/29 complete | **Stories**: 4/4 passing
+
+- **US-075-1** (P1): Skill Extraction for Methodology Agents - Domain knowledge (scoring schemas, detection patterns, dispatch rules) extracted from orchestrator, risk-scorer, and control-analyzer into on-demand skill files, bringing all three methodology agents to or below the 1,000-line cap
+- **US-075-2** (P2): Claude 4.6 Tone Audit - All 17 tachi agents audited for aggressive emphasis patterns, tool restrictions added to frontmatter, description fields reviewed for delegation routing quality, and data-top ordering verified
+- **US-075-3** (P2): Threat-Report Trim - Threat-report agent trimmed to at or below the 800-line Report tier cap
+- **US-075-4** (P3): Best Practices Guide and Compliance Table - Shared _TACHI_AGENT_BEST_PRACTICES.md created with tier definitions (Leaf 300, Report 800, Methodology 1,000), extraction checklist, 8-criterion quality checklist, and post-refactor compliance table confirming all agents within caps

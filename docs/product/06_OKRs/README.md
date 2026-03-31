@@ -1,6 +1,6 @@
 # OKRs (Objectives and Key Results) - tachi
 
-**Last Updated**: 2026-03-30
+**Last Updated**: 2026-03-31
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -160,3 +160,4 @@ OKRs align the team around measurable goals. They answer:
 | 2026-03-28 | F-053: Risk Reduction Funnel | [053](../02_PRD/053-risk-reduction-funnel-2026-03-28.md) | New `risk-funnel` infographic template visualizing progressive risk reduction through the tachi pipeline as a 4-tier vertical funnel (threats identified -> inherent risk scored -> controls applied -> residual risk). Supports graceful degradation: 4-tier from compensating-controls.md, 3-tier from risk-scores.md, 1-tier from threats.md. Metrics sidebar with risk reduction percentage and control coverage. |
 | 2026-03-30 | F-067: Deterministic Report Data Extraction | [067](../02_PRD/067-deterministic-report-data-extraction-2026-03-30.md) | Replaced LLM-based markdown parsing with deterministic Python script (scripts/extract-report-data.py) for `/security-report` data extraction. 3-tier severity source selection, internal consistency validation, scope data extraction. Report-assembler agent updated to invoke script instead of inline parsing. Fixes non-deterministic output where identical inputs produced varying severity counts (0-20 Critical) and risk levels (HIGH/CRITICAL). |
 | 2026-03-30 | F-071: Deterministic Infographic Extraction | [071](../02_PRD/071-deterministic-infographic-extraction-2026-03-30.md) | Replaced LLM-based data extraction in threat-infographic agent with deterministic Python script (scripts/extract-infographic-data.py). Shared tachi_parsers.py module extracted from extract-report-data.py. Produces byte-identical JSON output for baseball card, system architecture, and risk funnel templates. Ensures cross-output consistency between infographics and security reports. Completes deterministic extraction across all tachi pipelines. |
+| 2026-03-31 | F-075: Tachi Agent Best Practices | [075](../02_PRD/075-tachi-agent-best-practices-2026-03-31.md) | Extracted domain knowledge from 3 methodology agents (orchestrator, risk-scorer, control-analyzer) into on-demand skill files (tachi-orchestration, tachi-risk-scoring, tachi-control-analysis). Audited all 17 tachi agents for Claude 4.6 prompting best practices. Created shared _TACHI_AGENT_BEST_PRACTICES.md with tier caps and compliance table. Trimmed threat-report to 800-line cap. Unblocks #74 (baseline-aware pipeline). |

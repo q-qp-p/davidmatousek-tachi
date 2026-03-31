@@ -1,6 +1,6 @@
 # Design Patterns - tachi
 
-**Last Updated**: 2026-03-30
+**Last Updated**: 2026-03-31
 **Owner**: Architect
 
 ---
@@ -257,7 +257,7 @@ aod_state_get_governance_cache() {
 
 ### Pattern: On-Demand Reference File Segmentation
 
-**Added**: Feature 030 (Context Efficiency of /aod.run), extended to agent prompts in Feature 029 (Agent Refactoring -- Right-Size)
+**Added**: Feature 030 (Context Efficiency of /aod.run), extended to agent prompts in Feature 029 (Agent Refactoring -- Right-Size), extended to agent-to-skill domain extraction in Feature 075 (Tachi Agent Best Practices)
 **ADR**: [ADR-002](../02_ADRs/ADR-002-prompt-segmentation.md)
 
 #### Problem
@@ -310,9 +310,41 @@ adapters/claude-code/agents/
 
 **Key difference from skill-level**: Agent reference documents contain consultation-only content (templates, checklists, detailed procedures) that the agent needs at specific pipeline phases. The core prompt retains the agent's mission, dispatch logic, and structural rules. This yielded 30-41% line reductions across three agents with zero regression on 11 threat agents.
 
+#### Example 3: Agent-to-Skill Domain Knowledge Extraction (Feature 075)
+```
+# Directory structure — domain knowledge extracted from agents into standalone skills
+.claude/skills/tachi-orchestration/
+  SKILL.md                       # Level 2: metadata + loading table (36 lines)
+  references/
+    dispatch-rules.md            # Loaded at Phase 2 (Determine Threats)
+    output-schemas.md            # Loaded at Phase 1/3/4
+    sarif-specification.md       # Loaded at Phase 4 SARIF generation
+
+.claude/skills/tachi-risk-scoring/
+  SKILL.md                       # Level 2: metadata + loading table (29 lines)
+  references/
+    cvss-vectors.md              # Loaded at CVSS 3.1 base scoring phase
+    scoring-dimensions.md        # Loaded at exploitability/scalability/reachability phases
+    severity-bands.md            # Loaded at composite calculation phase
+
+.claude/skills/tachi-control-analysis/
+  SKILL.md                       # Level 2: metadata + loading table (28 lines)
+  references/
+    control-categories.md        # Loaded at Phase 3 (Detect Controls)
+    evidence-criteria.md         # Loaded at Phase 3-4 (Detect + Classify)
+    residual-risk.md             # Loaded at Phase 5 (Recommend + Calculate)
+
+# Agent loads skill reference at specific pipeline phase:
+Read `.claude/skills/tachi-orchestration/references/sarif-specification.md`
+when entering the SARIF generation step in Phase 4.
+```
+
+**Key difference from agent-level**: Domain knowledge lives in skill files rather than agent-adjacent reference files. The agent prompt retains workflow logic, structural rules, and phase sequencing. Domain data (schemas, scoring tables, detection patterns) moves to skills that can be independently versioned and discovered via the skills system. This yielded orchestrator reduction from 1,273 to 769 lines, with risk-scorer and control-analyzer both reduced to under 1,000 lines.
+
 #### When to Use
 - Skill files exceeding ~500 lines where content divides into always-needed vs. conditionally-needed
 - Agent prompts exceeding ~500 lines with pipeline-phase-specific content (templates, checklists, error handling)
+- Agent prompts containing large domain reference data (scoring tables, detection patterns, schema specifications) that can be extracted to standalone skill files
 - Skills or agents with distinct operational modes (e.g., normal vs. dry-run vs. error recovery)
 - When context window pressure limits the agent's ability to perform downstream work
 

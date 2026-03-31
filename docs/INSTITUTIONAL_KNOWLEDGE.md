@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-03-29
+**Last Updated**: 2026-03-31
 
-**Entry Count**: 15 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 16 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -306,6 +306,24 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #architecture #determinism #data-extraction #infographic
 
 **Quality Score**: 8/10
+
+---
+
+### PAT-016: On-Demand Skill Extraction for Agent Complexity Management
+
+**Added**: 2026-03-31
+**Source**: Feature 075 retrospective
+**Category**: Architecture Pattern
+
+**Pattern**: When agent prompt files exceed tier caps (Leaf ≤300, Report ≤800, Methodology ≤1,000 lines), extract domain knowledge (schemas, lookup tables, dispatch rules, scoring formulas) into dedicated skill directories with a tiered loading structure: SKILL.md (Level 2 overview + loading table) and references/ subdirectory (Level 3 on-demand files). Agents retain workflow logic and load domain knowledge via Read tool only when needed per ADR-002. This pattern reduced three methodology agents from 1,300–2,000 lines to under 1,000 lines each while maintaining identical pipeline output.
+
+**Evidence**: Feature 075 extracted domain knowledge from orchestrator (2,000→769 lines), risk-scorer (1,419→994 lines), and control-analyzer (1,367→935 lines) into three skills: tachi-orchestration, tachi-risk-scoring, tachi-control-analysis. Pipeline regression test confirmed identical threat detection, risk scoring, and control coverage. The extraction was clean because domain knowledge (reference data) and workflow logic (agent behavior) have natural separation boundaries.
+
+**When to Apply**: When any agent exceeds its tier line cap and the excess is reference data rather than workflow logic. The key indicator is content that agents consult but don't modify — schemas, lookup tables, scoring formulas, detection patterns. If the content drives conditional behavior, it belongs in the agent; if it's consulted as reference, it belongs in a skill.
+
+**Tags**: #retrospective #architecture #skill-extraction #agent-design #on-demand-loading
+
+**Quality Score**: 9/10
 
 ---
 

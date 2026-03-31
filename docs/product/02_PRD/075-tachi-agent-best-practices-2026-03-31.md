@@ -3,7 +3,7 @@ prd:
   number: "075"
   topic: tachi-agent-best-practices
   created: 2026-03-31
-  status: Approved
+  status: Delivered
   type: feature
 triad:
   pm_signoff: {agent: product-manager, date: 2026-03-31, status: APPROVED, notes: "Directly addresses context efficiency and maintainability — prerequisite for #74 baseline-aware pipeline"}
@@ -16,7 +16,7 @@ source:
 
 # Tachi Agent Best Practices — Product Requirements Document
 
-**Status**: Approved
+**Status**: Delivered
 **Created**: 2026-03-31
 **Author**: product-manager
 **Reviewers**: architect, team-lead
