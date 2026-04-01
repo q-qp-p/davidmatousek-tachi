@@ -1,6 +1,6 @@
 # User Stories - tachi
 
-**Last Updated**: 2026-03-31
+**Last Updated**: 2026-04-01
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -350,3 +350,15 @@ Each PRD should include relevant user stories:
 - **US-075-2** (P2): Claude 4.6 Tone Audit - All 17 tachi agents audited for aggressive emphasis patterns, tool restrictions added to frontmatter, description fields reviewed for delegation routing quality, and data-top ordering verified
 - **US-075-3** (P2): Threat-Report Trim - Threat-report agent trimmed to at or below the 800-line Report tier cap
 - **US-075-4** (P3): Best Practices Guide and Compliance Table - Shared _TACHI_AGENT_BEST_PRACTICES.md created with tier definitions (Leaf 300, Report 800, Methodology 1,000), extraction checklist, 8-criterion quality checklist, and post-refactor compliance table confirming all agents within caps
+
+### Feature 074: Baseline-Aware Pipeline
+
+**PRD**: [074-baseline-aware-pipeline](../02_PRD/074-baseline-aware-pipeline-2026-03-31.md)
+**Delivered**: 2026-04-01 | **PR**: #79 | **Tasks**: 36/36 complete | **Stories**: 6/6 passing
+
+- **US-074-1** (P0): Stable Re-Scan - Re-running the pipeline on an unchanged codebase produces identical finding IDs, risk scores, and finding counts with zero drift and no phantom findings
+- **US-074-2** (P0): Remediation Verification - After fixing a vulnerability, the targeted finding is marked `[RESOLVED]` with its original ID preserved for audit traceability; partial fixes produce `[UPDATED]` with revised scores
+- **US-074-3** (P0): New Threat Discovery - Fresh discovery phase finds genuinely new threats alongside carried-forward findings without anchoring bias, with category-bounded CVSS scoring (+/- 1.0 from schema defaults)
+- **US-074-4** (P1): Delta Annotations - Every finding annotated with exactly one lifecycle status (`[NEW]`, `[UNCHANGED]`, `[UPDATED]`, `[RESOLVED]`) enabling trend reporting and board-level communication
+- **US-074-5** (P1): Coverage Assurance - Coverage gate verifies minimum required threat categories are evaluated per component type, triggering targeted re-analysis for missing categories to prevent blind spots from LLM non-determinism
+- **US-074-6** (P1): Remediation SLA Tracking - Stable finding IDs and governance field preservation (risk_owner, remediation_sla) across assessment cycles enable time-to-remediate computation for compliance reporting

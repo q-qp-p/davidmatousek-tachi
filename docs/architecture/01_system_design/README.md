@@ -1358,3 +1358,152 @@ threats.md + optional artifacts (risk-scores.md, compensating-controls.md)
 |------------|---------|---------|
 | Python | 3.9+ (stdlib only) | Deterministic markdown parsing and JSON data generation; zero external dependencies |
 | JSON | N/A | Structured data interchange between extraction script and infographic agent |
+
+---
+
+### Feature 074: Baseline-Aware Pipeline
+
+**Status**: Delivered (2026-04-01) | PR #79 | 36/36 tasks complete
+
+## Components
+
+### Component 1: Schema Extensions
+
+**Files modified**: `schemas/finding.yaml`, `schemas/risk-scoring.yaml`, `schemas/compensating-controls.yaml`
+**Type**: Extended existing schemas with baseline-aware fields
+**Purpose**: Extend the finding IR chain (finding -> scored_finding -> controlled_finding) with delta tracking and score inheritance fields.
+
+| Schema | New Fields | Purpose |
+|--------|-----------|---------|
+| `finding.yaml` | `delta_status` (NEW/UNCHANGED/UPDATED/RESOLVED), `baseline_run_id` (nullable string) | Finding lifecycle tracking relative to baseline |
+| `risk-scoring.yaml` | `score_source` (inherited/fresh), `score_bounds` (min/max object, nullable) | Score inheritance for stable findings, bounded scoring for new findings |
+| `compensating-controls.yaml` | `control_carry_forward` (boolean), `rescan_scope` (full/incremental) | Control status inheritance and incremental re-scan scoping |
+
+### Component 2: Coverage Checklists Schema
+
+**File**: `schemas/coverage-checklists.yaml`
+**Type**: New file
+**Purpose**: Static configuration defining minimum required threat categories per DFD element type. Consumed by the orchestrator's coverage gate (Phase 4) to verify that all required threat categories have been evaluated for each component.
+
+6 component types:
+- **Standard DFD types** (4): external_entity (S, R), process (all 6 STRIDE), data_store (T, I, D), data_flow (T, I, D)
+- **AI subtypes** (2): llm_process (all STRIDE + llm, detected via keywords: llm, language model, gpt, claude, ai model, inference), mcp_server (all STRIDE + agentic, detected via keywords: mcp, model context protocol, tool server, plugin host)
+
+AI subtype detection takes precedence over standard type when keywords match.
+
+### Component 3: Orchestrator Agent Enhancement
+
+**File modified**: `.claude/agents/tachi/orchestrator.md`
+**Type**: Extended existing agent with 4-phase baseline pipeline
+**Purpose**: Transform the stateless OWASP pipeline into a baseline-aware pipeline with finding stability, delta annotations, and coverage assurance.
+
+New/modified phases:
+- **Phase 0 (new)**: Baseline Detection -- detect baseline from `--baseline` flag or auto-detect existing `threats.md` in output directory. Parse finding registry with fingerprint extraction. Graceful degradation to stateless mode on invalid baseline.
+- **Phase 1 (modified)**: Carry-Forward -- verify each baseline finding against current architecture, classify as UNCHANGED/UPDATED/RESOLVED. Build coverage summary (component -> covered categories).
+- **Phase 2 (modified)**: Isolated Discovery -- spawn discovery context with architecture + coverage summary only (no full finding text, preventing anchoring bias). Discover uncovered component-category pairs.
+- **Phase 3 (new)**: Merge + Dedup -- match Phase 2 findings against baseline by (component, threat_category, primaryLocationLineHash). Duplicate findings discarded (baseline version wins). New findings assigned sequential IDs continuing from highest existing per category.
+- **Phase 4 (new)**: Coverage Gate -- load `schemas/coverage-checklists.yaml`, check merged findings against required categories per component type. Flag gaps as warnings, trigger targeted re-analysis for missing categories (single pass, no retry loop).
+
+### Component 4: Risk Scorer Agent Enhancement
+
+**File modified**: `.claude/agents/tachi/risk-scorer.md`
+**Type**: Extended existing agent with delta-aware scoring
+**Purpose**: Support score inheritance for stable findings and bounded scoring for new findings.
+
+Delta-aware scoring rules:
+- **UNCHANGED**: Inherit all scores (composite, CVSS vector, governance fields) verbatim from baseline. `score_source: inherited`.
+- **UPDATED**: Re-score fresh using full 4-dimensional model. `score_source: fresh`.
+- **NEW**: Score fresh with CVSS base bounded within +/-1.0 of category defaults from `schemas/risk-scoring.yaml`. `score_source: fresh`.
+- **RESOLVED**: Retain last-known scores for historical reference.
+
+### Component 5: Control Analyzer Agent Enhancement
+
+**File modified**: `.claude/agents/tachi/control-analyzer.md`
+**Type**: Extended existing agent with incremental re-scan
+**Purpose**: Support control status carry-forward for stable findings and incremental re-scanning for changed findings.
+
+Carry-forward rules:
+- **UNCHANGED**: Carry forward control_status, control_evidence, reduction_factor, and residual_score from baseline. `control_carry_forward: true`.
+- **NEW/UPDATED**: Full re-scan against target codebase. `control_carry_forward: false`.
+- **Incremental scope**: When `rescan_scope: incremental`, only NEW and UPDATED findings trigger codebase scanning.
+
+### Component 6: Orchestration Skill Domain Knowledge
+
+**Files modified**: `.claude/skills/tachi-orchestration/SKILL.md`, `.claude/skills/tachi-risk-scoring/SKILL.md`, `.claude/skills/tachi-control-analysis/SKILL.md`
+**New file**: `.claude/skills/tachi-orchestration/references/baseline-correlation.md`
+**Type**: Extended existing skills + new reference file
+**Purpose**: Add baseline-aware domain knowledge to the three tachi methodology skills.
+
+| Skill | Updates | New Reference |
+|-------|---------|---------------|
+| `tachi-orchestration` | Baseline detection rules, finding registry format, coverage gate specification in SKILL.md | `references/baseline-correlation.md` -- file detection priority, finding registry extraction, fingerprint computation, matching algorithm with tie-breaking, delta classification rules, sequential ID assignment, baseline metadata extraction |
+| `tachi-risk-scoring` | Score inheritance rules, bounded scoring specification, score_source field derivation | None (rules added to SKILL.md) |
+| `tachi-control-analysis` | Carry-forward rules, incremental re-scan specification, rescan_scope derivation | None (rules added to SKILL.md) |
+
+### Component 7: Output Template Updates
+
+**Files modified**: All 6 output templates (3 markdown + 3 SARIF)
+**Type**: Extended with baseline-aware sections and properties
+**Purpose**: Surface delta annotations, score provenance, and control inheritance in pipeline outputs.
+
+| Template | Baseline Extensions |
+|----------|-------------------|
+| `threats.md` | Baseline frontmatter block (source, date, finding_count), delta_status column in threat tables, RESOLVED findings section, coverage gate results section |
+| `risk-scores.md` | score_source column (inherited/fresh), baseline reference in frontmatter |
+| `compensating-controls.md` | control_carry_forward column, rescan_scope in frontmatter |
+| `threats.sarif` | `baselineRunId` in partialFingerprints, `baselineState` property per result (new/unchanged/updated/absent) |
+| `risk-scores.sarif` | `score_source` property per result |
+| `compensating-controls.sarif` | `carry_forward` property per result |
+
+## Data Flow
+
+```mermaid
+flowchart TD
+    A[Architecture Input] --> B{Baseline Exists?}
+    B -->|No| C[Stateless Mode<br>Current behavior]
+    B -->|Yes| D[Phase 0: Baseline Detection]
+    
+    D --> D1[Parse baseline threats.md]
+    D1 --> D2[Extract finding registry<br>with fingerprints]
+    
+    D2 --> E[Phase 1: Carry-Forward]
+    E --> E1[Verify each finding<br>against current architecture]
+    E1 --> E2[Classify: UNCHANGED<br>UPDATED / RESOLVED]
+    E2 --> E3[Build coverage summary]
+    
+    E3 --> F[Phase 2: Isolated Discovery]
+    F --> F1[Architecture + coverage<br>summary ONLY]
+    F1 --> F2[Discover uncovered<br>component-category pairs]
+    
+    F2 --> G[Phase 3: Merge + Dedup]
+    G --> G1[Match by fingerprint]
+    G1 --> G2{Duplicate?}
+    G2 -->|Yes| G3[Discard — baseline wins]
+    G2 -->|No| G4[Assign sequential ID<br>Mark as NEW]
+    G3 --> G5[Merged Finding Set]
+    G4 --> G5
+    E2 --> G5
+    
+    G5 --> H[Phase 4: Coverage Gate]
+    H --> H1[Load coverage-checklists.yaml]
+    H1 --> H2[Check required categories<br>per component type]
+    H2 --> H3{All covered?}
+    H3 -->|Yes| H4[Pass]
+    H3 -->|No| H5[Targeted re-analysis]
+    H5 --> H4
+    
+    H4 --> I[Output Generation]
+    I --> I1[threats.md + threats.sarif<br>with delta annotations]
+    I --> I2[risk-scores.md + .sarif<br>with score inheritance]
+    I --> I3[compensating-controls.md + .sarif<br>with carry-forward]
+    
+    C --> I
+```
+
+## Tech Stack
+
+| Technology | Purpose |
+|-----------|---------|
+| Markdown + YAML | Agent definitions, skill domain knowledge, schema contracts, output templates -- no compiled code |
+| SARIF 2.1.0 `partialFingerprints` | Cross-run finding correlation via deterministic SHA-256 fingerprints |
+| YAML schema (`coverage-checklists.yaml`) | Static coverage gate configuration -- required categories per component type |

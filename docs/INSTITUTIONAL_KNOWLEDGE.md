@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-03-31
+**Last Updated**: 2026-04-01
 
-**Entry Count**: 16 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 17 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -324,6 +324,26 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #architecture #skill-extraction #agent-design #on-demand-loading
 
 **Quality Score**: 9/10
+
+---
+
+### PAT-017: Output Template Parity Requires Dedicated Validation Tasks
+
+**Date**: 2026-04-01
+**Feature**: 074 — Baseline-Aware Pipeline
+**Category**: Process / Quality Assurance
+
+**Context**: Feature 074 extended three output template pairs (threats.md/.sarif, risk-scores.md/.sarif, compensating-controls.md/.sarif) with baseline-aware sections — delta status columns, frontmatter blocks, and SARIF baselineState properties. During final validation, code review found 2 critical parity issues: the output-schemas.md checklist was missing the new baseline fields, and compensating-controls.md table columns didn't match the updated schema.
+
+**Pattern**: When a feature modifies YAML schemas that have corresponding output templates (both .md and .sarif), template parity validation must be an explicit checkpoint task — not deferred to final validation. Each schema change should trigger a paired template review: (1) does the .md template include all new schema fields in its table columns, (2) does the .sarif template include corresponding properties, and (3) does the output-schemas.md checklist reflect the additions. Template parity checks should be built into phase checkpoints, not discovered at the end.
+
+**Result**: The 2 critical parity issues were caught in final validation and fixed before merge. However, catching them earlier (at the Phase 1 checkpoint after schema extensions) would have prevented the code review round-trip. Future features touching schemas should add a "template parity audit" task at the end of each schema-modifying phase.
+
+**When to Apply**: Any feature that extends or modifies YAML schemas with downstream output templates. Add explicit template parity tasks after schema modification phases. The key indicator is multiple representation formats of the same data model — if a field exists in a schema, it must exist in every template that renders that schema.
+
+**Tags**: #retrospective #quality #template-parity #schemas
+
+**Quality Score**: 8/10
 
 ---
 

@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-01T00:38:03Z.
+> Auto-generated from GitHub Issues on 2026-04-01T14:34:03Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -34,7 +34,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| — | *No items in this stage* | | |
+| #74 | Feature: Baseline-aware pipeline — stable finding lifecycle across runs | 2026-04-01 | — | 2026-04-01 |
 
 ## Untracked
 
@@ -42,7 +42,7 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #74 | Feature: Baseline-aware pipeline — stable finding lifecycle across runs | OPEN | 2026-03-31 |
+| #78 | Refactor tachi agents: enforce tier caps, add model fields, optimize context loading | OPEN | 2026-04-01 |
 | #51 | fix: Gemini heat map renders incorrect severity labels for medium-risk components | OPEN | 2026-03-28 |
 | #46 | Sync upstream AOD Kit — merge new skills, commands, rules, and guides | OPEN | 2026-03-28 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
