@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-02T11:54:24Z.
+> Auto-generated from GitHub Issues on 2026-04-02T11:56:20Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -35,7 +35,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| #78 | Refactor tachi agents: enforce tier caps, add model fields, optimize context loading | 2026-04-02 | — | 2026-04-02 |
+| — | *No items in this stage* | | |
 
 ## Untracked
 
