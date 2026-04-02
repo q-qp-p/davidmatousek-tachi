@@ -1,6 +1,6 @@
 # User Stories - tachi
 
-**Last Updated**: 2026-04-01
+**Last Updated**: 2026-04-02
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -362,3 +362,14 @@ Each PRD should include relevant user stories:
 - **US-074-4** (P1): Delta Annotations - Every finding annotated with exactly one lifecycle status (`[NEW]`, `[UNCHANGED]`, `[UPDATED]`, `[RESOLVED]`) enabling trend reporting and board-level communication
 - **US-074-5** (P1): Coverage Assurance - Coverage gate verifies minimum required threat categories are evaluated per component type, triggering targeted re-analysis for missing categories to prevent blind spots from LLM non-determinism
 - **US-074-6** (P1): Remediation SLA Tracking - Stable finding IDs and governance field preservation (risk_owner, remediation_sla) across assessment cycles enable time-to-remediate computation for compliance reporting
+
+### Feature 078: Agent Context Optimization
+
+**PRD**: [078-agent-context-optimization](../02_PRD/078-agent-context-optimization-2026-04-01.md)
+**Delivered**: 2026-04-02 | **PR**: #81 | **Tasks**: 58/58 complete | **Stories**: 5/5 passing
+
+- **US-078-1** (P0): Methodology Agent Restructuring - Orchestrator, risk-scorer, and control-analyzer restructured from monolithic prompts to lean agent definitions with on-demand skill references, reducing prompt sizes by 40-60%
+- **US-078-2** (P0): Report Agent Restructuring - Report-assembler, threat-report, and threat-infographic agents restructured to lean definitions with extracted skill reference files for brand assets, Typst contracts, and template specifications
+- **US-078-3** (P1): Model Field Assignment - All 17 tachi agent definitions updated with explicit model fields for optimal delegation routing across agent tiers (Leaf, Report, Methodology)
+- **US-078-4** (P1): Best Practices Documentation Update - Shared _TACHI_AGENT_BEST_PRACTICES.md updated with restructuring patterns, skill reference conventions, and compliance verification for all 17 agents
+- **US-078-5** (P0): Zero Regression Validation - All restructured agents validated against example threat models with equivalent output structure, severity counts, and SARIF compliance preserved

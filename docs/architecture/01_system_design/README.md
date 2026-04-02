@@ -1514,14 +1514,64 @@ flowchart TD
 
 ## Components
 
-### Agent Definitions (6 files restructured)
-Files in `.claude/agents/tachi/` containing orchestration logic only. Each agent retains: role identity (2-3 lines), workflow skeleton (phases, decision points), skill loading instructions (navigation table + MANDATORY Read at branch points), output format summary, constraints and error handling.
+### Component 1: Agent Definitions (6 files restructured)
 
-### Skill Reference Files (15 new + 6 enhanced)
-Domain knowledge files in `.claude/skills/tachi-*/references/` loaded on-demand via Read tool. Categories: detection patterns, scoring schemas, output templates, format specifications, construction rules, visual design tokens.
+**Files**: `.claude/agents/tachi/{orchestrator,risk-scorer,control-analyzer,threat-report,threat-infographic,report-assembler}.md`
+**Type**: Restructured existing files
+**Purpose**: Convert 6 monolithic agent prompts to lean definitions containing only orchestration logic, with domain knowledge loaded on-demand from skill references.
 
-### Shared References (3 new files)
-Content used by multiple agents stored once in `tachi-shared/references/`. Consumers: orchestrator + risk-scorer + control-analyzer (severity bands), all STRIDE agents + orchestrator (STRIDE categories), all threat agents (finding format).
+Each restructured agent retains: role identity (2-3 lines), workflow skeleton (phases, decision points), skill loading instructions (navigation table + MANDATORY Read at branch points), output format summary, constraints and error handling. Domain-specific content (scoring tables, template specifications, detection patterns, formatting rules) moved to skill reference files.
+
+| Agent | Before | After | Reduction | Skill Target |
+|-------|--------|-------|-----------|--------------|
+| orchestrator | 1,286 lines | ~500 lines | ~61% | tachi-orchestration |
+| risk-scorer | 1,093 lines | ~500 lines | ~54% | tachi-risk-scoring |
+| control-analyzer | 973 lines | ~500 lines | ~49% | tachi-control-analysis |
+| threat-report | 800 lines | ~300 lines | ~63% | tachi-threat-reporting |
+| threat-infographic | 775 lines | ~300 lines | ~61% | tachi-infographics |
+| report-assembler | 654 lines | ~300 lines | ~54% | tachi-report-assembly |
+
+### Component 2: Skill Reference Files (15 new + 6 enhanced)
+
+**Directories**: `.claude/skills/tachi-*/references/`
+**Type**: New reference files in 4 new skill directories + enhanced references in 2 existing skill directories
+**Purpose**: Domain knowledge loaded on-demand via Read tool at specific pipeline phases, following the [On-Demand Reference File Segmentation](../03_patterns/README.md#pattern-on-demand-reference-file-segmentation) pattern.
+
+New skill directories (Feature 078):
+- `tachi-report-assembly/references/` -- 3 files: brand-asset-guidelines.md, typst-artifacts.md, typst-template-contract.md
+- `tachi-threat-reporting/references/` -- 3 files: narrative-templates.md, attack-tree-construction.md, attack-tree-examples.md
+- `tachi-infographics/references/` -- 4 files: infographic-specifications.md, template-specific-formats.md, gemini-prompt-construction.md, visual-design-system.md
+- `tachi-shared/references/` -- 3 files: severity-bands-shared.md, stride-categories-shared.md, finding-format-shared.md
+
+Enhanced existing skill directories (Feature 078):
+- `tachi-orchestration/references/` -- 5 new files added: format-detection.md, dfd-classification.md, trust-boundaries.md, coverage-requirements.md, coverage-matrix-model.md
+- `tachi-risk-scoring/references/` -- 3 new files added: output-formatting.md, reachability-analysis.md, trust-zones.md
+
+### Component 3: Shared Definitions (tachi-shared)
+
+**Directory**: `.claude/skills/tachi-shared/`
+**Type**: New skill directory
+**Purpose**: Single-source-of-truth reference files consumed by multiple agents, preventing cross-agent drift in severity thresholds, category definitions, and finding format specifications.
+
+| Reference | Consumers | Content |
+|-----------|-----------|---------|
+| `severity-bands-shared.md` | orchestrator, risk-scorer, control-analyzer | Severity band thresholds, SLA mapping, risk disposition rules |
+| `stride-categories-shared.md` | orchestrator, all 6 STRIDE agents | STRIDE+AI category definitions (8 categories), DFD element applicability matrix |
+| `finding-format-shared.md` | all 17 agents | Finding IR format specification, required/optional fields, validation rules |
+
+### Component 4: Model Field Governance (17 agents)
+
+**Files**: All `.claude/agents/tachi/*.md` YAML frontmatter
+**Type**: Modified existing files (additive)
+**Purpose**: Explicit `model: sonnet` field in YAML frontmatter of all 17 agent definitions, enabling intentional model-to-task matching, cost tracking, and reproducibility.
+
+Applies to: 6 STRIDE agents, 5 AI agents, orchestrator, risk-scorer, control-analyzer, threat-report, threat-infographic, report-assembler.
+
+### Component 5: Best Practices Document
+
+**File**: `.claude/agents/tachi/_TACHI_AGENT_BEST_PRACTICES.md`
+**Type**: New file
+**Purpose**: Codified conventions for agent definition structure, skill reference organization, shared definition governance, and model field assignment. Serves as contributor guide for future agent authoring.
 
 ## Data Flow
 
@@ -1530,33 +1580,39 @@ Architecture Description
         |
         v
  Orchestrator Agent (<=500 lines)
-  -- Read --> tachi-orchestration/references/
-  -- Read --> tachi-shared/references/
+  -- Read --> tachi-orchestration/references/   (9 files)
+  -- Read --> tachi-shared/references/          (3 files)
         |
         v (dispatches)
  11 Leaf Agents (<=200 lines, unchanged behavior)
+  -- Read --> tachi-shared/references/          (finding format, categories)
         |
         v (findings)
  Risk-Scorer Agent (<=500 lines)
-  -- Read --> tachi-risk-scoring/references/
+  -- Read --> tachi-risk-scoring/references/    (6 files)
+  -- Read --> tachi-shared/references/          (severity bands)
         |
         v (scored findings)
  Control-Analyzer Agent (<=500 lines)
-  -- Read --> tachi-control-analysis/references/
+  -- Read --> tachi-control-analysis/references/ (3 files)
+  -- Read --> tachi-shared/references/          (severity bands)
         |
         v (controls + residual risk)
- Report Agents x3 (<=300 lines each)
-  -- Read --> tachi-report-assembly/references/
-  -- Read --> tachi-threat-reporting/references/
-  -- Read --> tachi-infographics/references/
+ Threat-Report Agent (<=300 lines)
+  -- Read --> tachi-threat-reporting/references/ (3 files)
+        |
+ Threat-Infographic Agent (<=300 lines)
+  -- Read --> tachi-infographics/references/    (4 files)
+        |
+ Report-Assembler Agent (<=300 lines)
+  -- Read --> tachi-report-assembly/references/ (3 files)
 ```
 
 ## Tech Stack
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
-| Agent definitions | Markdown + YAML frontmatter | Orchestration logic, workflow skeletons |
+| Agent definitions | Markdown + YAML frontmatter (with `model:` field) | Orchestration logic, workflow skeletons, model governance |
 | Skill references | Markdown | Domain knowledge, templates, patterns |
-| Data files | YAML | Static lookup tables (CVSS, severity, dispatch) |
-| Shared references | Markdown | Deduplicated cross-agent content |
+| Shared references | Markdown | Deduplicated cross-agent definitions (severity, categories, format) |
 | Regression testing | Pipeline output comparison | Structural equivalence verification |

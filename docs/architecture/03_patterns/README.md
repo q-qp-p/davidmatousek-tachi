@@ -1,6 +1,6 @@
 # Design Patterns - tachi
 
-**Last Updated**: 2026-03-31
+**Last Updated**: 2026-04-02
 **Owner**: Architect
 
 ---
@@ -257,7 +257,7 @@ aod_state_get_governance_cache() {
 
 ### Pattern: On-Demand Reference File Segmentation
 
-**Added**: Feature 030 (Context Efficiency of /aod.run), extended to agent prompts in Feature 029 (Agent Refactoring -- Right-Size), extended to agent-to-skill domain extraction in Feature 075 (Tachi Agent Best Practices)
+**Added**: Feature 030 (Context Efficiency of /aod.run), extended to agent prompts in Feature 029 (Agent Refactoring -- Right-Size), extended to agent-to-skill domain extraction in Feature 075 (Tachi Agent Best Practices), extended to shared cross-agent definitions and full-pipeline agent restructuring in Feature 078 (Agent Context Optimization)
 **ADR**: [ADR-002](../02_ADRs/ADR-002-prompt-segmentation.md)
 
 #### Problem
@@ -341,12 +341,49 @@ when entering the SARIF generation step in Phase 4.
 
 **Key difference from agent-level**: Domain knowledge lives in skill files rather than agent-adjacent reference files. The agent prompt retains workflow logic, structural rules, and phase sequencing. Domain data (schemas, scoring tables, detection patterns) moves to skills that can be independently versioned and discovered via the skills system. This yielded orchestrator reduction from 1,273 to 769 lines, with risk-scorer and control-analyzer both reduced to under 1,000 lines.
 
+#### Example 4: Shared Cross-Agent Definitions and Full-Pipeline Restructuring (Feature 078)
+```
+# Directory structure — shared definitions consumed by multiple agents
+.claude/skills/tachi-shared/
+  SKILL.md                           # Level 2: metadata + loading table
+  references/
+    severity-bands-shared.md         # Loaded by orchestrator, risk-scorer, control-analyzer
+    stride-categories-shared.md      # Loaded by orchestrator, all 6 STRIDE agents
+    finding-format-shared.md         # Loaded by all 17 agents
+
+# New skill directories for report agents (Feature 078)
+.claude/skills/tachi-report-assembly/
+  SKILL.md
+  references/
+    brand-asset-guidelines.md        # Loaded at PDF assembly phase
+    typst-artifacts.md               # Loaded at artifact detection phase
+    typst-template-contract.md       # Loaded at data variable binding phase
+
+.claude/skills/tachi-threat-reporting/
+  SKILL.md
+  references/
+    narrative-templates.md           # Loaded at narrative generation phase
+    attack-tree-construction.md      # Loaded at attack tree generation phase
+    attack-tree-examples.md          # Loaded as reference during tree construction
+
+.claude/skills/tachi-infographics/
+  SKILL.md
+  references/
+    infographic-specifications.md    # Loaded at specification generation phase
+    template-specific-formats.md     # Loaded per template type selection
+    gemini-prompt-construction.md    # Loaded at image generation phase
+    visual-design-system.md          # Loaded at visual encoding phase
+```
+
+**Key difference from agent-to-skill**: Shared definitions introduce a cross-cutting concern -- content that multiple independent agents need but that must remain consistent across all consumers. The `tachi-shared` skill acts as a single-source-of-truth hub, preventing drift that occurred when severity bands, category definitions, and finding formats were duplicated across agent prompts. Additionally, Feature 078 applied the agent-to-skill extraction to the remaining 3 report agents (report-assembler, threat-report, threat-infographic), achieving full-pipeline coverage. Combined with model field governance (`model: sonnet` in all 17 agent YAML frontmatter), this yielded 40-60% prompt size reduction across all 6 restructured agents.
+
 #### When to Use
 - Skill files exceeding ~500 lines where content divides into always-needed vs. conditionally-needed
 - Agent prompts exceeding ~500 lines with pipeline-phase-specific content (templates, checklists, error handling)
 - Agent prompts containing large domain reference data (scoring tables, detection patterns, schema specifications) that can be extracted to standalone skill files
 - Skills or agents with distinct operational modes (e.g., normal vs. dry-run vs. error recovery)
 - When context window pressure limits the agent's ability to perform downstream work
+- When multiple agents share identical reference data (severity bands, category definitions, output formats) that must remain consistent -- extract to a shared skill
 
 #### When NOT to Use
 - Files under ~500 lines where the entire content is routinely needed

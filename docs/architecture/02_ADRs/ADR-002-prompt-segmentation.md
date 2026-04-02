@@ -125,6 +125,7 @@ The core SKILL.md contains a Navigation table mapping each section to its refere
 ## Related Decisions
 
 - ADR-001: Atomic State Persistence (state file format extended with `governance_cache`)
+- ADR-019: Shared Cross-Agent Definitions and Model Field Governance (extends this pattern to cross-agent shared content and model assignment, Feature 078)
 - Bash 3.2 compatibility constraint (compound helpers in run-state.sh, see KB Entry 6)
 
 ---

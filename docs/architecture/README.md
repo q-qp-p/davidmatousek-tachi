@@ -1,6 +1,6 @@
 # Architecture Documentation - tachi
 
-**Last Updated**: 2026-03-25
+**Last Updated**: 2026-04-02
 **Owner**: Architect
 **Status**: Template
 
@@ -41,6 +41,7 @@ Significant technical decisions with context and trade-offs
 - `ADR-013-sarif-output-format-adoption.md` - SARIF 2.1.0 output format for GitHub Code Scanning integration (Feature 012)
 - `ADR-014-gemini-api-optional-image-generation.md` - Optional Gemini API image generation for infographic agent (Feature 018)
 - `ADR-015-platform-adapter-hub-and-spoke-distribution.md` - Hub-and-spoke distribution pattern for platform adapters (Feature 021)
+- `ADR-019-shared-definitions-and-model-field-governance.md` - Shared cross-agent definitions and model field governance (Feature 078)
 - `ADR-NNN-decision-title.md` - Individual ADRs
 
 ### 03_patterns/

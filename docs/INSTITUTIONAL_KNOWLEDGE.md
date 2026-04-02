@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-04-01
+**Last Updated**: 2026-04-02
 
-**Entry Count**: 17 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 18 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -344,6 +344,26 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #quality #template-parity #schemas
 
 **Quality Score**: 8/10
+
+---
+
+### PAT-018: Prototype-First Gates Prevent Rework at Scale
+
+**Date**: 2026-04-02
+**Feature**: 078 — Agent Context Optimization
+**Category**: Process / Risk Mitigation
+
+**Context**: Feature 078 restructured 6 tachi agents from monolithic prompts (650-1,286 lines) to lean definitions (~150-180 lines) with on-demand skill references. The plan included a P0 prototype gate: restructure the risk-scorer agent first, validate the pattern works end-to-end, then scale to the remaining 5 agents.
+
+**Pattern**: When applying a structural pattern change across multiple similar components, implement one component first as a prototype with an explicit validation gate before proceeding. The P0 gate on risk-scorer caught issues with reference file granularity and Read instruction formatting that would have required rework across all 6 agents if discovered later. The gate added ~2 hours but prevented an estimated 4-6 hours of rework at scale.
+
+**Result**: P0 checkpoint was APPROVED_WITH_CONCERNS (non-blocking). Issues caught: reference file organization needed finer granularity than initially planned, and agent Read instructions needed explicit file path patterns. These learnings were applied cleanly to all subsequent agents (orchestrator, control-analyzer, report-assembler, threat-report, threat-infographic), resulting in P2 checkpoint APPROVED with 0 findings.
+
+**When to Apply**: Any feature that applies the same structural change to 3+ similar components. The prototype gate is most valuable when the pattern involves new architectural concepts (like the lean agent + skill reference pattern) where the first implementation reveals design assumptions that need adjustment.
+
+**Tags**: #retrospective #process #prototype-gate #agent-restructuring #risk-mitigation
+
+**Quality Score**: 9/10
 
 ---
 
