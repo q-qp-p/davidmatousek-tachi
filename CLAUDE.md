@@ -23,7 +23,7 @@ tachi/
 ├── examples/          → Reference threat models (architecture + threats.md pairs)
 ├── specs/             → Archived feature artifacts (per-feature history)
 ├── docs/              → Product, architecture, devops docs
-├── scripts/           → init.sh, check.sh
+├── scripts/           → init.sh, check.sh, install.sh
 ├── stacks/            → Stack packs (conventions, personas, scaffolds)
 └── CLAUDE.md          → AI agent context
 ```

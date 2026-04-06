@@ -218,6 +218,7 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 | `.aod/scripts/bash/github-lifecycle.sh` | GitHub Issue label management for stage transitions | Pre-022 |
 | `.aod/scripts/bash/backlog-regenerate.sh` | Regenerate product backlog from GitHub Issues | Pre-022 |
 | `scripts/generate-adapter-version.sh` | Generate `VERSION` manifest for platform adapters with source commit SHA, timestamp, and per-agent SHA-256 checksums for drift detection | Feature 021 |
+| `scripts/install.sh` | Bash 3.2+ install script that copies all distributable files from tachi source to target project using INSTALL_MANIFEST.md machine-parseable section; supports `--source`, `--version` (git tag checkout with trap cleanup), and `--help` flags | Feature 066 |
 
 ### CLI Dependencies
 

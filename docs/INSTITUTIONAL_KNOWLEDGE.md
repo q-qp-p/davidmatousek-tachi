@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-04-02
+**Last Updated**: 2026-04-06
 
-**Entry Count**: 18 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 19 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -364,6 +364,26 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #process #prototype-gate #agent-restructuring #risk-mitigation
 
 **Quality Score**: 9/10
+
+---
+
+### PAT-019: Manifest-Driven Scripts Complete Faster Than Estimated
+
+**Date**: 2026-04-06
+**Feature**: 066 — Install Script and Version Tagging
+**Category**: Process / Estimation
+
+**Context**: Feature 066 replaced 6+ manual `cp -r` commands with a single `scripts/install.sh` that parses a machine-parseable manifest section in `INSTALL_MANIFEST.md`. The PRD estimated 7-10 hours; team-lead estimated 6.25 hours with parallelism. Implementation completed in a single session.
+
+**Pattern**: When distributable paths are pre-defined in a parseable manifest and the spec contains exhaustive acceptance criteria with concrete Given/When/Then scenarios, bash script implementation becomes a translation exercise rather than a design exercise. Each acceptance scenario maps directly to a function or code block, eliminating ambiguity during coding.
+
+**Result**: 19/20 tasks completed in a single session (T018 deferred by design — post-merge git tag). All 4 architect checkpoints passed. The spec's 7 success criteria and 5 edge cases provided complete coverage without any mid-implementation design decisions.
+
+**When to Apply**: Any automation feature where (a) the input data is already structured (manifest, config, schema), (b) the spec enumerates all edge cases with concrete scenarios, and (c) the tool has no external dependencies beyond standard Unix tools. Less applicable to features requiring iterative design discovery or external API integration.
+
+**Tags**: #retrospective #process #estimation #bash #manifest-driven #translation-not-design
+
+**Quality Score**: 8/10
 
 ---
 
