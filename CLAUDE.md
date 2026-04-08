@@ -104,6 +104,11 @@ When invoked as a subagent (via Agent tool), return ONLY:
   - Downstream propagation: risk-scorer, control-analyzer, threat-report
   - New shared reference: `.claude/skills/tachi-shared/references/maestro-layers-shared.md`
   - All 6 example outputs regenerated with MAESTRO layer columns
+- **Feature 091**: MAESTRO Infographic Templates and PDF Report Section
+  - Two new MAESTRO-aware infographic templates: `maestro-stack` (layered stack diagram) and `maestro-heatmap` (layer x severity heat map)
+  - New Typst page `maestro-findings.typ` for MAESTRO Findings section in PDF security report
+  - MAESTRO data extraction in `extract-infographic-data.py` and `extract-report-data.py`
+  - `maestro` shorthand dispatch in `/infographic` command; all gated by `has-maestro-data` for backward compatibility
 - **Feature 086**: Automated Release Tagging via GitHub Actions
   - release-please workflow for version tagging and CHANGELOG generation on merge to main
   - New files: `.github/workflows/release-please.yml`, `release-please-config.json`, `.release-please-manifest.json`

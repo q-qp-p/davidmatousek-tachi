@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-08T16:51:34Z.
+> Auto-generated from GitHub Issues on 2026-04-08T18:12:12Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -8,6 +8,7 @@
 
 | # | Title | ICE | Evidence | Updated |
 |---|-------|-----|----------|---------|
+| #98 | MAESTRO coverage matrix — show which layers have threat coverage | — | — | 2026-04-08 |
 | #82 | Enrich threat detection quality via skill-referenced domain knowledge for 11 threat agents | Impact: 9, Confidence: 9, Effort: 6 = **24** | - **Retro finding**: Identified during delivery retrospec... | 2026-04-07 |
 | #69 | Expand example datasets for broader test coverage | — | — | 2026-03-30 |
 | #62 | Custom brand presets — user-definable brand identity via config file | — | — | 2026-03-29 |
@@ -36,7 +37,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| — | *No items in this stage* | | |
+| #91 | MAESTRO infographic templates and PDF report section | 2026-04-08 | — | 2026-04-08 |
 
 ## Untracked
 
@@ -44,7 +45,6 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #91 | MAESTRO infographic templates and PDF report section | OPEN | 2026-04-08 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
 | #18 | Feature: Threat Infographic Agent | CLOSED | 2026-03-23 |
 | #15 | Feature 007: Threat Report Agent & Attack Trees | CLOSED | 2026-03-23 |

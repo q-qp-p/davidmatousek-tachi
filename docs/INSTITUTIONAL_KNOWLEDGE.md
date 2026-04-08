@@ -5,7 +5,7 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-04-08
 
-**Entry Count**: 21 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 22 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -430,6 +430,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #architecture #taxonomy #pipeline #maestro
 
 **Quality Score**: 8/10
+
+---
+
+### KB-022: Existing Template Patterns Accelerate New Template Development
+
+**Date**: 2026-04-08
+**Category**: Architecture
+**Source**: Feature 091 retrospective
+**Severity**: Informational
+
+**Problem**: Estimating effort for new infographic templates and PDF report pages when extending an established pattern.
+
+**Root Cause**: The infographic template system (mandatory sections: layout, style, color palette, typography, zone specs, prompt template, API config, accessibility) and the Typst single-export-function pattern provide strong structural constraints. When new templates follow existing patterns, the creative design space is limited to data mapping and visual layout — not system architecture.
+
+**Solution**: Feature 091 added two new infographic templates (maestro-stack, maestro-heatmap), one new Typst page (maestro-findings), and extended two extraction scripts. All 25 tasks completed in a single session (estimated 3 days, actual <1 day). The 3-wave parallel strategy after the foundational extraction phase maximized throughput.
+
+**Result**: Implementation was significantly faster than estimated. No surprises. The extraction script extension (MAESTRO data parsing) was the most code-intensive part, but followed established patterns from Feature 071.
+
+**When to Apply**: Future infographic templates or PDF report pages that follow existing patterns. Estimate aggressively — the template architecture absorbs complexity. Reserve longer estimates for templates that require novel extraction logic or visual formats.
+
+**Tags**: #retrospective #architecture #templates #infographics #estimation
+
+**Quality Score**: 7/10
 
 ---
 
