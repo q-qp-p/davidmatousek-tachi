@@ -1,6 +1,6 @@
 # OKRs (Objectives and Key Results) - tachi
 
-**Last Updated**: 2026-04-02
+**Last Updated**: 2026-04-08
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -164,3 +164,4 @@ OKRs align the team around measurable goals. They answer:
 | 2026-04-01 | F-074: Baseline-Aware Pipeline | [074](../02_PRD/074-baseline-aware-pipeline-2026-03-31.md) | Baseline-aware threat detection pipeline with 4-phase orchestration (carry-forward, isolated discovery, merge/dedup, coverage gate). Correlates findings across runs with stable IDs via SARIF fingerprints. Delta annotations (`[NEW]`, `[UNCHANGED]`, `[UPDATED]`, `[RESOLVED]`) on all outputs. Coverage checklists per STRIDE category. Extended orchestrator, risk-scorer, and control-analyzer agents. New coverage-checklists schema. Updated all output templates and SARIF properties. Unblocks #55 (Security Progression Summary). |
 | 2026-04-02 | F-078: Agent Context Optimization | [078](../02_PRD/078-agent-context-optimization-2026-04-01.md) | Restructured 6 tachi agents (orchestrator, risk-scorer, control-analyzer, report-assembler, threat-report, threat-infographic) from monolithic prompts to lean definitions with on-demand skill references. Created 4 skill directories (tachi-orchestration, tachi-risk-scoring, tachi-report-assembly, tachi-shared) with 25+ granular reference files. Added explicit model fields to all 17 agent definitions. Reduced agent prompt sizes by 40-60%. Zero regression on threat model outputs. |
 | 2026-04-06 | F-086: Automated Release Tagging via GitHub Actions | [086](../02_PRD/086-automated-release-tagging-via-github-actions-2026-04-06.md) | Google release-please GitHub Action for automated version tagging from conventional commits. Deliverables: release-please.yml workflow, release-please-config.json, .release-please-manifest.json (baseline v4.0.0), README Releases section. Eliminates manual `git tag` commands; maintainer controls release timing via Release PR merge. |
+| 2026-04-08 | F-084: MAESTRO Layer Mapping | [084](../02_PRD/084-maestro-layer-mapping-2026-04-07.md) | CSA MAESTRO seven-layer taxonomy overlay for all threat findings. New schema field, shared reference, orchestrator keyword classification in Phase 1, SARIF tags, downstream agent propagation, layer-based risk summary. All 6 example outputs regenerated. 4 user stories delivered. |

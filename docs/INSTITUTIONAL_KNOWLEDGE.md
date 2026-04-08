@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-04-06
+**Last Updated**: 2026-04-08
 
-**Entry Count**: 20 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 21 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -407,6 +407,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #process #cicd #configuration #governance
 
 **Quality Score**: 7/10
+
+---
+
+### KB-021: Taxonomy Overlay Features Propagate Smoothly Through Finding IR
+
+**Date**: 2026-04-08
+**Category**: Architecture
+**Source**: Feature 084 retrospective
+**Severity**: Informational
+
+**Problem**: Uncertainty about whether adding a new classification dimension (MAESTRO layers) to the existing pipeline would require significant refactoring of downstream agents and output formats.
+
+**Root Cause**: The finding IR was designed with optional extensible fields, and downstream agents already follow a passive propagation pattern — they include whatever fields exist in the finding without gating on them. This architecture makes taxonomy overlays a natural fit.
+
+**Solution**: Feature 084 added `maestro_layer` as an optional field in the finding schema, classified components in Phase 1 via keyword matching, and let the field flow passively to all downstream outputs. No agent detection logic, scoring formulas, or dispatch rules required changes. All 22 tasks completed in 2 days across 5 waves.
+
+**Result**: Implementation was smoother and faster than the 2-3 day estimate. The keyword-based classification achieved 95.2% accuracy on existing examples. Example regeneration validated the full pipeline end-to-end in a single pass.
+
+**When to Apply**: Any future feature that adds a classification dimension to findings (e.g., compliance framework mapping, kill-chain phase tagging). Follow the same pattern: define taxonomy in shared reference, classify in Phase 1, extend schema with optional field, let downstream agents propagate passively.
+
+**Tags**: #retrospective #architecture #taxonomy #pipeline #maestro
+
+**Quality Score**: 8/10
 
 ---
 

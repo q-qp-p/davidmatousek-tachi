@@ -98,6 +98,12 @@ When invoked as a subagent (via Agent tool), return ONLY:
 - Review `agent-assignments.md` for workload distribution
 
 ## Recent Changes
+- **Feature 084**: MAESTRO Layer Mapping (CSA seven-layer taxonomy for agentic AI)
+  - New `maestro_layer` field in `schemas/finding.yaml` (schema_version 1.1 to 1.2)
+  - Orchestrator Phase 1 keyword classification, finding inheritance, SARIF tags
+  - Downstream propagation: risk-scorer, control-analyzer, threat-report
+  - New shared reference: `.claude/skills/tachi-shared/references/maestro-layers-shared.md`
+  - All 6 example outputs regenerated with MAESTRO layer columns
 - **Feature 086**: Automated Release Tagging via GitHub Actions
   - release-please workflow for version tagging and CHANGELOG generation on merge to main
   - New files: `.github/workflows/release-please.yml`, `release-please-config.json`, `.release-please-manifest.json`

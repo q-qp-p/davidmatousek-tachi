@@ -1,6 +1,6 @@
 # User Stories - tachi
 
-**Last Updated**: 2026-04-02
+**Last Updated**: 2026-04-08
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -373,3 +373,13 @@ Each PRD should include relevant user stories:
 - **US-078-3** (P1): Model Field Assignment - All 17 tachi agent definitions updated with explicit model fields for optimal delegation routing across agent tiers (Leaf, Report, Methodology)
 - **US-078-4** (P1): Best Practices Documentation Update - Shared _TACHI_AGENT_BEST_PRACTICES.md updated with restructuring patterns, skill reference conventions, and compliance verification for all 17 agents
 - **US-078-5** (P0): Zero Regression Validation - All restructured agents validated against example threat models with equivalent output structure, severity counts, and SARIF compliance preserved
+
+### Feature 084: MAESTRO Layer Mapping
+
+**PRD**: [084-maestro-layer-mapping](../02_PRD/084-maestro-layer-mapping-2026-04-07.md)
+**Delivered**: 2026-04-08 | **PR**: #92 | **Tasks**: 22/22 complete | **Stories**: 4/4 passing
+
+- **US-084-1** (P0): Layer-Tagged Threat Findings - Each finding in STRIDE and AI threat tables includes a MAESTRO Layer column, derived from component classification in Phase 1 with "Unclassified" default for unmatched components
+- **US-084-2** (P0): Phase 1 Component Classification - Orchestrator classifies each component by MAESTRO layer using keyword matching against name, description, and DFD type during Phase 1 (Scope), with dispatch table showing MAESTRO Layer column
+- **US-084-3** (P0): SARIF Layer Tags - SARIF results include `maestro-layer:{layer-name}` in properties.tags array and `maestro-layer` key in properties for security tooling filtering
+- **US-084-4** (P1): Layer-Based Risk Summary - Risk summary in threats.md includes "Risk by MAESTRO Layer" subsection showing finding count and highest severity per layer, omitting layers with zero findings

@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-07T23:22:23Z.
+> Auto-generated from GitHub Issues on 2026-04-08T15:15:56Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -37,7 +37,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| — | *No items in this stage* | | |
+| #84 | MAESTRO layer mapping — CSA seven-layer taxonomy overlay for threat findings | 2026-04-08 | — | 2026-04-08 |
 
 ## Untracked
 
@@ -45,7 +45,6 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #84 | MAESTRO layer mapping — CSA seven-layer taxonomy overlay for threat findings | OPEN | 2026-04-07 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
 | #18 | Feature: Threat Infographic Agent | CLOSED | 2026-03-23 |
 | #15 | Feature 007: Threat Report Agent & Attack Trees | CLOSED | 2026-03-23 |
