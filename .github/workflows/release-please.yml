@@ -16,5 +16,3 @@ jobs:
     steps:
       - name: Run release-please
         uses: googleapis/release-please-action@v4
-        with:
-          release-type: simple
