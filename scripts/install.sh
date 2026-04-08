@@ -189,6 +189,8 @@ done < <(parse_manifest "$MANIFEST_FILE")
 
 INSTALLED_VERSION="untagged"
 if command -v git >/dev/null 2>&1 && [ -d "${SOURCE_DIR}/.git" ]; then
+  # Fetch tags so git describe finds release-please tags created on GitHub
+  git -C "$SOURCE_DIR" fetch --tags --quiet 2>/dev/null || true
   INSTALLED_VERSION="$(git -C "$SOURCE_DIR" describe --tags --always 2>/dev/null || echo "untagged")"
 fi
 
