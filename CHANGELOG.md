@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Agentic Oriented Development Kit (formerly Product-Led Spec Kit) will be documented in this file.
+All notable changes to tachi will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -9,595 +9,266 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [4.5.0](https://github.com/davidmatousek/tachi/compare/v4.4.2...v4.5.0) (2026-04-09)
 
+### Added
 
-### Features
+- **Attack Path Pages in PDF Reports** (Feature 112) — Each Critical and High finding with an attack tree now gets a dedicated page in the security report PDF, showing a rendered Mermaid diagram, plain-English narrative explaining the attack chain, and specific remediation steps. Pages are ordered by severity (Critical first) and introduced by an "Attack Path Analysis" section divider with TOC entry. Mermaid diagrams render to PNG at 2x resolution via `mmdc`; graceful text fallback when the tool is unavailable. Fully backward compatible — reports without attack trees generate identically to before.
+- **Automated release notes polishing** (Feature 119) — Local script (`scripts/polish-release-notes.sh`) rewrites auto-generated release notes into user-facing language via Claude API. Run after merging a Release PR.
+- **README refresh** — Updated with MAESTRO layer classification, `/security-report` command, baseline delta tracking, all 5 infographic templates, and 6 examples (was 3).
 
-* **112:** add attack path pages to PDF security report ([#115](https://github.com/davidmatousek/tachi/issues/115)) ([febfa28](https://github.com/davidmatousek/tachi/commit/febfa28a6dcd92d9551dcb1ea7864ed2ad674bdb))
+### Changed
 
+- release-please now hides `docs`, `chore`, `refactor`, `test`, and `style` commits from auto-generated CHANGELOG entries. Only `feat`, `fix`, and `perf` appear.
 
-### Documentation
-
-* close Feature 112 - update all documentation ([9e04f7a](https://github.com/davidmatousek/tachi/commit/9e04f7aafc569023f13ce9d9e52181628667f12a))
-
-
-### Miscellaneous
-
-* **112:** simplify code per /simplify review ([#117](https://github.com/davidmatousek/tachi/issues/117)) ([9a7402b](https://github.com/davidmatousek/tachi/commit/9a7402b915b97dfc1c7cad291c9331511482d078))
+---
 
 ## [4.4.2](https://github.com/davidmatousek/tachi/compare/v4.4.1...v4.4.2) (2026-04-09)
 
+### Fixed
 
-### Bug Fixes
+- MAESTRO heading detection now falls back gracefully when headings use inconsistent formatting in threat-report.md. Attack trees regenerated fresh for all 6 examples. MAESTRO Findings section now appears in all reports and PDF output.
 
-* **091,104:** MAESTRO heading fallback, fresh attack trees, MAESTRO in all/PDF ([#113](https://github.com/davidmatousek/tachi/issues/113)) ([cefa1b1](https://github.com/davidmatousek/tachi/commit/cefa1b10218aa2e1bdae8076dd1e08ed963ffd2f))
+---
 
 ## [4.4.1](https://github.com/davidmatousek/tachi/compare/v4.4.0...v4.4.1) (2026-04-09)
 
+### Fixed
 
-### Bug Fixes
+- Attack tree generation no longer includes RESOLVED findings. Previously, findings marked as resolved in a baseline comparison still produced attack trees, cluttering the report with irrelevant attack paths.
 
-* **104:** skip RESOLVED findings when generating attack trees ([#110](https://github.com/davidmatousek/tachi/issues/110)) ([7bd1779](https://github.com/davidmatousek/tachi/commit/7bd17795d3bcb2e3745b375fc2f57507ea0f9f86))
+---
 
 ## [4.4.0](https://github.com/davidmatousek/tachi/compare/v4.3.4...v4.4.0) (2026-04-09)
 
+### Added
 
-### Features
+- **Downstream Baseline Propagation** (Feature 104) — Baseline severity and status fields from `threats.md` now propagate through all pipeline stages: risk scoring, compensating controls, threat report, infographics, and PDF report. Delta annotations (NEW, UNCHANGED, UPDATED, RESOLVED) carry through the entire pipeline. New Section 8 (Delta Summary) in `threats.md` and `threat-report.md`. All 6 example outputs regenerated with baseline columns.
 
-* **104:** add downstream baseline propagation for threat model output ([#107](https://github.com/davidmatousek/tachi/issues/107)) ([4589231](https://github.com/davidmatousek/tachi/commit/4589231e9fd7fdcd38a5e5abf848e1c3e80abacf))
-
-
-### Documentation
-
-* close Feature 104 - update all documentation ([f108036](https://github.com/davidmatousek/tachi/commit/f1080367d4aedf9e9b89c9a3d27cd6cdd8335b3b))
-
-
-### Miscellaneous
-
-* **104:** simplify code per /simplify review ([#109](https://github.com/davidmatousek/tachi/issues/109)) ([eaae097](https://github.com/davidmatousek/tachi/commit/eaae097df25a50a5927c56b903e59d6ade79796e))
+---
 
 ## [4.3.4](https://github.com/davidmatousek/tachi/compare/v4.3.3...v4.3.4) (2026-04-08)
 
+### Fixed
 
-### Bug Fixes
+- Baseline-aware pipeline now enforces mandatory Phase 2 discovery even when a baseline exists, preventing false confidence from carry-forward-only runs.
 
-* **074:** enforce mandatory Phase 2 discovery even with baseline ([#105](https://github.com/davidmatousek/tachi/issues/105)) ([3174674](https://github.com/davidmatousek/tachi/commit/31746746ebabda9367831ec87eaf0773a5815d40))
+---
 
 ## [4.3.3](https://github.com/davidmatousek/tachi/compare/v4.3.2...v4.3.3) (2026-04-08)
 
+### Fixed
 
-### Bug Fixes
+- Baseline auto-detection now correctly resolves paths, and downstream commands (`/risk-score`, `/compensating-controls`) no longer exceed context limits when processing large baseline files.
 
-* **074:** baseline auto-detection and downstream command context limits ([#102](https://github.com/davidmatousek/tachi/issues/102)) ([5aeb10b](https://github.com/davidmatousek/tachi/commit/5aeb10bf24ef9e002bed5d73b76c4989456bca23))
+---
 
 ## [4.3.2](https://github.com/davidmatousek/tachi/compare/v4.3.1...v4.3.2) (2026-04-08)
 
+### Fixed
 
-### Bug Fixes
+- Version reporting (`install.sh`) now fetches tags before checking the installed version, showing the correct tag instead of a commit hash.
+- release-please respects `release-please-config.json` instead of using a hardcoded release type.
 
-* **086:** fetch tags before reporting installed version ([07f6873](https://github.com/davidmatousek/tachi/commit/07f687333133f886847af74ddfeba48e2a3ab6ae))
-* **086:** remove release-type input so config file is respected ([a07d0e2](https://github.com/davidmatousek/tachi/commit/a07d0e25c45c7003b5f70323435325936e2093c0))
-
-
-### Documentation
-
-* **086:** update version examples to v4.3.1 ([ad86215](https://github.com/davidmatousek/tachi/commit/ad8621546bc5be1cb967d4c8161873464ffd621c))
+---
 
 ## [4.3.1](https://github.com/davidmatousek/tachi/compare/v4.3.0...v4.3.1) (2026-04-08)
 
+### Fixed
 
-### Bug Fixes
+- Version examples in README and `install.sh` now auto-bump via release-please extra-files configuration.
 
-* **086:** auto-bump version examples in README and install.sh ([dcc65b1](https://github.com/davidmatousek/tachi/commit/dcc65b1a86250b5e73828b2e0fef70ac029c8d6d))
+---
 
 ## [4.3.0](https://github.com/davidmatousek/tachi/compare/v4.2.1...v4.3.0) (2026-04-08)
 
+### Added
 
-### Features
+- **MAESTRO Infographic Templates and PDF Report Section** (Feature 091) — Two new infographic templates for MAESTRO-aware threat visualization: `maestro-stack` (vertical seven-layer risk distribution diagram) and `maestro-heatmap` (component-by-layer severity grid). New MAESTRO Findings page in the PDF security report. `maestro` shorthand in `/infographic` generates both templates in one invocation. All gated by `has-maestro-data` for backward compatibility with non-agentic threat models.
 
-* **091:** add MAESTRO infographic templates and PDF report section ([#96](https://github.com/davidmatousek/tachi/issues/96)) ([f0f0e9a](https://github.com/davidmatousek/tachi/commit/f0f0e9aae9eeaae6ecda726954dc3ffac95408f7))
+---
 
 ## [4.2.1](https://github.com/davidmatousek/tachi/compare/v4.2.0...v4.2.1) (2026-04-08)
 
+### Fixed
 
-### Bug Fixes
+- release-please workflow now supports `workflow_dispatch` for manual re-runs.
 
-* **086:** add workflow_dispatch trigger to release-please ([c0231b6](https://github.com/davidmatousek/tachi/commit/c0231b653428204538525bf42950250a243e0022))
+---
 
 ## [4.2.0](https://github.com/davidmatousek/tachi/compare/v4.1.0...v4.2.0) (2026-04-08)
 
+### Added
 
-### Features
+- **MAESTRO Layer Mapping** (Feature 084) — Every threat finding is now classified into the CSA MAESTRO seven-layer taxonomy (L1 Foundation Model through L7 User Interface). The orchestrator assigns layers via keyword classification in Phase 1, and the mapping propagates downstream through risk scoring, compensating controls, and the threat report. New `maestro_layer` field in the finding schema (v1.2), SARIF `maestro-layer` tags, and MAESTRO Layer columns in all output tables. All 6 example outputs regenerated.
 
-* **084:** add MAESTRO layer mapping to threat model pipeline ([#92](https://github.com/davidmatousek/tachi/issues/92)) ([ac2ca0e](https://github.com/davidmatousek/tachi/commit/ac2ca0e03ec6f2cda85b45ebb2829486099e0985))
+---
 
 ## [4.1.0](https://github.com/davidmatousek/tachi/compare/v4.0.0...v4.1.0) (2026-04-07)
 
+### Added
 
-### Features
+- **Automated Release Tagging** (Feature 086) — Releases are now automated via Google's release-please GitHub Action. Conventional commits on main trigger a Release PR with auto-generated CHANGELOG entries. Merging the Release PR creates the git tag and GitHub Release. New files: `.github/workflows/release-please.yml`, `release-please-config.json`, `.release-please-manifest.json`.
 
-* **086:** automated release tagging via GitHub Actions ([#86](https://github.com/davidmatousek/tachi/issues/86)) ([#88](https://github.com/davidmatousek/tachi/issues/88)) ([f1ad4ef](https://github.com/davidmatousek/tachi/commit/f1ad4efef2df517f8739cfa6598dd4b5f1ac4132))
+---
 
-## [Unreleased]
+## 4.0.x — Pre-release-please Features
 
-### Feature 091 — MAESTRO Infographic Templates and PDF Report Section
+*These features shipped between v4.0.0 and v4.1.0, before release-please was adopted. They were not individually tagged.*
 
-**Added**
-- Two MAESTRO-aware infographic templates: maestro-stack (vertical seven-layer risk distribution) and maestro-heatmap (component-by-layer severity grid); MAESTRO Findings Typst page for PDF security report; `maestro` shorthand dispatch generating both templates in one invocation; MAESTRO data extraction in extract-infographic-data.py and extract-report-data.py with `has-maestro-data` gating for backward compatibility (`f0f0e9a`)
-
-**Changed**
-- Closed Feature 091 — updated product docs (PRD INDEX), architecture docs (CLAUDE.md, Tech Stack README), KB entry KB-022, delivery report, BACKLOG regenerated (`0696df7`)
-
-### Feature 084 — MAESTRO Layer Mapping
-
-**Added**
-- CSA MAESTRO seven-layer taxonomy classification for every threat finding in the tachi pipeline; new `maestro_layer` field in finding IR schema (v1.2), shared reference with keyword-to-layer mappings, Phase 1 orchestrator classification with finding inheritance, SARIF `maestro-layer` tags, downstream propagation through risk-scorer/control-analyzer/threat-report; all 6 example outputs regenerated with MAESTRO Layer columns (`ac2ca0e`)
-
-**Changed**
-- Closed Feature 084 — updated product docs (PRD INDEX, User Stories, OKRs), architecture docs (Tech Stack, System Design, ADR-020), KB entry KB-021, delivery report, BACKLOG regenerated (`cd9b71a`)
-
-### Feature 086 — Automated Release Tagging
-
-**Added**
-- Google's release-please GitHub Action for automated version tagging from conventional commits; workflow at `.github/workflows/release-please.yml`, config at `release-please-config.json`, manifest baseline v4.0.0 at `.release-please-manifest.json`; creates Release PRs with auto-generated CHANGELOG entries grouped by commit type; maintainer controls release timing via merge decision (`f1ad4ef`)
-- README "Releases" section documenting the automated release process (`f1ad4ef`)
-
-**Changed**
-- Closed Feature 086 — updated product docs (PRD INDEX, OKRs), architecture docs (Tech Stack, System Design, CLAUDE.md), devops docs (CI_CD_GUIDE, staging/production READMEs), KB entry KB-020, delivery report (`f1ad4ef`)
-
-### Feature 066 — Install Script and Version Tagging
-
-**Added**
-- Single-command install script (`scripts/install.sh`) replacing 6+ manual `cp` commands; supports `--source` override, `--version` pinned installs with trap-based cleanup, auto-detection from script location; machine-parseable manifest section in `INSTALL_MANIFEST.md`; Bash 3.2+ compatible with no external dependencies beyond git (`9ed2a7f`)
-- First semantic version tag `v4.0.0` on main branch, enabling version-pinned installs and `git describe` version reporting
-
-**Changed**
-- README Quick Start Step 2 updated: scripted install as primary path, manual `cp -r` commands preserved in collapsible fallback section (`9ed2a7f`)
-- Developer Guide install section updated to match README with scripted install primary (`9ed2a7f`)
-- Closed Feature 066 — updated product docs (PRD INDEX, BACKLOG), architecture docs (Tech Stack, System Design, CLAUDE.md), KB entry PAT-019, delivery report (`65daf61`, `0dbf6ad`)
+### Feature 112 context already captured in v4.5.0 above.
 
 ### Feature 078 — Agent Context Optimization
 
-**Added**
-- Restructured 6 tachi agents (orchestrator, risk-scorer, control-analyzer, report-assembler, threat-report, threat-infographic) from monolithic prompts to lean definitions with on-demand skill references; created 4 new skill directories (`tachi-orchestration`, `tachi-risk-scoring`, `tachi-report-assembly`, `tachi-shared`) with 25+ granular reference files; added explicit model fields to all 17 agents; shared severity bands, STRIDE+AI categories, finding format as single-source-of-truth; 40-60% prompt size reduction (`46fc7e6`)
-
-**Changed**
-- Closed Feature 078 — updated product docs (PRD INDEX, User Stories, OKRs), architecture docs (Tech Stack, System Design, Patterns, ADR-019, ADR-002), KB entry PAT-018, delivery report, BACKLOG regenerated (`7c47b0a`, `618b790`)
-
-### Feature 074 — Baseline-Aware Pipeline
-
-**Added**
-- Baseline-aware threat detection pipeline with 4-phase correlation (detect → carry-forward → discover → merge+dedup), coverage checklists per component type, delta annotations ([NEW], [UNCHANGED], [UPDATED], [RESOLVED]), and SARIF baselineState properties; new `coverage-checklists.yaml` schema; extended `finding.yaml`, `risk-scoring.yaml`, `compensating-controls.yaml` with baseline fields; updated all 6 output templates; domain knowledge skills extended with baseline-correlation reference (`856f35e`)
-
-**Changed**
-- Closed Feature 074 — updated product docs (PRD INDEX, User Stories, OKRs), architecture docs (Tech Stack, System Design, ADR-018), KB entry PAT-017, delivery report, BACKLOG regenerated (`a300915`)
+Restructured 6 tachi agents from monolithic prompts to lean definitions with on-demand skill references. Created 4 skill directories with 25+ granular reference files. Shared severity bands, STRIDE+AI categories, and finding format as single-source-of-truth. 40-60% prompt size reduction across methodology agents.
 
 ### Feature 075 — Tachi Agent Best Practices
 
-**Added**
-- Shared best practices document (`_TACHI_AGENT_BEST_PRACTICES.md`) with tier caps (Leaf ≤300, Report ≤800, Methodology ≤1,000), 8-criterion quality checklist, and compliance table for all 17 tachi agents; 3 domain knowledge skills (`tachi-orchestration`, `tachi-risk-scoring`, `tachi-control-analysis`) extracted from methodology agents with tiered on-demand loading (SKILL.md + references/) per ADR-002 (`cdf91e7`)
+Shared best practices document with tier caps (Leaf 300, Report 800, Methodology 1,000 lines), 8-criterion quality checklist. Extracted domain knowledge from orchestrator (-39%), report agent (-41%), and control-analyzer (-30%) into dedicated skills.
 
-**Changed**
-- Refactored orchestrator (2,000→769 lines), risk-scorer (1,419→994 lines), and control-analyzer (1,367→935 lines) by extracting domain knowledge into dedicated skills; all methodology agents now under 1,000-line cap (`cdf91e7`)
-- Claude 4.6 tone audit across all 17 tachi agents — softened non-critical emphasis patterns, added tool restrictions to frontmatter, improved description fields for delegation routing, enforced data-top ordering (`cdf91e7`)
-- Trimmed threat-report agent to ≤800-line Report tier cap (`cdf91e7`)
-- Closed Feature 075 — updated product docs (PRD INDEX, User Stories, OKRs), architecture docs (Tech Stack, Patterns), KB entry PAT-016 (`e713251`, `e89a640`)
+### Feature 074 — Baseline-Aware Pipeline
+
+Baseline-aware threat detection with 4-phase correlation (detect, carry-forward, discover, merge+dedup), coverage checklists per component type, delta annotations (NEW, UNCHANGED, UPDATED, RESOLVED), and SARIF `baselineState` properties. Compare threat model runs to track risk posture changes over time.
 
 ### Feature 071 — Deterministic Infographic Data Extraction
 
-**Added**
-- Shared parser module (`scripts/tachi_parsers.py`) extracted from `extract-report-data.py` — generic table parsers, frontmatter/metadata parsers, severity parsers, findings/scope parsers; enables cross-output consistency between security reports and infographics (`61df3d4`)
-- Deterministic infographic extraction script (`scripts/extract-infographic-data.py`) — reads tachi pipeline markdown artifacts and outputs structured JSON for baseball-card, system-architecture, and risk-funnel templates; Largest Remainder Method for percentage rounding, deterministic tie-breaking (score desc, threat ID asc), component heat map cross-tabulation, 4-tier risk funnel computation; Python 3.9+ stdlib only (`61df3d4`)
-- ADR-017 documenting deterministic extraction approach, shared parser module extraction, and Largest Remainder Method selection (`93a39c6`)
-
-**Changed**
-- Refactored `extract-report-data.py` to import shared parsers from `tachi_parsers.py` — zero behavior change, byte-identical output verified (`61df3d4`)
-- Updated threat-infographic agent to invoke deterministic extraction script instead of LLM-based parsing (`61df3d4`)
-- Updated `schemas/infographic.yaml` and baseball card template for structured data support (`61df3d4`)
-- Closed Feature 071 — updated product docs (PRD INDEX, User Stories, OKRs), architecture docs (Tech Stack, System Design, Patterns, ADR-017), devops docs, KB entry PAT-015 (`93a39c6`, `faa2fb2`)
+Shared parser module (`scripts/tachi_parsers.py`) and deterministic extraction script (`scripts/extract-infographic-data.py`) replacing LLM-based markdown parsing for infographics. Largest Remainder Method for percentage rounding, deterministic tie-breaking, 4-tier risk funnel computation. Python 3.9+ stdlib only.
 
 ### Feature 067 — Deterministic Report Data Extraction
 
-**Added**
-- Deterministic Python parsing script (`scripts/extract-report-data.py`) replacing LLM-based markdown extraction for security report generation; 3-tier severity source selection (compensating-controls.md > risk-scores.md > threats.md), internal consistency validation (severity sums, duplicate IDs), scope data extraction (components, data flows, trust zones, boundary crossings), executive narrative and remediation action parsing; Python 3.9+ stdlib only, zero external dependencies (`7dc8b1c`)
-- Tier 1 test fixture (`examples/agentic-app/sample-report/compensating-controls.md`) for validating full-pipeline Tier 1 output (`7dc8b1c`)
+Deterministic Python parsing script (`scripts/extract-report-data.py`) replacing LLM-based markdown extraction for PDF report generation. 3-tier severity source selection, internal consistency validation, scope data extraction. Zero external dependencies.
 
-**Changed**
-- Updated report-assembler agent to invoke Python script instead of inline LLM parsing; Steps 2-3 replaced with single script invocation step with exit code handling (`7dc8b1c`)
-- Closed Feature 067 — updated product docs (PRD INDEX, User Stories, OKRs), architecture docs (Tech Stack — Python 3.9+, System Design), devops docs (local prerequisites), KB entry PAT-014 (`851ad2e`)
+### Feature 066 — Install Script and Version Tagging
 
-### Feature 060 — Professional PDF Security Assessment Report with tachi Branding
+Single-command install script (`scripts/install.sh`) replacing 6+ manual `cp` commands. Supports `--source` override, `--version` pinned installs with trap-based cleanup. First semantic version tag `v4.0.0`.
 
-**Added**
-- Professional branded PDF security report with modular Typst template system: 6 new pages (disclaimer, TOC, methodology, scope, theme, report-config), 6 updated templates, `brand/` asset directory with 8 logo variants, centralized theme tokens and shared utilities, extended `security-report.yaml` schema v1.1, updated report-assembler agent with brand-aware compilation (`c3cc8cf`)
+### Feature 060 — Professional PDF Security Report
 
-**Changed**
-- Closed Feature 060 — updated product docs (PRD INDEX), architecture docs (Tech Stack — Typst CLI), KB entry PAT-013, delivery report (`3f36ca5`)
-- Exported user stories, regenerated BACKLOG.md (`331d6e2`)
+Professional branded PDF with modular Typst template system: disclaimer, TOC, methodology, scope, theme, and report-config pages. `brand/` asset directory with logo variants. Extended `security-report.yaml` schema v1.1.
 
 ### Feature 054 — Security Assessment PDF Booklet
 
-**Added**
-- `/security-report` command + report-assembler agent for generating professional multi-page PDF security assessment booklets from tachi pipeline artifacts; 7 Typst templates (cover, executive summary, findings detail, remediation roadmap, control coverage, full-bleed infographic, main orchestrator), `schemas/security-report.yaml` validation schema, graceful degradation for partial pipelines, full-bleed landscape infographic pages (`053eba9`)
-
-**Changed**
-- Closed Feature 054 — updated product docs (PRD INDEX), devops docs (Typst dependency), KB entry PAT-012 (`ed481a1`)
-- Exported user stories from GitHub Issue #54, regenerated BACKLOG.md (`678da2f`)
+`/security-report` command and report-assembler agent for generating multi-page PDF security assessment booklets from tachi pipeline artifacts. 7 Typst templates, graceful degradation for partial pipelines, full-bleed landscape infographic pages.
 
 ### Feature 053 — Risk Reduction Funnel
 
-**Added**
-- 4-tier risk reduction funnel infographic template with graceful degradation (4-tier/3-tier/1-tier modes), ghost tiers with CTAs, metrics sidebar, and Gemini 3D prompt; registered in agent + command (`48b3c06`)
+4-tier risk reduction funnel infographic template with graceful degradation (4-tier/3-tier/1-tier modes), ghost tiers with CTAs, and metrics sidebar.
 
-**Changed**
-- Closed Feature 053 — updated product docs (PRD INDEX, User Stories, OKRs), architecture docs (Tech Stack), KB entry PAT-011 (`a09c3ff`)
-- Regenerated BACKLOG.md after issue closure (`d1d133d`)
+### Feature 048 — Infographic Tiered Pipeline Auto-Detection
 
-### Feature 048 — Infographic Tiered Pipeline Auto-Detection & Residual Risk
+Three-tier data source auto-detection for `/infographic` (compensating-controls.md > risk-scores.md > threats.md). Residual risk extraction, enhancement tips at each pipeline tier, risk label distinction across templates.
 
-**Added**
-- Three-tier data source auto-detection for `/infographic` (compensating-controls.md > risk-scores.md > threats.md), residual risk extraction from Coverage Matrix, enhancement tips at each pipeline tier, risk label distinction (Residual Risk / Inherent Risk / Severity) across both templates (`e67de32`)
+### Feature 045 — Developer Guide
 
-**Changed**
-- Closed Feature 048 — updated product docs (PRD INDEX, User Stories, OKRs), architecture docs (Tech Stack, System Design), developer guide, KB-010 (`8e8cab9`)
-- Regenerated BACKLOG.md after issue closure (`a2d4ac9`)
-
-### Feature 045 — End-to-End tachi Instruction Manual
-
-**Added**
-- Comprehensive developer guide covering tachi's 4-command threat modeling pipeline with step-by-step walkthrough, pipeline diagram, and command reference (`33db77b`)
-
-**Changed**
-- Closed Feature 045 — updated product docs, architecture docs, lifecycle overview diagram (`372ff26`)
-- Replaced lifecycle overview with tachi pipeline diagram (`d631522`)
+Comprehensive developer guide covering tachi's command pipeline with step-by-step walkthrough, pipeline diagram, and command reference.
 
 ### Feature 039 — Standalone /infographic Command
 
-**Added**
-- Standalone `/infographic` command with auto-detection of richest data source, dual-path extraction, template selection, and explicit file override; Phase 6 removed from `/threat-model` pipeline (5-phase only); all platform adapters updated (`45ba448`)
-
-**Changed**
-- Closed Feature 039 — updated product docs (PRD INDEX, User Stories, OKRs), architecture docs (System Design, ADR-014 addendum, ADR-016), KB entry PAT-008 (`9ba6f07`)
-- Delivery retrospective and backlog sync (`c291b42`)
+`/infographic` as a standalone command with auto-detection, dual-path extraction, and template selection. Removed from `/threat-model` pipeline (now 5-phase only).
 
 ### Feature 036 — Compensating Controls Analysis
 
-**Added**
-- `/compensating-controls` command + control-analyzer agent with 6-phase pipeline, 8 STRIDE + 2 AI control categories, effectiveness classification, recommendations with effort estimates, residual risk calculation, coverage matrix, and dual-format output (compensating-controls.md + compensating-controls.sarif) (`9a84115`)
-
-**Changed**
-- Closed Feature 036 — updated product docs (PRD INDEX), architecture docs (Tech Stack), KB entry PAT-007 (`d7370e8`)
-- Exported user stories from GitHub Issue #36 (`5069c9f`)
+`/compensating-controls` command with 6-phase pipeline, 8 STRIDE + 2 AI control categories, effectiveness classification, residual risk calculation, and dual-format output (markdown + SARIF).
 
 ### Feature 035 — Quantitative Risk Scoring
 
-**Added**
-- `/risk-score` command + risk-scorer agent with four-dimensional quantitative scoring (CVSS 3.1, exploitability, scalability, reachability), weighted composite scores, governance fields, and dual-format output (risk-scores.md + risk-scores.sarif) (`4afbe77`)
+`/risk-score` command with four-dimensional scoring (CVSS 3.1, exploitability, scalability, reachability), weighted composite scores, governance fields, and dual-format output (markdown + SARIF).
 
-**Changed**
-- Closed Feature 035 — updated product docs (PRD INDEX, User Stories), architecture docs (Tech Stack), KB entry PAT-006 (`a71337a`)
-- Exported user stories from GitHub Issue #35 (`939d17f`)
+### Feature 029 — Agent Right-Sizing
 
-### Feature 029 — Agent Refactoring Right-Size
-
-**Added**
-- Right-sized 3 threat agents via reference-extraction pattern: orchestrator (2,085→1,273 lines, -39%), report (801→472, -41%), infographic (592→414, -30%); 6 reference docs in `adapters/claude-code/agents/references/`; portable `.claude/agents/tachi/` agent set for non-Claude-Code adapters (`cde4cc8`)
-
-**Changed**
-- Closed Feature 029 — updated product docs (PRD INDEX, User Stories), architecture docs (Tech Stack, Patterns, README) (`5a8a127`)
-- Regenerated BACKLOG.md after issue closure (`64e5e4a`)
+Right-sized 3 threat agents via reference-extraction pattern: orchestrator (-39%), report (-41%), infographic (-30%). 6 reference docs extracted. Portable `.claude/agents/tachi/` agent set.
 
 ### Feature 024 — Example Threat Models
 
-**Added**
-- Three end-to-end example threat models: web-app (STRIDE + OWASP Web 2025), agentic-app (STRIDE + AI agents + OWASP Agentic/MCP), microservices (cross-service STRIDE); each with Mermaid architecture diagram and schema v1.1 compliant threat model output (`f411944`)
-
-**Changed**
-- Closed Feature 024 — updated product docs (PRD INDEX, OKRs, User Stories), architecture docs (CLAUDE.md, Tech Stack), delivery report (`68c9e47`)
-- Exported user stories from GitHub Issue #24 to aggregated reference (`38db6fc`)
+Three end-to-end examples: web-app (STRIDE), agentic-app (STRIDE + AI), microservices (cross-service STRIDE). Each with Mermaid architecture and schema v1.1 output.
 
 ### Feature 021 — Platform Adapters
 
-**Added**
-- Platform adapters for 5 targets: Claude Code (`.claude/agents/`), Generic (numbered prompts), Cursor (`.mdc` rules), Copilot (`.agent.md` with size-split), GitHub Actions (workflow YAML with SARIF upload); VERSION script for drift detection (`c4331f4`)
-
-**Changed**
-- Closed Feature 021 — updated product docs (INDEX, BACKLOG, User Stories), architecture docs (Tech Stack, System Design, ADR-015), DevOps docs (README, Local, CI/CD Guide) (`71f22b8`)
-- Regenerated BACKLOG.md after issue closure (`4b5c244`)
+Adapters for 5 targets: Claude Code, Generic, Cursor, Copilot, GitHub Actions (with SARIF upload).
 
 ### Feature 018 — Threat Infographic Agent
 
-**Added**
-- Threat infographic agent with 6-section visual risk spec, Gemini API image generation, output schema, orchestrator Phase 6 integration, and sample output (`24ba12b`)
-
-**Changed**
-- Closed Feature 018 — updated product docs (INDEX, User Stories, OKRs), architecture docs (Tech Stack, System Design, ADR-014), DevOps docs, KB entry PAT-005 (`a9cffc8`)
-- Regenerated BACKLOG.md after issue closure (`25329b4`)
+Visual risk spec generation with Gemini API image output. Integrated as orchestrator Phase 6.
 
 ### Feature 015 — Threat Report Agent & Attack Trees
 
-**Added**
-- Threat report agent with STRIDE+AI attack trees, report schema, 7-section template, 12 Mermaid attack tree examples, and orchestrator Phase 5 integration (`f59783f`)
-
-**Changed**
-- Closed Feature 015 — updated product docs (INDEX, User Stories), architecture docs (Tech Stack, System Design) (`16fd4f1`)
-- Regenerated BACKLOG.md after issue closure (`60780c6`)
+Narrative threat report with STRIDE+AI attack trees (Mermaid). 7-section template with 12 attack tree examples.
 
 ### Feature 012 — SARIF Output Generation
 
-**Added**
-- SARIF 2.1.0 output generation with STRIDE+AI rule mapping, CVSS severity alignment, correlated findings, dual locations, deterministic fingerprints, and optional OWASP/CWE taxonomies (`9f84fad`)
-
-**Changed**
-- Closed Feature 012 — updated product docs, architecture docs (ADR-013), tech stack, KB entry PAT-004 (`64cb30a`)
-- Regenerated BACKLOG.md after issue closure (`bbaabb3`)
+SARIF 2.1.0 output with STRIDE+AI rule mapping, CVSS severity alignment, deterministic fingerprints, and optional OWASP/CWE taxonomies.
 
 ### Feature 010 — Deduplication & Risk Rating
 
-**Added**
-- Cross-agent finding correlation with 5 deterministic rules, deduplicated risk summaries, three-state coverage matrix, and OWASP 3x3 risk calibration matrix; schema v1.1 (`2eac145`)
-
-**Changed**
-- Closed Feature 010 — updated product docs, architecture docs (ADR-012), patterns, KB entry PAT-003 (`87eeb89`)
-- Regenerated BACKLOG.md after issue closure (`d147318`)
+Cross-agent finding correlation with 5 deterministic rules, three-state coverage matrix, and OWASP 3x3 risk calibration. Schema v1.1.
 
 ### Feature 007 — AI Threat Agents
 
-**Added**
-- AI threat agent prompts for 5 agentic threat categories: prompt injection, data poisoning, tool abuse, model theft, agent autonomy (`eaa0439`)
-
-**Changed**
-- Closed Feature 007 — updated product docs, archived specs, regenerated backlog (`2ca4a19`, `71206e8`)
+5 AI threat agent prompts: prompt injection, data poisoning, tool abuse, model theft, agent autonomy.
 
 ### Feature 003 — Orchestrator Agent
 
-**Added**
-- Orchestrator agent prompt for STRIDE + AI threat modeling with 4-phase OWASP workflow, 5-format input parsing, 11-agent dispatch, and structured output assembly (`5f18934`)
+Orchestrator with 4-phase OWASP workflow, 5-format input parsing, 11-agent dispatch, and structured output assembly.
 
-**Changed**
-- Closed Feature 003 — updated product docs, archived specs, regenerated backlog (`ddd7699`, `d7acf41`)
+### Feature 001 — Project Skeleton
 
-### Feature 001 — Project Skeleton & Interface Contract
-
-**Added**
-- Project skeleton with STRIDE + AI threat agent prompts, machine-readable schemas, output template, interface contract, and 3 example inputs (`b398249`)
-
-**Changed**
-- Closed Feature 001 — updated product docs, archived specs, regenerated backlog (`d706b89`, `edd9f43`)
+Project skeleton with STRIDE + AI threat agent prompts, schemas, output template, interface contract, and 3 example inputs.
 
 ---
 
-## [4.0.0] - 2026-02-08
+## [4.0.0](https://github.com/davidmatousek/tachi/compare/v3.0.0...v4.0.0) (2026-02-08)
 
 ### BREAKING CHANGES
 
-#### AOD Rebranding — Renamed .specify/ to .aod/ and Replaced All Spec Kit Branding
-
-The project has been rebranded from "Product-Led Spec Kit" to "Agentic Oriented Development Kit" (AOD Kit). This is a comprehensive rename affecting directory structure, branding text, and file names across the repository.
-
-**Structural Changes:**
-- `.specify/` directory renamed to `.aod/` (git history preserved via `git mv`)
-- `docs/SPEC_KIT_TRIAD.md` renamed to `docs/AOD_TRIAD.md`
-- Environment variables: `SPECIFY_FEATURE` → `AOD_FEATURE`, `SPECIFY_DIR` → `AOD_DIR`
-- Log prefixes: `[specify]` → `[aod]`
-
-**Branding Replacements:**
-- `Product-Led Spec Kit` → `Agentic Oriented Development Kit`
-- `SPEC_KIT` → `AOD` (constant-case identifiers)
-- `Spec Kit` → `AOD Kit` (user-facing text)
-- `spec-kit` → `aod` (kebab-case identifiers)
-- All `spec-kit-ops` upstream references removed from active files
-
-**Preserved:**
-- `/triad.specify` command name (unchanged — "specify" is a verb, not branding)
-- Historical specs (001-007) and their artifacts
-- Historical planning documents and prior CHANGELOG entries
-
-**Migration**: Update any local scripts or documentation referencing `.specify/` paths to `.aod/`. Update any references to `docs/SPEC_KIT_TRIAD.md` to `docs/AOD_TRIAD.md`.
-
-### Added - 3 New Thinking Lenses (Feature 009)
-
-Added three new structured thinking lenses to `docs/core_principles/` and updated the thinking-lens skill:
-
-- **Four Causes** (`four_causes.md`) - Aristotelian causal analysis examining Material, Formal, Efficient, and Final causes to understand why something exists or happens
-- **Cargo Cult Detection** (`cargo_cult_detection.md`) - Identifies practices copied without understanding, helping teams distinguish genuine best practices from superficial mimicry
-- **Golden Mean** (`golden_mean.md`) - Aristotelian balance-finding framework for navigating engineering trade-offs between extremes
-
-**Details:**
-- Content-only addition (no code, API, or infrastructure changes)
-- Updated `docs/core_principles/README.md` lens registry with all three lenses
-- Updated `.claude/skills/thinking-lens/SKILL.md` to reference new lenses
-- PR: #8 (upstream development repo)
-- Tasks completed: 26/26
-
----
-
-## [3.0.0] - 2026-02-07
-
-### BREAKING CHANGES
-
-#### SpecKit Commands Removed — Unified Triad Workflow
-
-All `/speckit.*` commands have been removed and consolidated into the `/triad.*` command set. The dual command architecture (Triad + Vanilla) has been replaced with a single, unified workflow.
-
-**Command Mapping:**
-
-| Former Command | New Command | Notes |
-|----------------|-------------|-------|
-| `/speckit.specify` | `/triad.specify` | Logic inlined with research + PM sign-off |
-| `/speckit.plan` | `/triad.plan` | Logic inlined with PM + Architect sign-off |
-| `/speckit.tasks` | `/triad.tasks` | Logic inlined with triple sign-off |
-| `/speckit.implement` | `/triad.implement` | Logic inlined with Architect checkpoints |
-| `/speckit.clarify` | `/triad.clarify` | Direct transfer with reference updates |
-| `/speckit.analyze` | `/triad.analyze` | Direct transfer with reference updates |
-| `/speckit.checklist` | `/triad.checklist` | Direct transfer with reference updates |
-| `/speckit.constitution` | `/triad.constitution` | Direct transfer with reference updates |
-
-**Migration**: Replace all `/speckit.*` commands with their `/triad.*` equivalents. No other changes needed.
+- **AOD Rebranding** — `.specify/` directory renamed to `.aod/`, `docs/SPEC_KIT_TRIAD.md` renamed to `docs/AOD_TRIAD.md`, environment variables and log prefixes updated. Update any local scripts referencing `.specify/` paths.
 
 ### Added
-- 4 new triad commands: `/triad.clarify`, `/triad.analyze`, `/triad.checklist`, `/triad.constitution`
-- Archive tag `v2.0.0-pre-speckit-removal` preserves historical state
+
+- 3 new thinking lenses: Four Causes, Cargo Cult Detection, Golden Mean.
+
+---
+
+## [3.0.0](https://github.com/davidmatousek/tachi/compare/v2.1.0...v3.0.0) (2026-02-07)
+
+### BREAKING CHANGES
+
+- **SpecKit commands removed** — All `/speckit.*` commands consolidated into `/triad.*`. See [migration table in previous CHANGELOG](https://github.com/davidmatousek/tachi/blob/v3.0.0/CHANGELOG.md) for command mapping.
+
+### Added
+
+- 4 new triad commands: `/triad.clarify`, `/triad.analyze`, `/triad.checklist`, `/triad.constitution`.
 
 ### Removed
-- All 8 `/speckit.*` command files
-- "Vanilla Commands" sections from all documentation
-- `compatible_with_speckit` and `last_tested_with_speckit` frontmatter from all command files
 
-### Changed
-- 4 core triad commands now self-contained (no Skill tool coupling to speckit commands)
-- All documentation, rules, skills, and agents reference only `/triad.*` commands
-- CLAUDE.md updated with unified command set (10 triad commands)
-- Renamed `speckit-validator` skill to `spec-validator` (removes speckit branding)
+- All 8 `/speckit.*` command files and "Vanilla Commands" documentation.
 
 ---
 
-## [2.1.0] - 2026-01-31
+## [2.1.0](https://github.com/davidmatousek/tachi/compare/v2.0.0...v2.1.0) (2026-01-31)
 
-### Added - Agent Refactoring (Feature 003)
+### Added
 
-**Agent Best Practices Documentation**
-- Created `_AGENT_BEST_PRACTICES.md` with 8 core principles for agent design
-- Created `_README.md` agent directory overview and quick reference
-
-**Agent Refactoring**
-- Refactored all 12 agents to consistent 8-section structure (58% line reduction)
-- Split team-lead into team-lead + orchestrator (13 agents total)
-- Standardized YAML frontmatter across all agents (version, changelog, boundaries, triad-governance)
-
-**New Skill**
-- Added thinking-lens skill for structured analysis methodologies
-
-**Key Metrics**
-- Tasks completed: 140
-- Total agent line reduction: 58% (7,885 → ~3,300 lines)
-- All 12 agents now follow standardized 8-section structure
-- 100% YAML frontmatter standardization
+- Agent refactoring: all 12 agents restructured to consistent 8-section format (58% line reduction). Team-lead split into team-lead + orchestrator (13 agents). New thinking-lens skill.
 
 ---
 
-## [2.0.0] - 2026-01-24
+## [2.0.0](https://github.com/davidmatousek/tachi/compare/v1.1.0...v2.0.0) (2026-01-24)
 
-### Added - Anthropic Claude Code v2.1.16 Integration
+### Added
 
-**Parallel Triad Reviews**
-- PM + Architect reviews now run simultaneously with context forking
-- Triple sign-off (PM + Architect + Team-Lead) executes in parallel for tasks.md
-- Review results merge automatically using severity ranking (Critical > Warning > Suggestion)
-
-**Version Detection & Feature Flags**
-- Automatic Claude Code version detection at session start
-- Feature flags system (`.claude/config/feature-flags.json`) for capability management
-- Graceful degradation for older Claude Code versions (sequential fallback)
-
-**New Libraries**
-- `.claude/lib/version/detect.sh` - Version detection utilities
-- `.claude/lib/version/feature-gate.sh` - Feature gating logic
-- `.claude/lib/version/degradation.sh` - Graceful fallback handling
-- `.claude/lib/triad/merge-results.sh` - Parallel review result merging
-- `.claude/lib/triad/timing-metrics.sh` - Performance measurement
-- `.claude/lib/dependencies/` - Task dependency resolution system
-
-**New Skills**
-- `.claude/skills/triad/pm-review.md` - PM review skill for parallel execution
-- `.claude/skills/triad/architect-review.md` - Architect review skill
-- `.claude/skills/triad/teamlead-review.md` - Team-Lead review skill
-
-**Documentation**
-- `docs/devops/FEATURE_MATRIX.md` - Feature compatibility by Claude Code version
-- `docs/devops/MIGRATION.md` - DevOps migration guide
-- PRD-002: Anthropic Updates Integration specification
-
-**Test Fixtures**
-- `specs/002-anthropic-updates-integration/test-fixtures/` - Comprehensive test suite
-  - Version detection tests
-  - Parallel execution tests
-  - Context forking tests
-  - Degradation tests
-  - Dependency resolution tests
-
-### Changed
-- Triad commands now auto-detect version and use parallel execution when available
-- `_triad-init.md` command initializes version detection at session start
-- Review workflows use isolated contexts to prevent cross-contamination
-
-### Migration
-See [MIGRATION.md](MIGRATION.md) for detailed upgrade instructions from v1.x to v2.0.0.
+- **Parallel Triad Reviews** — PM + Architect reviews run simultaneously with context forking. Triple sign-off executes in parallel.
+- Automatic Claude Code version detection with feature flags and graceful degradation.
 
 ---
 
-## [1.1.0] - 2025-12-15
+## [1.1.0](https://github.com/davidmatousek/tachi/compare/v1.0.0...v1.1.0) (2025-12-15)
 
-### Added - Modular Rules System
+### Added
 
-**Modular Governance Rules**
-- `.claude/rules/governance.md` - Sign-off requirements, Triad workflow
-- `.claude/rules/git-workflow.md` - Branch naming, PR policies
-- `.claude/rules/deployment.md` - DevOps agent policy
-- `.claude/rules/scope.md` - Project boundaries
-- `.claude/rules/commands.md` - Triad + Vanilla command reference
-- `.claude/rules/context-loading.md` - Context loading guide
-
-**Documentation**
-- `MIGRATION.md` - Guide for customizing modular rules
-
-### Changed
-- Refactored CLAUDE.md from 192 to 70 lines using @-references
-- Instant context loading (<1 second vs 5-10 seconds with manual `cat` commands)
-- Topic-specific editing without merge conflicts
+- Modular rules system: governance, git workflow, deployment, scope, commands, and context loading extracted from CLAUDE.md (192 → 70 lines).
 
 ---
 
-## [1.0.0] - 2025-12-04
+## [1.0.0](https://github.com/davidmatousek/tachi/releases/tag/v1.0.0) (2025-12-04)
 
-### Added - Initial Release
+### Added
 
-**Core Governance**
-- Product-led governance template
-- SDLC Triad collaboration framework (PM + Architect + Tech-Lead)
-- Templatized constitution with `{{PLACEHOLDERS}}` for easy customization
-
-**Agents**
-- 13 specialized agents for different roles
-- Product Manager, Architect, Team-Lead, and implementation agents
-
-**Skills**
-- 8 automation capabilities
-- PRD creation, specification, planning, task generation, implementation
-
-**Commands**
-- Triad commands with governance (sign-offs required)
-- Vanilla commands for fast prototyping (no governance)
-
-**Documentation**
-- Constitution template (`.specify/memory/constitution.md`)
-- Product documentation structure (`docs/product/`)
-- Architecture documentation (`docs/architecture/`)
-- Core principles (`docs/core_principles/`)
-
----
-
-## Version Comparison
-
-| Feature | v1.0.0 | v1.1.0 | v2.0.0 | v2.1.0 | v3.0.0 | v4.0.0 |
-|---------|--------|--------|--------|--------|--------|--------|
-| Command Set | Triad + Vanilla | Triad + Vanilla | Triad + Vanilla | Triad + Vanilla | Triad only (10 commands) | Triad only (10 commands) |
-| Triad Governance | Sequential | Sequential | Parallel | Parallel | Parallel | Parallel |
-| CLAUDE.md Size | 192 lines | 70 lines | 70 lines | 70 lines | ~80 lines | ~80 lines |
-| Context Loading | Manual | @-references | @-references | @-references | @-references | @-references |
-| Version Detection | - | - | Automatic | Automatic | Automatic | Automatic |
-| Feature Flags | - | - | Supported | Supported | Supported | Supported |
-| Degradation | - | - | Graceful | Graceful | Graceful | Graceful |
-| Agent Count | 13 | 13 | 13 | 13 (refactored) | 13 | 13 |
-| Agent Line Reduction | - | - | - | 58% | 58% | 58% |
-| Skill Tool Coupling | - | - | 3 cross-calls | 3 cross-calls | 0 (self-contained) | 0 (self-contained) |
-| Branding | Spec Kit | Spec Kit | Spec Kit | Spec Kit | Spec Kit | AOD Kit |
-| Thinking Lenses | 5 | 5 | 5 | 5 | 5 | 8 |
-
----
-
-[4.0.0]: https://github.com/davidmatousek/tachi/compare/v3.0.0...v4.0.0
-[3.0.0]: https://github.com/davidmatousek/tachi/compare/v2.1.0...v3.0.0
-[2.1.0]: https://github.com/davidmatousek/tachi/compare/v2.0.0...v2.1.0
-[2.0.0]: https://github.com/davidmatousek/tachi/compare/v1.1.0...v2.0.0
-[1.1.0]: https://github.com/davidmatousek/tachi/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/davidmatousek/tachi/releases/tag/v1.0.0
+- Initial release: product-led governance template, SDLC Triad framework, 13 agents, 8 skills, triad + vanilla commands, documentation structure.
