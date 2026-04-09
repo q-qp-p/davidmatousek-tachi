@@ -383,3 +383,13 @@ Each PRD should include relevant user stories:
 - **US-084-2** (P0): Phase 1 Component Classification - Orchestrator classifies each component by MAESTRO layer using keyword matching against name, description, and DFD type during Phase 1 (Scope), with dispatch table showing MAESTRO Layer column
 - **US-084-3** (P0): SARIF Layer Tags - SARIF results include `maestro-layer:{layer-name}` in properties.tags array and `maestro-layer` key in properties for security tooling filtering
 - **US-084-4** (P1): Layer-Based Risk Summary - Risk summary in threats.md includes "Risk by MAESTRO Layer" subsection showing finding count and highest severity per layer, omitting layers with zero findings
+
+### Feature 104: Downstream Baseline Propagation
+
+**PRD**: [104-downstream-baseline-propagation](../02_PRD/104-downstream-baseline-propagation-2026-04-08.md)
+**Delivered**: 2026-04-08 | **PR**: #107 | **Tasks**: 18/18 complete | **Stories**: 4/4 passing
+
+- **US-104-1** (P0): Delta-Aware Threat Report - Threat-report agent parses delta_status from findings, groups by lifecycle status (new, unchanged, updated, resolved), excludes RESOLVED from attack trees, carries forward UNCHANGED attack trees, and produces Delta Summary section
+- **US-104-2** (P0): Delta-Aware Infographics - Infographic extraction script excludes RESOLVED findings from severity distribution counts, includes delta breakdown (new vs. unchanged vs. updated), and passes delta context to Gemini prompts
+- **US-104-3** (P1): Delta-Aware PDF Security Report - Report extraction script includes delta_status per finding in Typst data, RESOLVED findings appear in separate section, NEW findings visually badged in findings table
+- **US-104-4** (P0): Output Schema Delta Support - Standardized delta structures in threats.md Section 8 (Delta Summary) and threat-report.md output schema templates for consistent downstream parsing

@@ -98,6 +98,14 @@ When invoked as a subagent (via Agent tool), return ONLY:
 - Review `agent-assignments.md` for workload distribution
 
 ## Recent Changes
+- **Feature 104**: Downstream Baseline Propagation
+  - Propagates baseline severity and status fields from `threats.md` downstream through all pipeline stages
+  - New parser functions in `scripts/tachi_parsers.py`: `parse_baseline_frontmatter`, `parse_resolved_findings`, updated `parse_threats_findings` with delta fields
+  - Updated output schemas: `threats.md` (Section 8 Delta Summary, Status column in Section 7), `threat-report.md` (schema_version 1.0 to 1.1, Section 8 Delta Summary, baseline frontmatter fields)
+  - Updated agents: `threat-report` (delta-aware narrative), `threat-infographic` (delta-aware extraction), `report-assembler` (baseline data assembly)
+  - Updated scripts: `extract-report-data.py`, `extract-infographic-data.py` (baseline field extraction)
+  - Updated commands: `infographic.md`, `security-report.md` (baseline data display)
+  - All 6 example outputs regenerated with baseline columns
 - **Feature 084**: MAESTRO Layer Mapping (CSA seven-layer taxonomy for agentic AI)
   - New `maestro_layer` field in `schemas/finding.yaml` (schema_version 1.1 to 1.2)
   - Orchestrator Phase 1 keyword classification, finding inheritance, SARIF tags

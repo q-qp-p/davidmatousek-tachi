@@ -1808,3 +1808,124 @@ Architecture Input
 | Schema format | YAML | Consistent with existing finding.yaml |
 | Classification | Keyword matching | Reuses established AI dispatch pattern (case-insensitive substring) |
 | Reference framework | CSA MAESTRO | Industry-standard seven-layer taxonomy for agentic AI |
+
+---
+
+### Feature 104: Downstream Baseline Propagation
+
+**Status**: Delivered (2026-04-08) | PR #107 | 18/18 tasks complete
+
+## Components
+
+### Component 1: Shared Parser Extensions
+
+**File modified**: `scripts/tachi_parsers.py`
+**Type**: Extended existing module with 3 new/updated functions
+**Purpose**: Provide shared baseline metadata and delta lifecycle extraction for all downstream consumers (report and infographic extraction scripts).
+
+| Function | Purpose |
+|----------|---------|
+| `parse_baseline_frontmatter()` | Extract baseline metadata (source, date, finding_count, run_id) from nested YAML frontmatter block in threats.md. Handles both standard and code-fenced frontmatter delimiters. Returns None values when no baseline is present. |
+| `parse_resolved_findings()` | Parse Section 4b Resolved Findings table. Returns list of resolved finding dicts with `delta_status: "RESOLVED"` injected. Returns empty list when Section 4b is absent (first run, no baseline). |
+| `parse_threats_findings()` (updated) | Extended to extract optional `delta_status` field from Status column in Section 7 Recommended Actions table. Backward compatible -- omits field when Status column is absent. |
+
+### Component 2: Output Schema Updates
+
+**Files modified**: `templates/tachi/output-schemas/threats.md`, `templates/tachi/output-schemas/threat-report.md`
+**Type**: Extended existing output schemas
+**Purpose**: Surface baseline lifecycle data in standardized output formats for downstream consumption.
+
+| Template | Changes |
+|----------|---------|
+| `threats.md` | Section 7 Recommended Actions gains Status column carrying `delta_status` (NEW/UNCHANGED/UPDATED); new Section 8 Delta Summary with finding lifecycle counts, remediation proof, and baseline reference table |
+| `threat-report.md` | Schema version bumped 1.0 to 1.1; frontmatter gains `baseline_source`, `baseline_date`, `delta_counts` (new/unchanged/updated/resolved) fields; new Section 8 Delta Summary |
+
+### Component 3: Threat Report Agent Enhancement
+
+**File modified**: `agents/threat-report.md`
+**Type**: Extended existing agent with delta-aware narrative generation
+**Purpose**: Adapt executive summary, threat analysis, and remediation roadmap narratives to highlight changes since baseline.
+
+Delta-aware narrative rules:
+- Executive summary includes baseline comparison paragraph when baseline data is present
+- Threat analysis sections annotate individual findings with lifecycle status
+- New Section 8 Delta Summary generated with lifecycle breakdown and baseline reference
+- Attack tree generation scoped to NEW and UPDATED Critical/High findings (UNCHANGED findings carried from baseline)
+- Frontmatter populated with baseline metadata and delta counts from source threats.md
+
+### Component 4: Extraction Script Updates
+
+**Files modified**: `scripts/extract-report-data.py`, `scripts/extract-infographic-data.py`
+**Type**: Extended existing extraction scripts with baseline data support
+**Purpose**: Propagate baseline metadata and delta lifecycle counts to Typst and JSON data formats for report and infographic rendering.
+
+| Script | Changes |
+|--------|---------|
+| `extract-report-data.py` | Emits baseline metadata Typst variables (source, date, finding count, run ID), delta lifecycle count variables, and `has-baseline-data` boolean flag for conditional report section inclusion |
+| `extract-infographic-data.py` | Emits baseline metadata and delta lifecycle fields in JSON output when baseline data is present in source artifacts |
+
+### Component 5: Command Updates
+
+**Files modified**: `.claude/commands/infographic.md`, `.claude/commands/security-report.md`
+**Type**: Extended existing commands with baseline data display
+**Purpose**: Surface baseline comparison data in infographic specifications and PDF security reports.
+
+| Command | Changes |
+|---------|---------|
+| `/infographic` | Baseline metadata passed to infographic templates for delta annotation display |
+| `/security-report` | Baseline data variables available for conditional page inclusion in Typst report |
+
+### Component 6: Report Assembler Agent Enhancement
+
+**File modified**: `.claude/agents/tachi/report-assembler.md`
+**Type**: Extended existing agent with baseline data assembly
+**Purpose**: Include baseline metadata and delta lifecycle data in PDF security report assembly.
+
+### Component 7: Example Output Regeneration
+
+**Files modified**: All 6 example `threats.md` files, 2 example `threat-report.md` files
+**Type**: Regenerated with baseline columns
+**Purpose**: Reference implementations updated to demonstrate Section 7 Status column and Section 8 Delta Summary format.
+
+## Data Flow
+
+```
+threats.md (with baseline data from Feature 074)
+       │
+       ├── Section 7: Status column (delta_status per finding)
+       ├── Section 8: Delta Summary (lifecycle counts + baseline reference)
+       └── Frontmatter: baseline metadata block
+       │
+       ▼
+  ┌────────────────────────────────────────────────────────┐
+  │                    tachi_parsers.py                     │
+  │  parse_baseline_frontmatter() → baseline metadata      │
+  │  parse_resolved_findings()    → resolved finding list   │
+  │  parse_threats_findings()     → findings + delta_status │
+  └────────────────────────────────────────────────────────┘
+       │                                    │
+       ▼                                    ▼
+  extract-report-data.py            extract-infographic-data.py
+  (Typst variables)                 (JSON fields)
+       │                                    │
+       ▼                                    ▼
+  /security-report                  /infographic
+  (PDF with baseline data)          (spec with delta annotations)
+       │
+       ▼
+  threat-report.md (schema 1.1)
+  ├── Frontmatter: baseline_source, baseline_date, delta_counts
+  ├── Executive summary: baseline comparison paragraph
+  ├── Threat analysis: per-finding lifecycle annotations
+  └── Section 8: Delta Summary with lifecycle table
+```
+
+## Tech Stack
+
+| Technology | Purpose |
+|-----------|---------|
+| Python 3.9+ (stdlib only) | Shared parser module and extraction scripts -- no external dependencies |
+| Markdown tables | Status column and Delta Summary section as structured data carriers |
+| YAML frontmatter | Baseline metadata block in threats.md and threat-report.md |
+| Typst data variables | Conditional baseline section inclusion in PDF security reports |
+| JSON | Baseline fields in infographic extraction output |

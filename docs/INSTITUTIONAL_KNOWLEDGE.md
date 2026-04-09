@@ -5,7 +5,7 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-04-08
 
-**Entry Count**: 22 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 23 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -453,6 +453,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #architecture #templates #infographics #estimation
 
 **Quality Score**: 7/10
+
+---
+
+### KB-023: Centralized Parser Module Enables Same-Day Cross-Cutting Propagation
+
+**Date**: 2026-04-08
+**Category**: Architecture
+**Source**: Feature 104 retrospective
+**Severity**: Informational
+
+**Problem**: Need to propagate baseline delta annotations (NEW, UNCHANGED, UPDATED, RESOLVED) through all downstream pipeline consumers (threat-report, infographic, PDF report) without modifying each consumer's parsing logic independently.
+
+**Root Cause**: The shared parser module (`tachi_parsers.py`) serves as the single extraction point for all downstream scripts. Adding new fields to shared parser functions automatically makes them available to both `extract-report-data.py` and `extract-infographic-data.py`, which in turn feed agent prompts and report assembly.
+
+**Solution**: Feature 104 added 2 new parser functions (`parse_baseline_frontmatter()`, `parse_resolved_findings()`) and extended 1 existing function (`parse_threats_findings()`) in the shared parser. Both extraction scripts consumed the new fields without needing independent parsing logic. Agent instructions and command files received delta context through the existing data flow — no new plumbing required. All 18 tasks completed same-day across 5 waves.
+
+**Result**: Cross-cutting propagation through 10 files completed in a single session. The centralized parser pattern (established in Feature 067, PAT-014) proved its value as an architectural multiplier — one change point propagated to all consumers. Backward compatibility was maintained via presence checks (fields are only included when baseline data exists).
+
+**When to Apply**: Any future feature that adds new data fields to the pipeline. Always add extraction logic to `tachi_parsers.py` first, then let downstream scripts consume via the shared API. Avoid adding field-specific parsing to individual extraction scripts — the shared parser is the single source of truth for data extraction.
+
+**Tags**: #retrospective #architecture #parser #pipeline #centralized-extraction
+
+**Quality Score**: 8/10
 
 ---
 
