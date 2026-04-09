@@ -12,11 +12,13 @@
 
 ## What is tachi?
 
-tachi is a threat modeling sidecar that you add to any project. It dispatches 14 specialized AI agents against your architecture description and produces a complete threat model in one command. Then three post-pipeline commands enrich your results: `/risk-score` for quantitative scoring, `/compensating-controls` for codebase control analysis, and `/infographic` for visual risk diagrams.
+tachi is a threat modeling sidecar that you add to any project. It dispatches 12 specialized threat agents against your architecture description and produces a complete threat model in one command. Four post-pipeline commands enrich your results: `/risk-score` for quantitative scoring, `/compensating-controls` for codebase control analysis, `/infographic` for visual risk diagrams, and `/security-report` for a professional PDF assessment booklet.
 
 - **11 threat categories**: 6 STRIDE + 3 LLM-specific + 2 Agentic
+- **MAESTRO layer mapping**: CSA seven-layer taxonomy (L1-L7) for agentic AI threat classification
 - **5 input formats**: Mermaid, free-text, ASCII, PlantUML, C4
-- **12+ output artifacts**: structured findings, SARIF, narrative report, attack trees, quantitative risk scores, compensating controls analysis, visual infographics
+- **5 commands, 20+ artifacts**: structured findings, SARIF, narrative report, attack trees, risk scores, compensating controls, 5 infographic templates, PDF security report
+- **Baseline delta tracking**: Compare runs to track new, resolved, and unchanged findings over time
 - **Works with any stack**: tachi analyzes architecture, not code
 
 tachi is built with the [Agentic Oriented Development Kit (AOD Kit)](https://github.com/davidmatousek/agentic-oriented-development-kit), a governance framework for AI agent-assisted development.
@@ -106,13 +108,13 @@ tachi auto-detects the format. Mermaid, free-text, ASCII, PlantUML, and C4 are a
 /threat-model
 ```
 
-That's it. One command. tachi validates the setup, reads your architecture, dispatches 14 threat agents, and writes everything to a timestamped folder under `docs/security/`.
+That's it. One command. tachi validates the setup, reads your architecture, dispatches 12 threat agents, and writes everything to a timestamped folder under `docs/security/`.
 
 ### 6. Review your results
 
 | File | Source | What It Contains |
 |------|--------|-----------------|
-| `threats.md` | `/threat-model` | Primary threat model -- findings, coverage matrix, risk summary, mitigations |
+| `threats.md` | `/threat-model` | Primary threat model -- findings, coverage matrix, MAESTRO layers, risk summary |
 | `threats.sarif` | `/threat-model` | SARIF 2.1.0 for GitHub Code Scanning and CI/CD integration |
 | `threat-report.md` | `/threat-model` | Narrative report with executive summary and remediation roadmap |
 | `attack-trees/` | `/threat-model` | One Mermaid attack tree per Critical/High finding |
@@ -120,12 +122,14 @@ That's it. One command. tachi validates the setup, reads your architecture, disp
 | `risk-scores.sarif` | `/risk-score` | SARIF 2.1.0 with composite scores as `security-severity` per finding |
 | `compensating-controls.md` | `/compensating-controls` | Detected codebase controls, residual risk, missing control recommendations |
 | `compensating-controls.sarif` | `/compensating-controls` | SARIF 2.1.0 with residual risk as `security-severity` per finding |
-| `threat-baseball-card-spec.md` | `/infographic` | Baseball Card risk dashboard specification |
-| `threat-baseball-card.jpg` | `/infographic` | Baseball Card infographic (requires `GEMINI_API_KEY`) |
-| `threat-system-architecture-spec.md` | `/infographic` | Annotated architecture diagram specification |
-| `threat-system-architecture.jpg` | `/infographic` | Architecture infographic with finding legend (requires `GEMINI_API_KEY`) |
+| `threat-baseball-card.jpg` | `/infographic` | Baseball Card risk dashboard (requires `GEMINI_API_KEY`) |
+| `threat-system-architecture.jpg` | `/infographic` | Annotated architecture diagram with finding legend |
+| `threat-risk-funnel.jpg` | `/infographic` | Risk distribution funnel by severity |
+| `threat-maestro-stack.jpg` | `/infographic` | MAESTRO layer stack visualization (agentic systems only) |
+| `threat-maestro-heatmap.jpg` | `/infographic` | MAESTRO layer x severity heat map (agentic systems only) |
+| `security-report.pdf` | `/security-report` | Professional PDF booklet with all artifacts assembled |
 
-Start with `threats.md` Section 7 -- Recommended Actions. Then run `/risk-score` for quantitative prioritization, `/compensating-controls` to detect existing defenses, and `/infographic` for visual risk diagrams. Work through Critical findings first, then High.
+Start with `threats.md` Section 7 -- Recommended Actions. Then run `/risk-score` for quantitative prioritization, `/compensating-controls` to detect existing defenses, `/infographic` for visual risk diagrams, and `/security-report` to assemble everything into a PDF booklet. Work through Critical findings first, then High.
 
 > **Full Walkthrough**: The [Developer Guide](docs/guides/DEVELOPER_GUIDE_TACHI.md) covers the complete 5-step risk lifecycle with worked examples, advanced options, and CI/CD integration.
 
@@ -135,7 +139,7 @@ Start with `threats.md` Section 7 -- Recommended Actions. Then run `/risk-score`
 
 ### /threat-model
 
-Runs the 5-phase threat modeling pipeline: scope, determine threats, determine countermeasures, assess, and report. Produces `threats.md`, `threats.sarif`, `threat-report.md`, and `attack-trees/`.
+Runs the 5-phase threat modeling pipeline: scope, determine threats, determine countermeasures, assess, and report. Produces `threats.md`, `threats.sarif`, `threat-report.md`, and `attack-trees/`. Findings include MAESTRO layer classification for agentic AI components. Automatically detects baseline from previous runs for delta tracking.
 
 ```bash
 # Default -- uses docs/security/architecture.md
@@ -149,6 +153,9 @@ Runs the 5-phase threat modeling pipeline: scope, determine threats, determine c
 
 # Version-tagged output for a release
 /threat-model docs/security/architecture.md --version v1.0.0
+
+# Explicit baseline for delta comparison
+/threat-model docs/security/architecture.md --baseline docs/security/2026-03-01/threats.md
 ```
 
 ### /risk-score
@@ -186,30 +193,48 @@ Scans a target codebase against scored threats to detect existing security contr
 
 ### /infographic
 
-Generates visual threat infographic specifications and presentation-ready images. Auto-detects the richest data source in the output directory (prefers `risk-scores.md` over `threats.md`). Produces spec markdown and `.jpg` images (images require `GEMINI_API_KEY`).
+Generates visual threat infographic specifications and presentation-ready images. Auto-detects the richest data source in the output directory (prefers `compensating-controls.md` > `risk-scores.md` > `threats.md`). Produces spec markdown and `.jpg` images (images require `GEMINI_API_KEY`).
+
+**Templates**: `baseball-card`, `system-architecture`, `risk-funnel`, `maestro-stack`, `maestro-heatmap`, `all`
 
 ```bash
-# Generate all infographic templates from the default location
+# Generate all templates (auto-includes MAESTRO if data present)
 /infographic
 
 # Generate from a specific directory
 /infographic docs/security/2026-03-27/
 
-# Generate only the baseball card template
+# Generate a specific template
 /infographic docs/security/2026-03-27/ --template baseball-card
+/infographic docs/security/2026-03-27/ --template risk-funnel
 
-# Generate only the system architecture template
-/infographic docs/security/2026-03-27/ --template system-architecture
+# Generate both MAESTRO templates
+/infographic docs/security/2026-03-27/ --template maestro
+```
 
-# Custom output directory
-/infographic docs/security/2026-03-27/ --output-dir reports/visuals/
+### /security-report
+
+Assembles all pipeline artifacts into a professional multi-page PDF security assessment booklet. Auto-detects available artifacts and conditionally includes pages. Requires `typst` CLI for PDF compilation and optionally `mmdc` (Mermaid CLI) for attack path diagram rendering.
+
+**Page types** (conditional, based on available artifacts):
+Cover, Disclaimer, Table of Contents, Risk Methodology, Assessment Scope, Executive Summary, Attack Path Analysis, MAESTRO Findings, Infographic pages (full-bleed), Findings Detail, Control Coverage, Remediation Roadmap
+
+```bash
+# Generate PDF from the default location
+/security-report
+
+# Generate from a specific directory
+/security-report docs/security/2026-03-27/
+
+# Custom output path
+/security-report docs/security/2026-03-27/ --output reports/assessment.pdf
 ```
 
 ---
 
 ## How It Works
 
-tachi uses a multi-agent orchestration pattern. The orchestrator parses your architecture, identifies components and data flows, then dispatches the right combination of threat agents per component:
+tachi uses a multi-agent orchestration pattern. The orchestrator parses your architecture, identifies components and data flows, then dispatches the right combination of 12 threat agents per component:
 
 | Component Type | STRIDE Agents | AI Agents |
 |---------------|---------------|-----------|
@@ -221,6 +246,26 @@ tachi uses a multi-agent orchestration pattern. The orchestrator parses your arc
 AI agents activate when component names or descriptions contain keywords like "LLM", "agent", "orchestrator", "MCP", "tool server", "embedding", "RAG", etc.
 
 After all agents report, the orchestrator deduplicates findings, runs cross-agent correlation, computes risk ratings, and generates the output suite.
+
+### MAESTRO Layer Classification
+
+For agentic AI systems, tachi maps each finding to the [CSA MAESTRO](https://cloudsecurityalliance.org/) seven-layer taxonomy:
+
+| Layer | Name | Scope |
+|-------|------|-------|
+| L1 | Foundation Model | Pre-trained LLMs, inference engines |
+| L2 | Data Operations | Vector stores, RAG pipelines, embeddings |
+| L3 | Agent Framework | Orchestrators, tool servers, MCP |
+| L4 | Deployment Infrastructure | API gateways, containers, networking |
+| L5 | Security | Auth, guardrails, rate limiting |
+| L6 | Agent Ecosystem | Multi-agent coordination, delegation |
+| L7 | User Interface | Chat UIs, dashboards, API endpoints |
+
+MAESTRO layers appear in `threats.md`, propagate through all downstream commands, and power the `maestro-stack` and `maestro-heatmap` infographic templates.
+
+### Baseline Delta Tracking
+
+When you run `/threat-model` on a system that already has a previous run, tachi automatically detects the baseline and computes a delta: new findings, resolved findings, unchanged findings, and updated findings. This lets you track risk posture changes over time without manual diffing.
 
 ---
 
@@ -251,19 +296,24 @@ After all agents report, the orchestrator deduplicates findings, runs cross-agen
 
 ## Examples
 
-The [`examples/`](examples/) directory contains complete threat models you can reference:
+The [`examples/`](examples/) directory contains complete threat models across different input formats and architectures:
 
-| Example | Architecture | Threat Categories |
-|---------|-------------|-------------------|
-| [Web App](examples/web-app/) | Traditional web application | STRIDE |
-| [Agentic App](examples/agentic-app/) | LLM orchestrator + MCP tools | STRIDE + AI |
-| [Microservices](examples/microservices/) | Cross-service architecture | STRIDE |
+| Example | Input Format | Architecture | Threat Categories |
+|---------|-------------|-------------|-------------------|
+| [Agentic App](examples/agentic-app/) | Mermaid | LLM orchestrator + MCP tools | STRIDE + AI + MAESTRO |
+| [Mermaid Agentic App](examples/mermaid-agentic-app/) | Mermaid | Multi-agent system | STRIDE + AI |
+| [Web App](examples/web-app/) | Mermaid | Traditional web application | STRIDE |
+| [Microservices](examples/microservices/) | Mermaid | Cross-service architecture | STRIDE |
+| [ASCII Web API](examples/ascii-web-api/) | ASCII | REST API with database | STRIDE |
+| [Free-text Microservice](examples/free-text-microservice/) | Free-text | Event-driven microservice | STRIDE |
 
-The agentic-app example includes a [complete sample report](examples/agentic-app/sample-report/) showing every artifact the pipeline produces -- structured findings, SARIF, narrative report, attack trees, and infographics:
+The agentic-app example includes a [complete sample report](examples/agentic-app/sample-report/) showing every artifact the pipeline produces -- structured findings, SARIF, narrative report, attack trees, risk scores, compensating controls, and infographics:
 
 ![Threat Baseball Card](examples/agentic-app/sample-report/threat-baseball-card.jpg)
 
 ![System Architecture](examples/agentic-app/sample-report/threat-system-architecture.jpg)
+
+![Risk Funnel](examples/agentic-app/sample-report/threat-risk-funnel.jpg)
 
 ---
 
@@ -272,9 +322,10 @@ The agentic-app example includes a [complete sample report](examples/agentic-app
 | Resource | Location | Purpose |
 |----------|----------|---------|
 | Interface Contract | [`docs/INTERFACE-CONTRACT.md`](docs/INTERFACE-CONTRACT.md) | Input formats, invocation protocol, output structure |
-| Output Templates | [`templates/tachi/`](templates/tachi/) | Canonical output structures ([threats.md](templates/tachi/output-schemas/threats.md), [risk-scores.md](templates/tachi/output-schemas/risk-scores.md), [risk-scores.sarif](templates/tachi/output-schemas/risk-scores.sarif), [compensating-controls.md](templates/tachi/output-schemas/compensating-controls.md), [compensating-controls.sarif](templates/tachi/output-schemas/compensating-controls.sarif)) |
+| Output Templates | [`templates/tachi/`](templates/tachi/) | Canonical output structures and Typst PDF templates |
 | Schemas | [`schemas/`](schemas/) | Machine-readable contracts ([finding.yaml](schemas/finding.yaml), [input.yaml](schemas/input.yaml), [output.yaml](schemas/output.yaml), [risk-scoring.yaml](schemas/risk-scoring.yaml)) |
-| Threat Agents | [`agents/stride/`](agents/stride/) + [`agents/ai/`](agents/ai/) | Agent prompt definitions |
+| Threat Agents | [`.claude/agents/tachi/`](.claude/agents/tachi/) | 12 threat agents (7 STRIDE + 3 LLM + 2 Agentic) + utility agents |
+| Commands | [`.claude/commands/`](.claude/commands/) | 5 slash commands: threat-model, risk-score, compensating-controls, infographic, security-report |
 | Developer Guide | [`docs/guides/DEVELOPER_GUIDE_TACHI.md`](docs/guides/DEVELOPER_GUIDE_TACHI.md) | Full walkthrough with worked examples |
 
 ---
@@ -289,7 +340,7 @@ Successive threat model runs on the same architecture may produce slightly diffe
 
 **What varies**: Borderline findings in the long tail -- a Medium-severity finding like "missing correlation ID on external API calls" may appear in one run but not the next, depending on how the agent reasons through the architecture.
 
-**Why this happens**: Each of the 14 threat agents makes independent LLM calls. LLM output is non-deterministic by nature, so agents may surface slightly different findings on each invocation.
+**Why this happens**: Each of the 12 threat agents makes independent LLM calls. LLM output is non-deterministic by nature, so agents may surface slightly different findings on each invocation.
 
 **If you need higher consistency**:
 - Run twice and diff the results to catch edge cases
