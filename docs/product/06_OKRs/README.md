@@ -1,6 +1,6 @@
 # OKRs (Objectives and Key Results) - tachi
 
-**Last Updated**: 2026-04-08
+**Last Updated**: 2026-04-09
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -166,4 +166,5 @@ OKRs align the team around measurable goals. They answer:
 | 2026-04-06 | F-086: Automated Release Tagging via GitHub Actions | [086](../02_PRD/086-automated-release-tagging-via-github-actions-2026-04-06.md) | Google release-please GitHub Action for automated version tagging from conventional commits. Deliverables: release-please.yml workflow, release-please-config.json, .release-please-manifest.json (baseline v4.0.0), README Releases section. Eliminates manual `git tag` commands; maintainer controls release timing via Release PR merge. |
 | 2026-04-08 | F-084: MAESTRO Layer Mapping | [084](../02_PRD/084-maestro-layer-mapping-2026-04-07.md) | CSA MAESTRO seven-layer taxonomy overlay for all threat findings. New schema field, shared reference, orchestrator keyword classification in Phase 1, SARIF tags, downstream agent propagation, layer-based risk summary. All 6 example outputs regenerated. 4 user stories delivered. |
 | 2026-04-08 | F-104: Downstream Baseline Propagation | [104](../02_PRD/104-downstream-baseline-propagation-2026-04-08.md) | Propagates baseline delta_status downstream through threat-report, infographic, and PDF report pipelines. RESOLVED findings excluded from active counts, NEW findings highlighted, Delta Summary section in reports. Shared parser updated for delta extraction. Completes the baseline story started in F-074. 4 user stories delivered. |
+| 2026-04-09 | F-121: Rename Tachi Commands to tachi.* Namespace | [121](../02_PRD/121-rename-tachi-commands-to-namespace-2026-04-09.md) | All 6 tachi pipeline commands renamed to tachi.* dot-namespace (e.g., /threat-model -> /tachi.threat-model). New /tachi.architecture command added. Cross-references updated across 160+ files. Install script handles cleanup of old command files. 5 user stories delivered. |
 | 2026-04-09 | F-112: Attack Path Pages in Security Report PDF | [112](../02_PRD/112-attack-path-pages-in-pdf-2026-04-09.md) | Dedicated attack path visualization pages in PDF security reports. Extraction pipeline parses attack trees, renders Mermaid diagrams to PNG, feeds structured data to Typst template. Conditional inclusion gated by has-attack-trees boolean. Backward compatible with existing reports. 4 user stories delivered. |

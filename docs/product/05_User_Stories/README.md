@@ -1,6 +1,6 @@
 # User Stories - tachi
 
-**Last Updated**: 2026-04-08
+**Last Updated**: 2026-04-09
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -403,3 +403,14 @@ Each PRD should include relevant user stories:
 - **US-112-2** (P1): Attack Path Page Ordering - Attack path pages ordered by severity (Critical first, then High) and by finding ID within the same severity for focused reading
 - **US-112-3** (P1): Mermaid Diagram Rendering - Mermaid attack tree code blocks rendered to PNG images at 2x resolution via mmdc; graceful fallback to preformatted text when rendering tool is unavailable
 - **US-112-4** (P2): Section Header and TOC Integration - Attack path section introduced by "Attack Path Analysis" divider page and included in table of contents for clear navigation
+
+### Feature 121: Rename Tachi Commands to tachi.* Namespace
+
+**PRD**: [121-rename-tachi-commands-to-namespace](../02_PRD/121-rename-tachi-commands-to-namespace-2026-04-09.md)
+**Delivered**: 2026-04-09 | **PR**: #122 | **Tasks**: 72/72 complete | **Stories**: 5/5 passing
+
+- **US-121-1** (P0): Namespace-Prefixed Command Invocation - All 6 tachi pipeline commands (/tachi.threat-model, /tachi.risk-score, /tachi.compensating-controls, /tachi.infographic, /tachi.security-report, /tachi.architecture) invoke correctly under the tachi.* namespace
+- **US-121-2** (P1): Command Discovery via Namespace - Typing `/tachi.` in IDE command palette reveals all 6 pipeline commands as completions
+- **US-121-3** (P0): Cross-Reference Integrity - Zero references to old unprefixed command names remain across commands, agents, skills, docs, and templates (historical PRDs and specs excluded per immutability policy)
+- **US-121-4** (P0): Clean Upgrade Without Duplicate Commands - Install script removes old command files (threat-model.md, risk-score.md, compensating-controls.md, infographic.md, security-report.md) from .claude/commands/ so only tachi.* prefixed commands exist
+- **US-121-5** (P1): Migration Guidance for Existing Users - CHANGELOG contains clear old-to-new command name mapping for existing users transitioning to the new namespace

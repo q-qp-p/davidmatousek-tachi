@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-04-08
+**Last Updated**: 2026-04-09
 
-**Entry Count**: 23 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 24 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -474,6 +474,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **When to Apply**: Any future feature that adds new data fields to the pipeline. Always add extraction logic to `tachi_parsers.py` first, then let downstream scripts consume via the shared API. Avoid adding field-specific parsing to individual extraction scripts — the shared parser is the single source of truth for data extraction.
 
 **Tags**: #retrospective #architecture #parser #pipeline #centralized-extraction
+
+**Quality Score**: 8/10
+
+---
+
+### KB-024: Namespace Rename Across 50+ Files Executes Cleanly with Tiered Wave Strategy
+
+**Date**: 2026-04-09
+**Category**: Process
+**Source**: Feature 121 retrospective
+**Severity**: Informational
+
+**Problem**: Rename all 6 tachi pipeline commands from unprefixed names (e.g., `/threat-model`) to dot-namespace convention (`/tachi.threat-model`), updating every cross-reference across agents, adapters, schemas, templates, scripts, and documentation — 52 files total.
+
+**Root Cause**: The rename touched every layer of the codebase because command names appear in agent instructions, skill references, command files, adapter configs, schemas, templates, documentation, and install scripts. A naive approach risked inconsistent partial renames or broken cross-references.
+
+**Solution**: Used a 5-wave tiered execution strategy: Wave 1 (prototype: rename command files + core agents), Wave 2 (validate prototype), Wave 3 (propagate to adapters, schemas, templates, scripts, docs), Wave 4 (cross-reference consistency verification), Wave 5 (final grep verification for zero old-name matches). Each wave had explicit checkpoint validation before proceeding.
+
+**Result**: 72 tasks across 52 files completed same-day with zero regressions. The tiered strategy caught 8 additional files (adapter README, GitHub Actions workflow, internal command cross-references) that weren't in the original task list. Grep-based verification in Wave 5 confirmed zero stale references in distributable code.
+
+**When to Apply**: Any codebase-wide rename or migration affecting naming conventions. Structure as: rename core files → validate → propagate to dependents → verify consistency → grep sweep. The grep verification wave is essential — it catches references that task-based enumeration misses.
+
+**Tags**: #retrospective #process #rename #migration #namespace #wave-strategy
 
 **Quality Score**: 8/10
 

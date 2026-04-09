@@ -98,6 +98,13 @@ When invoked as a subagent (via Agent tool), return ONLY:
 - Review `agent-assignments.md` for workload distribution
 
 ## Recent Changes
+- **Feature 121**: Rename Tachi Commands to `tachi.*` Namespace
+  - All 6 pipeline commands renamed: `/threat-model` to `/tachi.threat-model`, `/risk-score` to `/tachi.risk-score`, `/compensating-controls` to `/tachi.compensating-controls`, `/infographic` to `/tachi.infographic`, `/security-report` to `/tachi.security-report`
+  - New `/tachi.architecture` command added for generating architecture descriptions
+  - Cross-references updated across entire codebase (agents, schemas, templates, docs, examples, adapters)
+  - Install script (`scripts/install.sh`) handles cleanup of old command files
+  - GitHub Actions workflow renamed: `tachi-threat-model.yml` to `tachi.threat-model.yml`
+  - No new dependencies or architectural changes -- naming/namespace migration only
 - **Feature 112**: Attack Path Pages in Security Report PDF
   - New Typst page template `templates/tachi/security-report/attack-path.typ` for attack path visualization pages
   - New functions in `scripts/extract-report-data.py`: `parse_attack_trees()`, `render_mermaid_to_png()`, narrative/remediation builders

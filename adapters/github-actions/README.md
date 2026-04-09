@@ -23,7 +23,7 @@ The workflow ships as a single `.yml` file. All 14 tachi agents (orchestrator, 6
 Copy the workflow file into your repository's GitHub Actions directory:
 
 ```bash
-cp adapters/github-actions/tachi-threat-model.yml .github/workflows/
+cp adapters/github-actions/tachi.threat-model.yml .github/workflows/
 ```
 
 Then add your LLM API key as a repository secret:
@@ -130,14 +130,14 @@ Each finding also includes a `findingId/v1` partial fingerprint containing the t
 
 1. **Install the workflow**:
    ```bash
-   cp adapters/github-actions/tachi-threat-model.yml .github/workflows/
+   cp adapters/github-actions/tachi.threat-model.yml .github/workflows/
    ```
 
 2. **Set the API key** as a repository secret (`LLM_API_KEY`).
 
 3. **Trigger a run** by either:
    - Opening a pull request that modifies a file under `docs/architecture/`
-   - Manually dispatching the workflow from **Actions > tachi-threat-model > Run workflow**
+   - Manually dispatching the workflow from **Actions > tachi.threat-model > Run workflow**
 
 4. **Check the workflow run** in the **Actions** tab. The job summary shows finding count, model used, and artifact links.
 
@@ -165,7 +165,7 @@ Each finding also includes a `findingId/v1` partial fingerprint containing the t
 Remove the workflow file from your repository:
 
 ```bash
-rm .github/workflows/tachi-threat-model.yml
+rm .github/workflows/tachi.threat-model.yml
 ```
 
 Existing Code Scanning alerts from previous runs will remain in the Security tab until manually dismissed.

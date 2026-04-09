@@ -163,13 +163,13 @@ The GitHub Actions adapter requires a GitHub repository with Actions enabled. To
 1. Copy the workflow file:
    ```bash
    mkdir -p /path/to/test-project/.github/workflows
-   cp adapters/github-actions/tachi-threat-model.yml /path/to/test-project/.github/workflows/
+   cp adapters/github-actions/tachi.threat-model.yml /path/to/test-project/.github/workflows/
    ```
 
 2. Validate the YAML syntax:
    ```bash
    # Requires yq or a YAML linter
-   yq eval '.' adapters/github-actions/tachi-threat-model.yml > /dev/null && echo "YAML valid"
+   yq eval '.' adapters/github-actions/tachi.threat-model.yml > /dev/null && echo "YAML valid"
    ```
 
 3. Set the `LLM_API_KEY` repository secret in the test repository (Settings > Secrets and variables > Actions).

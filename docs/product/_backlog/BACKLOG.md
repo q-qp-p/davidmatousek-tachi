@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-09T16:37:38Z.
+> Auto-generated from GitHub Issues on 2026-04-09T19:05:55Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -38,7 +38,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| — | *No items in this stage* | | |
+| #121 | Rename tachi commands to tachi.* namespace | 2026-04-09 | — | 2026-04-09 |
 
 ## Untracked
 
@@ -46,7 +46,6 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #121 | Rename tachi commands to tachi.* namespace | OPEN | 2026-04-09 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
 | #18 | Feature: Threat Infographic Agent | CLOSED | 2026-03-23 |
 | #15 | Feature 007: Threat Report Agent & Attack Trees | CLOSED | 2026-03-23 |

@@ -6,7 +6,7 @@
 
 | # | Feature | PM | Architect | Team-Lead | Status | Date |
 |---|---------|----|-----------|-----------| -------|------|
-| 121 | [Rename Tachi Commands to tachi.* Namespace](121-rename-tachi-commands-to-namespace-2026-04-09.md) | ✓ | ⚠ | ⚠ | Approved | 2026-04-09 |
+| 121 | [Rename Tachi Commands to tachi.* Namespace](121-rename-tachi-commands-to-namespace-2026-04-09.md) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-09 |
 | 112 | [Attack Path Pages in Security Report PDF](112-attack-path-pages-in-pdf-2026-04-09.md) | ✓ | ✓ | ✓ | Delivered | 2026-04-09 |
 | 104 | [Downstream Baseline Propagation](104-downstream-baseline-propagation-2026-04-08.md) | ✓ | ✓ | ✓ | Delivered | 2026-04-08 |
 | 091 | [MAESTRO Infographic Templates and PDF Report Section](091-maestro-infographic-templates-and-pdf-report-section-2026-04-08.md) | ✓ | ✓ | ✓ | Delivered | 2026-04-08 |

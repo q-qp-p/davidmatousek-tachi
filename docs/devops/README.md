@@ -157,7 +157,7 @@ No new environment variables, Docker services, staging configuration, or product
 
 ### Relationship to Existing Workflows
 
-release-please complements the existing CI/CD pipeline -- it does not replace any existing workflow. The tachi-threat-model workflow (Feature 021) runs on PRs that modify architecture files; release-please runs on pushes to `main` after PRs are merged. Both workflows coexist without interaction.
+release-please complements the existing CI/CD pipeline -- it does not replace any existing workflow. The tachi.threat-model workflow (Feature 021) runs on PRs that modify architecture files; release-please runs on pushes to `main` after PRs are merged. Both workflows coexist without interaction.
 
 See [CI/CD Guide](CI_CD_GUIDE.md) for detailed configuration and changelog section mappings.
 
