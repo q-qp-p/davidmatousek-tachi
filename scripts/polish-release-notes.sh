@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # polish-release-notes.sh — Rewrite auto-generated release notes via Claude API
 #
-# Usage: TAG_NAME=v4.5.0 ANTHROPIC_API_KEY=... ./scripts/polish-release-notes.sh
+# Run locally after merging a Release PR:
+#   TAG_NAME=v4.5.0 ./scripts/polish-release-notes.sh
 #
-# Requires: gh, jq, curl
+# ANTHROPIC_API_KEY must be set in your environment (e.g., .zshrc or .env).
+# Requires: gh (authenticated), jq, curl
 # Graceful fallback: keeps auto-generated notes if Claude API is unavailable.
 
 set -euo pipefail
@@ -74,7 +76,7 @@ HTTP_CODE=$(echo "$RESPONSE" | tail -1)
 BODY=$(echo "$RESPONSE" | sed '$d')
 
 if [ "$HTTP_CODE" != "200" ]; then
-  echo "::warning::Claude API returned $HTTP_CODE — keeping auto-generated notes"
+  echo "Warning: Claude API returned $HTTP_CODE — keeping auto-generated notes"
   echo "$BODY" | head -5
   exit 0
 fi
@@ -82,7 +84,7 @@ fi
 POLISHED=$(echo "$BODY" | jq -r '.content[0].text')
 
 if [ -z "$POLISHED" ] || [ "$POLISHED" = "null" ]; then
-  echo "::warning::Empty response from Claude API — keeping auto-generated notes"
+  echo "Warning: Empty response from Claude API — keeping auto-generated notes"
   exit 0
 fi
 
