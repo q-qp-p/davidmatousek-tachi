@@ -2097,6 +2097,8 @@ Data flow unchanged — only command invocation names change from unprefixed to 
 
 ### Feature 120: Architecture Lifecycle Command
 
+**Status**: Delivered (2026-04-09) | PR #124 | 23/23 tasks complete
+
 ## Components
 
 | Component | Type | Description |

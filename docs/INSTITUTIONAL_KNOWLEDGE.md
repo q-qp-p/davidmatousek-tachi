@@ -5,7 +5,7 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-04-09
 
-**Entry Count**: 24 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 25 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -497,6 +497,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **When to Apply**: Any codebase-wide rename or migration affecting naming conventions. Structure as: rename core files → validate → propagate to dependents → verify consistency → grep sweep. The grep verification wave is essential — it catches references that task-based enumeration misses.
 
 **Tags**: #retrospective #process #rename #migration #namespace #wave-strategy
+
+**Quality Score**: 8/10
+
+---
+
+### KB-025: Well-Scoped Features with Thorough Spec/Plan/Tasks Pipeline Complete in Single Sessions
+
+**Date**: 2026-04-09
+**Category**: Process
+**Source**: Feature 120 retrospective
+**Severity**: Informational
+
+**Problem**: Feature development often spans multiple sessions due to unclear scope, mid-flight rework, or incomplete task decomposition — leading to context loss and handoff overhead between sessions.
+
+**Root Cause**: When specifications lack clear acceptance scenarios, plans lack concrete file-level implementation details, or task decomposition is too coarse, implementation stalls on ambiguity and requires clarification loops that break single-session flow.
+
+**Solution**: Feature 120 (Architecture Lifecycle Command) used a thorough pipeline: 4 user stories with explicit acceptance scenarios, 22 granular functional requirements in spec, file-level implementation plan with data model, and 23 atomic tasks organized in 5 dependency-ordered waves. Every task referenced specific files and had clear done criteria.
+
+**Result**: All 23 tasks completed in one session with zero blockers, zero rework, and no mid-flight scope changes. The feature shipped same-day with clean backward compatibility — no changes needed to example files or downstream pipeline stages.
+
+**When to Apply**: Any command-level or methodology feature. Invest time in acceptance scenarios (Given/When/Then format), file-level task granularity, and wave-based ordering. The upfront cost of thorough planning pays for itself by eliminating mid-session ambiguity and rework.
+
+**Tags**: #retrospective #process #planning #single-session #spec-quality
 
 **Quality Score**: 8/10
 
