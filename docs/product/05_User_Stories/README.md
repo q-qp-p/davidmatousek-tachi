@@ -393,3 +393,13 @@ Each PRD should include relevant user stories:
 - **US-104-2** (P0): Delta-Aware Infographics - Infographic extraction script excludes RESOLVED findings from severity distribution counts, includes delta breakdown (new vs. unchanged vs. updated), and passes delta context to Gemini prompts
 - **US-104-3** (P1): Delta-Aware PDF Security Report - Report extraction script includes delta_status per finding in Typst data, RESOLVED findings appear in separate section, NEW findings visually badged in findings table
 - **US-104-4** (P0): Output Schema Delta Support - Standardized delta structures in threats.md Section 8 (Delta Summary) and threat-report.md output schema templates for consistent downstream parsing
+
+### Feature 112: Attack Path Pages in Security Report PDF
+
+**PRD**: [112-attack-path-pages-in-pdf](../02_PRD/112-attack-path-pages-in-pdf-2026-04-09.md)
+**Delivered**: 2026-04-09 | **PR**: #115 | **Tasks**: 18/18 complete | **Stories**: 4/4 passing
+
+- **US-112-1** (P1): View Attack Path Page in PDF Report - Each Critical and High finding with an attack tree gets a dedicated page in the PDF with rendered diagram image, narrative explanation, and remediation steps; reports without attack trees generate without errors
+- **US-112-2** (P1): Attack Path Page Ordering - Attack path pages ordered by severity (Critical first, then High) and by finding ID within the same severity for focused reading
+- **US-112-3** (P1): Mermaid Diagram Rendering - Mermaid attack tree code blocks rendered to PNG images at 2x resolution via mmdc; graceful fallback to preformatted text when rendering tool is unavailable
+- **US-112-4** (P2): Section Header and TOC Integration - Attack path section introduced by "Attack Path Analysis" divider page and included in table of contents for clear navigation

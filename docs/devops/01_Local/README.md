@@ -1,6 +1,6 @@
 # Local Development Environment - tachi
 
-**Last Updated**: 2026-03-30
+**Last Updated**: 2026-04-09
 **Owner**: DevOps Agent
 
 ---
@@ -19,6 +19,7 @@
 - **jq**: JSON processor, required by `.aod/scripts/bash/run-state.sh` for the Full Lifecycle Orchestrator (`brew install jq` on macOS, `apt-get install jq` on Linux)
 - **GitHub CLI (`gh`)**: Used by `make init` to auto-create a GitHub Projects board for backlog tracking. Requires the `project` OAuth scope (`gh auth refresh -s project`). If not installed or not authenticated, init continues without creating the board. Install via `brew install gh` on macOS or see [cli.github.com](https://cli.github.com)
 - **Typst CLI**: Required by `/security-report` for PDF generation. Install via `brew install typst` on macOS, `cargo install typst-cli` on Linux, or `winget install typst` on Windows. If not installed, the `/security-report` command displays platform-specific install instructions and halts. See `templates/tachi/security-report/` for Typst template sources
+- **Mermaid CLI (`mmdc`)**: Optional. Used by `scripts/extract-report-data.py` to render Mermaid attack tree diagrams to PNG for the Attack Path Pages section of the PDF security report (Feature 112). Requires Node.js. Install via `npm install -g @mermaid-js/mermaid-cli`. If not installed, the extraction script logs a warning and the attack path pages omit rendered diagram images while retaining narrative and remediation content. Only relevant when the scanned project contains an `attack-trees/` directory
 
 ### make init Personalization
 

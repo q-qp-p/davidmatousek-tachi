@@ -1133,7 +1133,7 @@ graph TD
 
 ### Component 1: Command File (`security-report.md`)
 
-User-facing entry point following the 4-step command pattern (parse → validate → generate → report). Handles `--output-dir` and `--title` flags, validates Typst installation, auto-detects 7 artifact types in target directory, and invokes the report-assembler agent.
+User-facing entry point following the 4-step command pattern (parse → validate → generate → report). Handles `--output-dir` and `--title` flags, validates Typst installation, auto-detects 8 artifact types in target directory (including `attack-trees/` directory, Feature 112), and invokes the report-assembler agent.
 
 ### Component 2: Agent File (`report-assembler.md`)
 
@@ -1145,7 +1145,7 @@ Declarative page assembly rules defining artifact detection patterns, page seque
 
 ### Component 4: Typst Templates (`templates/tachi/security-report/`)
 
-Modular rendering templates: `main.typ` (orchestrator with conditional page inclusion), `shared.typ` (severity colors, typography, headers/footers), and per-page modules (`cover.typ`, `executive-summary.typ`, `full-bleed.typ`, `findings-detail.typ`, `control-coverage.typ`, `remediation-roadmap.typ`).
+Modular rendering templates: `main.typ` (orchestrator with conditional page inclusion), `shared.typ` (severity colors, typography, headers/footers), and per-page modules (`cover.typ`, `executive-summary.typ`, `full-bleed.typ`, `findings-detail.typ`, `control-coverage.typ`, `remediation-roadmap.typ`, `attack-path.typ` -- Feature 112).
 
 ## Data Flow
 
@@ -1156,6 +1156,7 @@ graph LR
         TR[threat-report.md]
         RS[risk-scores.md]
         CC[compensating-controls.md]
+        AT[attack-trees/*.md]
         I1[threat-risk-funnel.jpg]
         I2[threat-baseball-card.jpg]
         I3[threat-system-architecture.jpg]
@@ -1184,6 +1185,7 @@ graph LR
     TR --> CMD
     RS --> CMD
     CC --> CMD
+    AT --> CMD
     I1 --> CMD
     I2 --> CMD
     I3 --> CMD
@@ -1246,7 +1248,7 @@ threats.md + brand/*.png + optional artifacts
     → Report Assembler (detects artifacts)
     → python3 scripts/extract-report-data.py (deterministic parsing, Feature 067)
     → report-data.typ + report-config.typ
-    → Typst compile (main.typ orchestrates 12 page types)
+    → Typst compile (main.typ orchestrates 13 page types)
     → security-report.pdf
 ```
 
@@ -1255,7 +1257,7 @@ threats.md + brand/*.png + optional artifacts
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | Typst | 0.11+ | PDF rendering with `outline()`, `image()`, `hide()` |
-| PNG | N/A | Brand logo assets (Typst auto-detects PNG vs JPEG from headers) |
+| PNG | N/A | Brand logo assets (Typst auto-detects PNG vs JPEG from headers); attack tree diagram images rendered by `mmdc` (Feature 112) |
 | YAML | N/A | Schema definitions (security-report.yaml v1.1) |
 
 ---
@@ -1929,3 +1931,99 @@ threats.md (with baseline data from Feature 074)
 | YAML frontmatter | Baseline metadata block in threats.md and threat-report.md |
 | Typst data variables | Conditional baseline section inclusion in PDF security reports |
 | JSON | Baseline fields in infographic extraction output |
+
+---
+
+### Feature 112: Attack Path Pages in Security Report PDF
+
+**Status**: Delivered (2026-04-09) | PR #115 | 18/18 tasks complete
+
+## Components
+
+### Component 1: Attack Tree Data Extraction
+
+**File modified**: `scripts/extract-report-data.py`
+**Type**: Extended existing script with 2 new functions
+**Purpose**: Parse attack tree Mermaid files, render to PNG via `mmdc` subprocess, and emit structured data for Typst page rendering.
+
+| Function | Purpose |
+|----------|---------|
+| `parse_attack_trees()` | Scans `attack-trees/` directory for `*-attack-tree.md` files, extracts finding ID, component, severity from metadata table, extracts Mermaid code block, cross-references finding ID with parsed findings data for authoritative severity and mitigation text, filters to Critical and High findings, orders by severity then finding ID. Constructs narrative from attack tree metadata and node labels, sources remediation from finding mitigation field. |
+| `render_mermaid_to_png()` | Checks `mmdc` availability via `shutil.which()`, creates `tempfile.TemporaryDirectory()` for intermediate files, invokes `mmdc -i {id}.mmd -o {id}.png -s 2 -b transparent` per entry, copies PNGs to `attack-trees/` directory for Typst consumption. Graceful fallback: sets `has_image = false` per entry when `mmdc` unavailable or rendering fails; raw Mermaid text displayed instead. |
+
+**Output to `report-data.typ`**: `has-attack-trees` (boolean), `attack-trees` (array of dicts with: id, component, severity, title, image-path, has-image, mermaid-text, narrative, remediation).
+
+### Component 2: Artifact Detection Extension
+
+**File modified**: `scripts/tachi_parsers.py`
+**Type**: Extended existing function
+**Purpose**: Add `attack-trees/` directory detection to the canonical `detect_artifacts()` entry point, returning `has_attack_trees` boolean and directory path.
+
+### Component 3: Attack Path Typst Page Template
+
+**New file**: `templates/tachi/security-report/attack-path.typ`
+**Type**: New file
+**Purpose**: Renders one portrait page per attack path entry with severity badge, rendered diagram (or raw Mermaid fallback), narrative explanation, and remediation steps.
+
+Exports `attack-path-page(entry, classification)` function rendering:
+- Header with classification bar via `report-header()`
+- Severity-colored finding badge (using `severity-color()`) with finding ID and title
+- Diagram section (~60% page height): `#image()` if `has-image` is true, `#raw()` monospace block otherwise
+- Narrative section: 2-4 sentence attack chain explanation
+- Remediation section: Bulleted list of remediation steps
+- Standard footer via `report-footer()`
+
+Follows patterns from `maestro-findings.typ`: imports `shared.typ`, exports single function, severity badge helper.
+
+### Component 4: Main Orchestrator Update
+
+**File modified**: `templates/tachi/security-report/main.typ`
+**Type**: Modified
+**Purpose**: Import `attack-path.typ`, add backward-compatible defaults for `has-attack-trees` and `attack-trees` variables, insert conditional attack path page section after Executive Summary (before infographic pages).
+
+Conditional inclusion:
+```typst
+#if has-attack-trees and attack-trees.len() > 0 {
+  section-divider("Attack Path Analysis", classification: classification)
+  for entry in attack-trees {
+    page(...)[#attack-path-page(entry: entry, classification: classification)]
+  }
+}
+```
+
+### Component 5: Command and Agent Updates
+
+**Files modified**: `.claude/commands/security-report.md`, `.claude/agents/tachi/report-assembler.md`
+**Type**: Extended existing files
+**Purpose**: Add `attack-trees/` directory to artifact detection tables and attack path pages to page listing display.
+
+### Component 6: Example Output Validation
+
+**Files validated**: All 6 example `sample-report/` directories
+**Type**: End-to-end pipeline validation
+**Purpose**: 2 examples with attack trees (attack path pages rendered), 4 examples without (backward compatible, no attack path pages).
+
+## Data Flow
+
+```
+attack-trees/*.md ──┐
+                     ├──> extract-report-data.py ──> mmdc (PNG) ──> report-data.typ ──> main.typ ──> PDF
+threat-report.md ───┘                                                                    |
+                                                                              attack-path.typ
+```
+
+1. **Input**: `attack-trees/{id}-attack-tree.md` files (primary) or `threat-report.md` Section 5 (fallback)
+2. **Extraction**: `parse_attack_trees()` reads metadata tables + Mermaid code blocks
+3. **Rendering**: `render_mermaid_to_png()` converts Mermaid to PNG via `mmdc` subprocess (optional, graceful fallback)
+4. **Data binding**: Attack tree entries written to `report-data.typ` as Typst array with `has-attack-trees` boolean gate
+5. **Template**: `attack-path.typ` renders each entry as a portrait page with severity badge, diagram, narrative, remediation
+6. **Orchestration**: `main.typ` conditionally includes section divider + pages after Executive Summary
+
+## Tech Stack
+
+| Technology | Purpose | Justification |
+|-----------|---------|---------------|
+| Python 3.9+ (stdlib only) | Attack tree parsing and data extraction | Extends existing `extract-report-data.py` pattern; `shutil.which()` and `subprocess` for mmdc invocation |
+| `mmdc` (Mermaid CLI, optional) | Mermaid-to-PNG rendering for diagram embedding | Standard tool for Mermaid rendering; graceful fallback to raw text when unavailable |
+| Typst | Attack path page template | Extends existing PDF report template system via hub-first architecture |
+| PNG @ 2x scale | Rendered diagram images | Consistent with existing infographic image handling in Typst report |
