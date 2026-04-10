@@ -98,6 +98,14 @@ When invoked as a subagent (via Agent tool), return ONLY:
 - Review `agent-assignments.md` for workload distribution
 
 ## Recent Changes
+- **Feature 136**: MAESTRO Canonical Layer Correctness Fix
+  - Renamed MAESTRO L5/L6/L7 to canonical CSA names per Ken Huang authoritative definition: L5 "Security" → "Evaluation and Observability", L6 "Agent Ecosystem" → "Security and Compliance", L7 "User Interface" → "Agent Ecosystem". Corrected MAESTRO acronym expansion to "Multi-Agent Environment, Security, Threat, Risk, and Outcome".
+  - Schema bump: `schemas/finding.yaml` `maestro_layer` enum values renamed; `schema_version` bumped 1.2 to 1.3. Establishes new **enum-value-only minor-bump rule**: enum-value-only breaking changes warrant a minor schema bump (x.y+1), not major, provided schema shape and required fields unchanged. Rule documented in ADR-020 Revision History as precedent for future enum corrections.
+  - Pipeline is fully data-driven — zero Python script changes required. All 14 foundation files touched are content-only: shared reference (`maestro-layers-shared.md` with verbatim Ordering Rationale explaining L5-before-L6 specificity gradient), schema, Typst templates (`maestro-findings.typ` prose + fallback dict fix for pre-existing "Integration Services" bug), pipeline docs (`dispatch-rules.md`, `output-schemas.md`, `finding-format-shared.md`), output schemas (`threats.md`), infographic templates (`infographic-maestro-stack.md`, `infographic-maestro-heatmap.md`), `README.md`, `docs/architecture/00_Tech_Stack/README.md`, ADR-020.
+  - **Latent Feature 128 bug fixed** (scope expansion inside PR): `templates/tachi/security-report/full-bleed.typ` `infographic-page()` function now constrains image height to 7.5in with `fit: "contain"` to handle portrait-aspect infographics that would otherwise overflow the page.
+  - All 6 example outputs regenerated with canonical layer names. 5 byte-deterministic PDF baselines regenerated via `SOURCE_DATE_EPOCH=1700000000` (per ADR-021); agentic-app excluded per Feature 128 convention. 2 MAESTRO golden fixtures (`maestro-heatmap.json`, `maestro-stack.json`) confirmed frozen pre-MAESTRO schema — no regeneration needed.
+  - Release v4.10.0 auto-cut by release-please on merge to main (PR #146, squash commit 31356fb).
+  - Known follow-up items: (1) agentic-app sample-report JPEGs to be re-rendered via Gemini in housekeeping PR, (2) infographic extract tier-selection bug when source is compensating-controls.md.
 - **Feature 128**: Executive Threat Architecture Infographic
   - New `executive-architecture` template (6th infographic template) in `scripts/extract-infographic-data.py`; groups components into architectural layers via existing `_compute_trust_zones()`, filters Critical/High findings, selects one callout per layer
   - Portrait JPEG output: `threat-executive-architecture.jpg` generated via existing Gemini integration (no new API calls or dependencies)

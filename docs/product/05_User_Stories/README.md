@@ -1,6 +1,6 @@
 # User Stories - tachi
 
-**Last Updated**: 2026-04-09
+**Last Updated**: 2026-04-10
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -414,3 +414,17 @@ Each PRD should include relevant user stories:
 - **US-121-3** (P0): Cross-Reference Integrity - Zero references to old unprefixed command names remain across commands, agents, skills, docs, and templates (historical PRDs and specs excluded per immutability policy)
 - **US-121-4** (P0): Clean Upgrade Without Duplicate Commands - Install script removes old command files (threat-model.md, risk-score.md, compensating-controls.md, infographic.md, security-report.md) from .claude/commands/ so only tachi.* prefixed commands exist
 - **US-121-5** (P1): Migration Guidance for Existing Users - CHANGELOG contains clear old-to-new command name mapping for existing users transitioning to the new namespace
+
+### Feature 136: MAESTRO Canonical Layer Correctness Fix
+
+**PRD**: [136-maestro-canonical-layer-correctness-fix](../02_PRD/136-maestro-canonical-layer-correctness-fix-2026-04-10.md)
+**Delivered**: 2026-04-10 | **PR**: #146 | **Tasks**: 45/45 complete | **Stories**: 8/8 passing
+
+- **US-136-1** (P1): Canonical Shared Reference Alignment - Shared MAESTRO reference file (`.claude/skills/tachi-shared/references/maestro-layers-shared.md`) uses canonical CSA seven-layer taxonomy names with correct acronym expansion ("Multi-Agent Environment, Security, Threat, Risk, and Outcome") and keyword set that correctly separates observability (L5), security/compliance (L6), and agent-ecosystem + user-facing components (L7)
+- **US-136-2** (P1): Observability Layer Classifies Detective Controls - Components like Audit Logger, behavioral monitoring, and anomaly detection now classify to "L5 — Evaluation and Observability" in threats.md, with a dedicated layer band in the PDF security report MAESTRO Findings section instead of being lost in Unclassified or misrouted to Security
+- **US-136-3** (P1): Schema Enum and Downstream Migration - `schemas/finding.yaml` `maestro_layer` enum contains canonical values ("L5 — Evaluation and Observability", "L6 — Security and Compliance", "L7 — Agent Ecosystem"), schema version bumped 1.2 → 1.3, and CHANGELOG documents the old → new value mapping, acronym correction, and migration guidance for downstream adopters
+- **US-136-4** (P1): Regenerated Example Outputs - All six example architectures (`examples/*`) regenerated with canonical layer names throughout threats.md, threat-report.md, infographic specs, and security-report.pdf.baseline; zero occurrences of old layer names ("L5 — Security", "L6 — Agent Ecosystem", "L6 — Integration Services", "L7 — User Interface") remain
+- **US-136-5** (P1): Typst Template Canonical Alignment - `templates/tachi/security-report/maestro-findings.typ` fallback dictionary corrected to use canonical layer names (resolving pre-existing three-way divergence where template said "Integration Services" for L6); PDF security report MAESTRO Findings page now displays canonical labels for all seven layer bands
+- **US-136-6** (P2): Pipeline Documentation and ADR Updates - Dispatch rules, finding format shared reference, README layer table, and ADR-020 (with Feature 136 revision note) all use canonical layer names; historical PRDs 084 and 091 preserved unchanged per immutability policy
+- **US-136-7** (P2): Wave 0 Pre-Edit Discovery Report - Committed `specs/136-maestro-canonical-layer/discovery-report.md` documenting pre-edit grep sweep results with file-by-file match inventory, providing audit trail that every hardcoded layer name reference was found and addressed before editing began
+- **US-136-8** (P1): Backward Compatibility Validation Gate - Five non-agentic-app example baselines (web-app, microservices, ascii-web-api, mermaid-agentic-app, free-text-microservice) regenerate byte-deterministically under `SOURCE_DATE_EPOCH=1700000000`; `test_backward_compatibility.py` passes against regenerated baselines with idempotency verified

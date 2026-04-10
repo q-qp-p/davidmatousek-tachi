@@ -5,7 +5,7 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-04-10
 
-**Entry Count**: 27 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 28 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -568,6 +568,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #process #simplify #test-quality #comments #tooling #aod-document
 
 **Quality Score**: 8/10
+
+---
+
+### KB-028: Naive String Substitution Bypasses Classification Algorithms on Taxonomy Rename
+
+**Date**: 2026-04-10
+**Category**: Orchestration / Sub-agent tooling
+**Source**: Feature 136 Wave 2 regeneration + code review T041a
+**Severity**: Medium
+
+**Problem**: Feature 136 renamed three MAESTRO taxonomy layer names (L5/L6/L7) with downstream changes to the keyword-to-layer mapping algorithm. Wave 2 sub-agents (devops, senior-backend-engineer) regenerated six example `threats.md` files using Edit-tool targeted `s/old/new/` substitution rather than re-invoking the `/tachi.threat-model` skill pipeline. Code reviewer T041a caught four resulting misclassifications before commit: "Guardrails Service" still mapped to L5 (Observability) when it should have moved to L6 (Security and Compliance) per the new keyword rules, and two External Entities in `free-text-microservice` were substituted L6 → L7 incorrectly when their correct classification was straight L7 rename.
+
+**Root Cause**: Sub-agents were constrained to the `Edit` tool (no `Task` tool access) for context-efficiency reasons, which forced string-substitution methodology. The naive transform `L5 — Security → L5 — Evaluation and Observability` is only correct when the component genuinely belongs on the new L5. When the taxonomy rename shifts the meaning of each layer slot (old L5 Security keywords moved to new L6, old L5 observability keywords introduced as a new set), some components must cross layers entirely. String substitution does not know about the classification algorithm's keyword rules and cannot cross layers.
+
+**Solution**: For classification-driven outputs (threat model findings, risk scores, compensating controls, anything with keyword-based layer or category assignment), regenerate by re-invoking the producer skill with fresh keyword tables — do NOT text-substitute. When sub-agent tool limits prevent skill re-invocation, escalate to the main context for regeneration, or accept that code review must catch the resulting misclassifications.
+
+**Result**: Code reviewer T041a caught all 4 misclassifications pre-commit. Fixed in-place with downstream propagation to `risk-scores.md`, `risk-scores.sarif`, `compensating-controls.md`, `compensating-controls.sarif`, and regenerated `free-text-microservice` PDF baseline byte-deterministically. Backward-compatibility test remained 5/5 passing throughout. No misclassification leaked past the code review gate to main.
+
+**When to Apply**: Any future taxonomy/enum rename that affects the meaning of classification slots, not just their labels. Examples: STRIDE category renames, severity band redefinitions, OWASP category merges, MITRE ATT&CK reclassifications. If the underlying algorithm's keyword tables change alongside the label rename, text substitution is unsafe — re-run the producer.
+
+**Tags**: #process #sub-agent-tooling #classification-algorithms #taxonomy-rename #code-review #feature-136
+
+**Quality Score**: 9/10
 
 ---
 

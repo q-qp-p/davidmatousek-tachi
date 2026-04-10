@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-10T18:25:44Z.
+> Auto-generated from GitHub Issues on 2026-04-10T18:56:34Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -45,7 +45,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| #136 | MAESTRO framework compliance: fix canonical L5-L7 layer naming and add cross-layer analysis, agentic threat patterns, AIVSS evaluation | 2026-04-10 | — | 2026-04-10 |
+| — | *No items in this stage* | | |
 
 ## Untracked
 

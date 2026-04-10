@@ -1,6 +1,6 @@
 # Architecture Documentation - tachi
 
-**Last Updated**: 2026-04-02
+**Last Updated**: 2026-04-10
 **Owner**: Architect
 **Status**: Template
 
@@ -42,6 +42,8 @@ Significant technical decisions with context and trade-offs
 - `ADR-014-gemini-api-optional-image-generation.md` - Optional Gemini API image generation for infographic agent (Feature 018)
 - `ADR-015-platform-adapter-hub-and-spoke-distribution.md` - Hub-and-spoke distribution pattern for platform adapters (Feature 021)
 - `ADR-019-shared-definitions-and-model-field-governance.md` - Shared cross-agent definitions and model field governance (Feature 078)
+- `ADR-020-maestro-layer-classification.md` - CSA MAESTRO seven-layer taxonomy for agentic AI component classification (Feature 084; Revision History adds canonical layer rename rule for enum-value-only minor schema bumps in Feature 136)
+- `ADR-021-source-date-epoch-for-deterministic-pdf-comparison.md` - SOURCE_DATE_EPOCH reproducible-builds convention for byte-deterministic PDF baseline comparison (Feature 128)
 - `ADR-NNN-decision-title.md` - Individual ADRs
 
 ### 03_patterns/
