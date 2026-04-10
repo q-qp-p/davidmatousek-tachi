@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-10T11:39:06Z.
+> Auto-generated from GitHub Issues on 2026-04-10T12:38:56Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -8,6 +8,7 @@
 
 | # | Title | ICE | Evidence | Updated |
 |---|-------|-----|----------|---------|
+| #136 | MAESTRO framework compliance: fix canonical L5-L7 layer naming and add cross-layer analysis, agentic threat patterns, AIVSS evaluation | Impact: 9, Confidence: 6, Effort: 6 = **21** | User Request — tachi maintainer reviewed canonical CSA MA... | 2026-04-10 |
 | #130 | Fix attack path Mermaid rendering when mmdc is not installed (spec 112 follow-up) | Impact: 9, Confidence: 9, Effort: 9 = **27** | Team Observation: Directly observed in second-brain-mcp P... | 2026-04-10 |
 | #129 | Attack Tree Delta Sub-Agent — extract Section 5 generation into focused sub-agent | — | — | 2026-04-09 |
 | #126 | Auto-detect architecture drift | — | — | 2026-04-09 |
@@ -48,7 +49,6 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #128 | Executive Threat Architecture infographic — 6th template with early PDF placement | CLOSED | 2026-04-10 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
 | #18 | Feature: Threat Infographic Agent | CLOSED | 2026-03-23 |
 | #15 | Feature 007: Threat Report Agent & Attack Trees | CLOSED | 2026-03-23 |
