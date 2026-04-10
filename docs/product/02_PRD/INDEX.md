@@ -1,12 +1,12 @@
 # PRD Index
 
-**Last Updated**: 2026-04-09
+**Last Updated**: 2026-04-10
 **Legend**: ✓=APPROVED, ⚠=APPROVED_WITH_CONCERNS, 🔄=CHANGES_REQUESTED, ⛔=BLOCKED, ⚠⚡=OVERRIDDEN
 
 
 | # | Feature | PM | Architect | Team-Lead | Status | Date |
 |---|---------|----|-----------|-----------| -------|------|
-| 128 | [Executive Threat Architecture Infographic](128-executive-threat-architecture-2026-04-09.md) | ✓ | ⚠ | ⚠ | Approved | 2026-04-09 |
+| 128 | [Executive Threat Architecture Infographic](128-executive-threat-architecture-2026-04-09.md) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-10 |
 | 120 | [Architecture Lifecycle Command](120-architecture-lifecycle-command-2026-04-09.md) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-09 |
 | 121 | [Rename Tachi Commands to tachi.* Namespace](121-rename-tachi-commands-to-namespace-2026-04-09.md) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-09 |
 | 112 | [Attack Path Pages in Security Report PDF](112-attack-path-pages-in-pdf-2026-04-09.md) | ✓ | ✓ | ✓ | Delivered | 2026-04-09 |

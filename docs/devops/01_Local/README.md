@@ -1,6 +1,6 @@
 # Local Development Environment - tachi
 
-**Last Updated**: 2026-04-09
+**Last Updated**: 2026-04-10
 **Owner**: DevOps Agent
 
 ---
@@ -13,7 +13,7 @@
 - **Git**: Version {{VERSION}}+
 
 ### Optional Software
-- **Python**: Version 3.9+ (stdlib only, no external packages). Required by the deterministic data extraction scripts in `scripts/`: `extract-report-data.py` (security report data for `/tachi.security-report`), `extract-infographic-data.py` (infographic template data for `/tachi.infographic`), and the shared `tachi_parsers.py` module. Most macOS and Linux systems include Python 3.9+ by default; verify with `python3 --version`
+- **Python**: Version 3.9+ (stdlib only at runtime, no external packages required). Required by the deterministic data extraction scripts in `scripts/`: `extract-report-data.py` (security report data for `/tachi.security-report`), `extract-infographic-data.py` (infographic template data for `/tachi.infographic`), and the shared `tachi_parsers.py` module. Most macOS and Linux systems include Python 3.9+ by default; verify with `python3 --version`. For running the test suite, install dev dependencies via `pip install -r requirements-dev.txt` (see Python Test Suite below)
 - **VS Code**: Recommended IDE
 - **Postman/Insomnia**: API testing
 - **jq**: JSON processor, required by `.aod/scripts/bash/run-state.sh` for the Full Lifecycle Orchestrator (`brew install jq` on macOS, `apt-get install jq` on Linux)
@@ -189,6 +189,70 @@ cat adapters/claude-code/VERSION
 ```
 
 The VERSION file contains the source commit SHA, generation date, and SHA-256 checksums of each source agent file. Use it to confirm adapter files are derived from the expected source version.
+
+---
+
+## Python Test Suite
+
+Feature 128 introduced the first pytest-based test infrastructure for tachi. Project-level pytest configuration lives in `pyproject.toml` at the repo root (`[tool.pytest.ini_options]` section: `testpaths = ["tests"]`, strict markers, `-ra` reporting). Development dependencies are pinned in `requirements-dev.txt` (pytest, pytest-cov).
+
+### Installation
+
+```bash
+# Create a virtualenv (recommended)
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install development dependencies
+pip install -r requirements-dev.txt
+```
+
+No runtime dependencies are added -- the extraction scripts remain stdlib-only. Dev dependencies are only needed when running tests.
+
+### Running Tests
+
+```bash
+# Run the full test suite
+pytest tests/
+
+# Run a single module
+pytest tests/scripts/test_extract_report_data.py
+
+# Run with coverage
+pytest tests/ --cov=scripts --cov-report=term-missing
+
+# Run only smoke tests
+pytest tests/scripts/test_smoke.py
+```
+
+### Test Layout
+
+```
+tests/
+├── conftest.py                          # Shared fixtures and pytest hooks
+└── scripts/
+    ├── test_smoke.py                    # Fast sanity checks
+    ├── test_backward_compatibility.py   # Legacy output compatibility
+    ├── test_command_dispatch.py         # Command routing
+    ├── test_extract_infographic_data.py # Infographic data extraction
+    ├── test_extract_report_data.py      # Security report data extraction
+    ├── test_pdf_page_positioning.py     # PDF layout ordering
+    └── fixtures/
+        ├── exec_arch/                   # Executive architecture infographic inputs
+        ├── report_data/                 # Report extraction inputs
+        └── golden/                      # Expected outputs for golden-file tests
+```
+
+### Adding New Tests
+
+- Place new test modules under `tests/scripts/` using the `test_*.py` naming convention
+- Store input fixtures under `tests/scripts/fixtures/<category>/`
+- Store expected outputs for golden-file comparisons under `tests/scripts/fixtures/golden/`
+- Keep tests hermetic: no network calls, no dependence on absolute host paths
+
+### CI Integration Status
+
+The pytest harness is available locally but is not yet wired into the GitHub Actions workflows. See `docs/devops/CI_CD_GUIDE.md` for the current CI test story and follow-up notes.
 
 ---
 

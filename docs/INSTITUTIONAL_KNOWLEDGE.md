@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-04-09
+**Last Updated**: 2026-04-10
 
-**Entry Count**: 25 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 26 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -522,6 +522,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #retrospective #process #planning #single-session #spec-quality
 
 **Quality Score**: 8/10
+
+---
+
+### KB-026: Parallel Session Workflow Can Cross-Contaminate Uncommitted State
+
+**Date**: 2026-04-10
+**Category**: Process
+**Source**: Feature 128 retrospective
+**Severity**: Informational
+
+**Problem**: Running two Claude Code sessions in parallel against the same working directory — one for a feature branch (F-128 executive infographic) and one for an unrelated bug fix — produced a mixed uncommitted state at delivery time. The F-128 delivery session encountered seven modified files and twenty untracked files belonging to the parallel bug-fix session, forcing a manual scope-filter step before the delivery commit could be made.
+
+**Root Cause**: Claude Code sessions share the filesystem, not the git index. When two sessions edit files concurrently, git status reflects the union of both sessions' changes. Automated delivery workflows like `/aod.deliver` that "stage and commit all uncommitted changes" will misattribute the other session's work unless the operator intercepts and filters manually. The workflow assumes a single-session working directory.
+
+**Solution**: When running parallel sessions, either (a) use separate worktrees via `git worktree add` so each session has its own index and working directory, or (b) explicitly list the files that belong to the current session's scope and stage only those at commit time. For F-128 delivery, the operator listed the three F-128 docs files (`docs/architecture/01_system_design/README.md`, `docs/product/02_PRD/INDEX.md`, `docs/product/_backlog/BACKLOG.md`) and explicitly left the seven parallel-session files and twenty untracked files untouched.
+
+**Result**: F-128 delivery committed cleanly with only F-128 scope. The parallel bug-fix session's changes remained intact in the working directory for its own delivery path. No cross-contamination, no accidental commits, no lost work — but the delivery took longer because manual scope triage was required.
+
+**When to Apply**: Any time two or more Claude Code sessions operate against the same clone simultaneously. Prefer `git worktree add ../tachi-bugfix <bug-branch>` for true isolation. If worktrees are not used, add a pre-delivery checklist step: "list all uncommitted files, classify each by feature scope, stage only current-feature files explicitly." The `/aod.deliver` command should consider adding scope-filter heuristics when it detects files outside the expected feature directories.
+
+**Tags**: #retrospective #process #git #parallel-sessions #workflow #delivery
+
+**Quality Score**: 7/10
 
 ---
 

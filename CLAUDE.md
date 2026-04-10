@@ -98,6 +98,18 @@ When invoked as a subagent (via Agent tool), return ONLY:
 - Review `agent-assignments.md` for workload distribution
 
 ## Recent Changes
+- **Feature 128**: Executive Threat Architecture Infographic
+  - New `executive-architecture` template (6th infographic template) in `scripts/extract-infographic-data.py`; groups components into architectural layers via existing `_compute_trust_zones()`, filters Critical/High findings, selects one callout per layer
+  - Portrait JPEG output: `threat-executive-architecture.jpg` generated via existing Gemini integration (no new API calls or dependencies)
+  - PDF integration via `scripts/extract-report-data.py` `detect_images()` and `templates/tachi/security-report/main.typ`: new page placed immediately after Executive Summary (pages 2-3) using existing `infographic-page()` Typst function -- NO new template function
+  - Schema additions in `schemas/infographic.yaml` (executive-architecture template enum entry with section structure and visual directive constants)
+  - Command updates in `.claude/commands/tachi.infographic.md`: `exec` alias dispatch + inclusion in `all` shorthand expansion
+  - New reference doc: `.claude/skills/tachi-infographics/references/executive-architecture.md`
+  - **pytest bootstrap** (first-time addition of Python test infrastructure to tachi): new `pyproject.toml`, `requirements-dev.txt` (pytest>=8.0, pytest-cov>=4.1), `tests/` directory with `conftest.py` and `tests/scripts/` containing 6 test files covering 150+ tests across the extraction pipeline. `Makefile` gains `test:` target. Developer-only — runtime `scripts/*.py` remain stdlib-only per zero-dependency constraint.
+  - New fixtures and golden files: `tests/scripts/fixtures/exec_arch/` (8 variations), `tests/scripts/fixtures/report_data/`, `tests/scripts/fixtures/golden/` (5 golden JSON files)
+  - Baseline PDFs for backward-compatibility test: `examples/{web-app,microservices,ascii-web-api,mermaid-agentic-app,free-text-microservice}/security-report.pdf.baseline` (committed; use `SOURCE_DATE_EPOCH=1700000000` per ADR-021 for byte-deterministic comparison)
+  - New ADR-021: SOURCE_DATE_EPOCH for deterministic PDF comparison (reproducible-builds convention for the backward-compatibility test; production pipeline unchanged)
+  - Backward compatible: 5 example PDFs byte-identical without the new executive-architecture JPEG present; the 6th example (agentic-app) is intentionally regenerated as the feature demonstration
 - **Feature 120**: Architecture Lifecycle Command
   - Version tracking: `/tachi.architecture` adds YAML frontmatter (version, date, description, checksum, previous_version) to generated architecture files
   - Archive mechanism: previous versions archived to `{parent_dir}/.archive/v{N}/architecture.md` before updates; legacy files (no frontmatter) archived as v0

@@ -208,6 +208,42 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 | `scripts/extract-report-data.py` | Deterministic extraction of structured data from tachi pipeline markdown artifacts (threats.md, risk-scores.md, compensating-controls.md, threat-report.md) into Typst data file (report-data.typ). Replaces LLM-based markdown parsing in the report-assembler agent. Supports 3-tier severity source hierarchy, validates internal consistency (severity sums, scope counts, unique finding IDs), and produces byte-identical output on identical inputs. MAESTRO data extraction (Feature 091): emits `has-maestro-data` boolean flag and per-layer finding variables for conditional `maestro-findings.typ` page inclusion. Baseline data extraction (Feature 104): emits baseline metadata variables (source, date, finding count, run ID) and delta lifecycle counts (new, unchanged, updated, resolved) from threats.md frontmatter and Section 8 Delta Summary; emits `has-baseline-data` boolean flag for conditional report section inclusion. Attack path extraction (Feature 112): `parse_attack_trees()` scans `attack-trees/` directory for Mermaid attack tree files, extracts metadata and cross-references findings; `render_mermaid_to_png()` converts Mermaid to PNG via `mmdc` subprocess (graceful fallback to raw text when `mmdc` unavailable); emits `has-attack-trees` boolean flag and structured attack tree array for conditional `attack-path.typ` page inclusion. Imports shared parsers from `tachi_parsers.py`. | Feature 067, refactored Feature 071, extended Feature 091, extended Feature 104, extended Feature 112 |
 | `scripts/extract-infographic-data.py` | Deterministic extraction of structured infographic data (~1,100 lines) from tachi pipeline markdown artifacts into JSON data files for infographic templates (baseball-card, system-architecture, risk-funnel, maestro-stack, maestro-heatmap). Replaces LLM-based data extraction in the threat-infographic agent. Auto-detects richest data source (compensating-controls.md > risk-scores.md > threats.md), uses Largest Remainder Method for integer percentage rounding, and produces byte-identical JSON output on identical inputs. MAESTRO layer parsing extracts per-layer finding counts and severity distributions from `maestro_layer` field in source artifacts; gated by `has-maestro-data` flag (Feature 091). Baseline data extraction (Feature 104): extracts baseline metadata and delta lifecycle counts for infographic delta annotations; emits baseline fields in JSON output when baseline data is present. Imports shared parsers from `tachi_parsers.py`. | Feature 071, extended Feature 091, extended Feature 104 |
 
+### Python Test Infrastructure (Feature 128)
+
+**pytest 8.0+** (developer-only; not required by end users or the runtime pipeline)
+- First-time addition of a Python test harness to tachi. Prior to Feature 128, `scripts/*.py` modules had no automated test coverage — ad-hoc manual verification only. Feature 128 bootstrapped the harness to cover the extraction pipeline (`extract-infographic-data.py`, `extract-report-data.py`, `tachi_parsers.py`) as part of the `executive-architecture` infographic template work.
+- Why pytest (not `unittest`): fixture ergonomics, parametrized tests (one-to-many fixture coverage), rich assertion introspection, and `pytest-cov` coverage reporting — all standard choices for modern Python test suites. `unittest` would have required substantially more boilerplate for the same coverage.
+- Why developer-only: runtime constraint from the Python Scripts section above (`scripts/*.py` must be stdlib-only, zero-dependency). The test harness lives outside runtime — adopters running `/tachi.threat-model`, `/tachi.security-report`, or `/tachi.infographic` do NOT install pytest. The harness is exclusively for tachi contributors verifying the extraction pipeline locally or in CI.
+
+**Configuration files** (all added in Feature 128):
+
+| File | Purpose |
+|------|---------|
+| `pyproject.toml` | Project config and `[tool.pytest.ini_options]` section; sets `testpaths = ["tests"]`, `python_files = ["test_*.py"]`, `addopts = "-ra --strict-markers"`. Non-disruptive to existing `scripts/*.py` runtime (no runtime imports of `pyproject.toml`). |
+| `requirements-dev.txt` | Developer dependencies: `pytest>=8.0`, `pytest-cov>=4.1`. Installed via `pip install -r requirements-dev.txt`. |
+| `Makefile` | `test:` target added in Feature 128 Wave 1 for `python3 -m pytest tests/` one-liner invocation. |
+| `.gitignore` | Python patterns added in Feature 128 Wave 1 (`__pycache__/`, `.pytest_cache/`, `.coverage`, `htmlcov/`). |
+
+**Test tree structure** (new in Feature 128):
+
+| Path | Purpose |
+|------|---------|
+| `tests/conftest.py` | Shared pytest fixtures for all test modules |
+| `tests/scripts/` | Test modules for `scripts/*.py` (6 test files, 150+ tests covering extraction, parsing, and output-shape contracts) |
+| `tests/scripts/fixtures/exec_arch/` | Input fixtures for the executive-architecture template (8 variations: with/without findings, single/multi-component scopes, tier-upgrade sources) |
+| `tests/scripts/fixtures/report_data/` | Input fixtures for `extract-report-data.py` variants |
+| `tests/scripts/fixtures/golden/` | Expected JSON payloads (5 golden files) for byte-identical regression testing |
+
+**Running tests**:
+```bash
+pip install -r requirements-dev.txt      # one-time setup
+make test                                  # or: python3 -m pytest tests/
+python3 -m pytest tests/scripts/test_extract_infographic.py -v   # single module
+python3 -m pytest tests/ --cov=scripts    # with coverage
+```
+
+**Backward-compatibility harness** (Feature 128 Wave 4): `tests/scripts/test_backward_compatibility.py` is a parametrized test that compiles the 5 unmodified example projects through the full PDF pipeline and compares the output byte-for-byte against committed `examples/*/security-report.pdf.baseline` files. The test sets `SOURCE_DATE_EPOCH=1700000000` before `typst compile` to neutralize PDF metadata timestamps — see [ADR-021](../02_ADRs/ADR-021-source-date-epoch-for-deterministic-pdf-comparison.md) for the reproducible-builds rationale.
+
 ### Shell Scripts
 
 **Bash 3.2** (macOS default `/bin/bash`)
@@ -234,6 +270,7 @@ These are tools used by the AOD Kit itself (not the adopter's application stack)
 | `python3` | `scripts/extract-report-data.py` (invoked by report-assembler agent) | Deterministic markdown-to-Typst data extraction for security report pipeline; stdlib only, no pip dependencies (Feature 067) | Pre-installed on macOS; `apt-get install python3` (Linux) |
 | `typst` | `/tachi.security-report` command (report-assembler agent) | PDF compilation from modular `.typ` templates; renders security assessment reports with brand assets, auto-generated TOC, and conditional page inclusion (Feature 054, extended Feature 060); MAESTRO Findings page conditionally included via `has-maestro-data` flag (Feature 091); Attack Path pages conditionally included via `has-attack-trees` flag (Feature 112) | `brew install typst` (macOS) / `cargo install typst-cli` / [typst.app](https://github.com/typst/typst/releases) |
 | `mmdc` | `scripts/extract-report-data.py` (invoked by report-assembler agent, optional) | Mermaid CLI for rendering attack tree Mermaid diagrams to PNG images for PDF report embedding; graceful fallback to raw Mermaid text display when unavailable (Feature 112) | `npm install -g @mermaid-js/mermaid-cli` |
+| `pytest` | `tests/scripts/*.py` (developer-only; not runtime) | Python test runner for the `scripts/*.py` extraction pipeline and `tachi_parsers.py` shared module; invoked via `make test` or `python3 -m pytest tests/` (Feature 128) | `pip install -r requirements-dev.txt` |
 
 **Note**: `gh` degrades gracefully -- the orchestrator falls back to artifact-only detection when `gh` is unavailable or unauthenticated. Similarly, `scripts/init.sh` skips GitHub Projects board creation when `gh` is missing, unauthenticated, or lacks the `project` OAuth scope, reporting status in the init summary with remediation guidance.
 

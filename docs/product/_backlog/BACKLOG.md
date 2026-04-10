@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-10T03:14:56Z.
+> Auto-generated from GitHub Issues on 2026-04-10T11:39:06Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -48,7 +48,7 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #128 | Executive Threat Architecture infographic — 6th template with early PDF placement | OPEN | 2026-04-10 |
+| #128 | Executive Threat Architecture infographic — 6th template with early PDF placement | CLOSED | 2026-04-10 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
 | #18 | Feature: Threat Infographic Agent | CLOSED | 2026-03-23 |
 | #15 | Feature 007: Threat Report Agent & Attack Trees | CLOSED | 2026-03-23 |

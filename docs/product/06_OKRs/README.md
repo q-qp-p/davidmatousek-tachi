@@ -1,6 +1,6 @@
 # OKRs (Objectives and Key Results) - tachi
 
-**Last Updated**: 2026-04-09
+**Last Updated**: 2026-04-10
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -169,3 +169,4 @@ OKRs align the team around measurable goals. They answer:
 | 2026-04-09 | F-121: Rename Tachi Commands to tachi.* Namespace | [121](../02_PRD/121-rename-tachi-commands-to-namespace-2026-04-09.md) | All 6 tachi pipeline commands renamed to tachi.* dot-namespace (e.g., /threat-model -> /tachi.threat-model). New /tachi.architecture command added. Cross-references updated across 160+ files. Install script handles cleanup of old command files. 5 user stories delivered. |
 | 2026-04-09 | F-120: Architecture Lifecycle Command | [120](../02_PRD/120-architecture-lifecycle-command-2026-04-09.md) | Version tracking with YAML frontmatter (version, date, checksum) for architecture files. Archive mechanism preserving previous versions. Threat model snapshot integration copying architecture into output folder. Guided update mode for walking through architecture change categories. 4 user stories delivered. |
 | 2026-04-09 | F-112: Attack Path Pages in Security Report PDF | [112](../02_PRD/112-attack-path-pages-in-pdf-2026-04-09.md) | Dedicated attack path visualization pages in PDF security reports. Extraction pipeline parses attack trees, renders Mermaid diagrams to PNG, feeds structured data to Typst template. Conditional inclusion gated by has-attack-trees boolean. Backward compatible with existing reports. 4 user stories delivered. |
+| 2026-04-10 | F-128: Executive Threat Architecture Infographic | [128](../02_PRD/128-executive-threat-architecture-2026-04-09.md) | Sixth infographic template (executive-architecture) producing CISO-ready threat architecture visualization with early-page PDF placement immediately after Executive Summary. `all` shorthand and new `exec` alias include the template; graceful handling of threat models with no qualifying findings. 51/51 tasks across 8 phases; 4 user stories delivered. T038 PM usability check deferred with 5-business-day post-merge SLA. |

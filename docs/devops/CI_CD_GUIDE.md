@@ -1,6 +1,6 @@
 # CI/CD Setup Guide - tachi
 
-**Last Updated**: 2026-04-06
+**Last Updated**: 2026-04-10
 **Owner**: DevOps Agent
 
 ---
@@ -239,6 +239,57 @@ permissions:
 
 ---
 
+### Python Test Harness (pytest)
+
+**Best For**: Validating deterministic data extraction scripts, command dispatch, PDF page positioning, and golden-file comparisons for tachi pipeline outputs
+
+Feature 128 introduced the first pytest-based test infrastructure for tachi. The harness lives at the repo root and is runnable locally today.
+
+**Project Configuration**: `pyproject.toml` (repo root)
+```toml
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-ra --strict-markers"
+```
+
+**Development Dependencies**: `requirements-dev.txt`
+- `pytest>=8.0`
+- `pytest-cov>=4.1`
+
+**Test Layout**:
+```
+tests/
+├── conftest.py
+└── scripts/
+    ├── test_smoke.py
+    ├── test_backward_compatibility.py
+    ├── test_command_dispatch.py
+    ├── test_extract_infographic_data.py
+    ├── test_extract_report_data.py
+    ├── test_pdf_page_positioning.py
+    └── fixtures/
+        ├── exec_arch/
+        ├── report_data/
+        └── golden/
+```
+
+**Local Execution**: See `docs/devops/01_Local/README.md` section "Python Test Suite" for full local setup and run commands.
+
+**Current CI Status (as of F-128 close, 2026-04-10)**:
+- Pytest harness **exists locally** and runs against ~150+ test cases across 6 modules
+- Pytest is **not yet wired** into any GitHub Actions workflow
+- Existing workflows (`release-please.yml`, `tachi.threat-model.yml`) are unchanged by F-128
+- Wiring pytest to CI is explicitly **out of scope for F-128** and is tracked as a follow-up
+
+**Recommended Follow-Up Pipeline Step** (not implemented):
+When a future feature adds a CI workflow for Python tests, use the snippet in "Essential CI/CD Components -> Unit Tests" above. The workflow should install `requirements-dev.txt`, run `pytest tests/`, and surface coverage via `pytest-cov` on pull requests that modify `scripts/`, `tests/`, `pyproject.toml`, or `requirements-dev.txt`.
+
+**Infrastructure Impact**: No new runtime dependencies, no new environment variables, no new Docker services. Development dependencies are isolated to `requirements-dev.txt` and only installed when running tests.
+
+---
+
 ## Essential CI/CD Components
 
 ### 1. Linting
@@ -257,6 +308,18 @@ permissions:
 ```yaml
 - name: Run Tests
   run: npm test
+```
+
+For tachi's Python test suite (introduced in Feature 128), a pytest step looks like:
+```yaml
+- name: Setup Python
+  uses: actions/setup-python@v5
+  with:
+    python-version: '3.11'
+- name: Install dev dependencies
+  run: pip install -r requirements-dev.txt
+- name: Run pytest
+  run: pytest tests/
 ```
 
 ### 4. Build Verification
