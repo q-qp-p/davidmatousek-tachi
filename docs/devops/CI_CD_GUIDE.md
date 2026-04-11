@@ -239,6 +239,62 @@ permissions:
 
 ---
 
+### tachi mmdc Preflight Gate (Feature 130)
+
+**Best For**: Proving the `/tachi.security-report` preflight gate fires on a fresh runner where `@mermaid-js/mermaid-cli` (`mmdc`) is intentionally absent
+
+Feature 130 introduced a CI acceptance test at `.github/workflows/tachi-mmdc-preflight.yml` that verifies the fail-loud preflight behavior documented in [ADR-022](../architecture/02_ADRs/ADR-022-mmdc-hard-prerequisite.md). This workflow is **not** a general CI/CD pipeline — it is a single-job verification that the pipeline aborts non-zero when `mmdc` is absent and the scanned project contains attack trees.
+
+**Workflow File**: `.github/workflows/tachi-mmdc-preflight.yml`
+
+**Trigger**: Pull requests touching any of:
+- `scripts/extract-report-data.py` (the preflight gate lives in `render_mermaid_to_png()`)
+- `templates/tachi/security-report/attack-path.typ` (Typst template that consumes rendered diagrams)
+- `scripts/install.sh` (courtesy warning signal)
+- `.claude/commands/tachi.security-report.md` (shell preflight gate)
+- `README.md` (Prerequisites section)
+- `.github/workflows/tachi-mmdc-preflight.yml` (the workflow itself)
+
+**Runner**: `ubuntu-latest` — intentionally chosen because `ubuntu-latest` ships WITHOUT `@mermaid-js/mermaid-cli` preinstalled (plan.md spike S3 confirmed). Do NOT switch to a custom image that preinstalls mmdc — that would silently validate the happy path instead of the loud-failure path this workflow is designed to exercise.
+
+**Job Steps**:
+
+1. **Checkout repository** — standard `actions/checkout@v4`
+2. **Set up Python 3.11** — via `actions/setup-python@v5`
+3. **Set up Typst** — via `typst-community/setup-typst@v5` (must NOT transitively install Node.js tooling; see T4 enforcement below)
+4. **Diagnostic: show mmdc absence** — logs `which mmdc` output for human-readable CI debugging (architect refinement R3)
+5. **Enforce mmdc absence (T4 / plan Risk #6)** — **team-lead T4 enforcement assertion** that fails the job if `command -v mmdc` unexpectedly succeeds. This guards against future upstream changes (e.g., a new major version of `typst-community/setup-typst` that transitively installs Node.js tooling, or a GitHub Actions runner image update that adds mmdc to the base image) that would silently break the spike-S3 assumption and make the subsequent preflight test meaningless. If this assertion ever fires, treat it as a high-severity CI infrastructure bug — do NOT install mmdc to "fix" it.
+6. **Run `scripts/extract-report-data.py` against `examples/mermaid-agentic-app/`** — direct Python invocation with `--target-dir`, `--output`, `--template-dir`. Slash commands cannot run in CI, so we invoke the script directly. The `mermaid-agentic-app` example contains an `attack-trees/` directory with Critical/High findings, so the preflight gate is expected to fire. Expected exit code: non-zero. Captures stdout+stderr to `/tmp/out.txt` for the next step.
+7. **Assert canonical error tokens present** — greps `/tmp/out.txt` for three tokens from the canonical preflight `RuntimeError` message:
+   - `@mermaid-js/mermaid-cli`
+   - `npm install -g @mermaid-js/mermaid-cli`
+   - `Attack path rendering`
+
+   Each token is grepped individually so a missing token produces a specific, actionable error message. This is the **seven-location canonical command consistency** guarantee — the install command appears in exactly 7 enforcement locations across the codebase (extract-report-data.py raise, tachi.security-report.md shell echo, install.sh warning, README Prerequisites, test_mmdc_preflight.py assertion, tachi-mmdc-preflight.yml grep, ADR-022 decision body). Any drift fails this workflow.
+
+**Required Permissions**:
+```yaml
+permissions:
+  contents: read
+```
+
+**No Repository Secrets Required**: The workflow uses only `GITHUB_TOKEN` implicitly via `actions/checkout@v4`.
+
+**What This Workflow Does NOT Test**:
+- Happy-path rendering when `mmdc` IS installed (covered by local pytest suite `tests/scripts/test_mmdc_preflight.py` and backward-compatibility baselines in `tests/scripts/test_backward_compatibility.py`)
+- Non-attack-tree projects (covered by the backward-compatibility baseline suite — 5 example PDFs remain byte-identical without mmdc required)
+- Mid-render failures (covered by the 5 aggregator tests in `tests/scripts/test_mmdc_preflight.py`)
+
+**Infrastructure Impact**: No new environment variables, Docker services, or deployment changes. The workflow runs entirely within GitHub Actions using the standard `ubuntu-latest` image.
+
+**Related Files**:
+- `scripts/extract-report-data.py` (`render_mermaid_to_png()` is the enforcement point)
+- `tests/scripts/test_mmdc_preflight.py` (9 local tests: 4 preflight + 5 mid-render aggregator)
+- [ADR-022](../architecture/02_ADRs/ADR-022-mmdc-hard-prerequisite.md) (hard-prerequisite posture decision)
+- `specs/130-prd-130-fix/plan.md` (spike S3 and Risk #6 mitigation)
+
+---
+
 ### Python Test Harness (pytest)
 
 **Best For**: Validating deterministic data extraction scripts, command dispatch, PDF page positioning, and golden-file comparisons for tachi pipeline outputs

@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-11T14:38:34Z.
+> Auto-generated from GitHub Issues on 2026-04-11T16:30:50Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -44,7 +44,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| — | *No items in this stage* | | |
+| #130 | Fix attack path Mermaid rendering when mmdc is not installed (spec 112 follow-up) | 2026-04-11 | — | 2026-04-11 |
 
 ## Untracked
 
@@ -52,7 +52,6 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #130 | Fix attack path Mermaid rendering when mmdc is not installed (spec 112 follow-up) | OPEN | 2026-04-11 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
 | #18 | Feature: Threat Infographic Agent | CLOSED | 2026-03-23 |
 | #15 | Feature 007: Threat Report Agent & Attack Trees | CLOSED | 2026-03-23 |

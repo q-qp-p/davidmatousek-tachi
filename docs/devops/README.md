@@ -163,6 +163,39 @@ See [CI/CD Guide](CI_CD_GUIDE.md) for detailed configuration and changelog secti
 
 ---
 
+## Mermaid CLI Hard Prerequisite (Feature 130)
+
+Feature 130 upgraded `@mermaid-js/mermaid-cli` (`mmdc`) from an optional nice-to-have to a **hard prerequisite** for `/tachi.security-report` when the scanned project contains an `attack-trees/` directory with Critical/High findings. Prior to Feature 130, absence of `mmdc` produced a broken PDF with raw Mermaid source dumped verbatim into the Attack Path Pages section. The pipeline now fails loud and fast with a preflight gate instead.
+
+### Enforcement Points (defense-in-depth)
+
+| Enforcement Point | Location | When It Fires |
+|-------------------|----------|---------------|
+| Shell preflight gate | `.claude/commands/tachi.security-report.md` Step 1 | Command-level check before Python is invoked |
+| Python preflight gate | `scripts/extract-report-data.py::render_mermaid_to_png()` via `shutil.which("mmdc")` | Script-level check before any rendering is attempted |
+
+Both gates are **conditionally active** — they fire only when `attack-trees/` contains Critical/High findings. Projects without attack trees are unaffected, preserving backward compatibility for the majority of threat-modeling workflows.
+
+### New CI Workflow: `tachi-mmdc-preflight.yml`
+
+A new GitHub Actions workflow at `.github/workflows/tachi-mmdc-preflight.yml` runs on `ubuntu-latest` (which ships without `mmdc` preinstalled — confirmed by plan.md spike S3) and asserts the pipeline aborts non-zero with three canonical tokens in stderr. This is the fresh-install acceptance test for Feature 130. The workflow includes a **team-lead T4 enforcement assertion** that fails the CI job if `mmdc` is unexpectedly present on `PATH` — this mitigates the risk that a future GitHub Actions runner image change or a transitive install via a Typst action ships with `mmdc` preinstalled and silently validates the happy path when we intended to validate the loud-failure path.
+
+See [CI/CD Guide — tachi mmdc Preflight Gate](CI_CD_GUIDE.md#tachi-mmdc-preflight-gate-feature-130) for trigger paths, step-by-step breakdown, and the T4 rationale.
+
+### Developer Setup Signal
+
+`scripts/install.sh` emits a courtesy warning at setup time if `mmdc` is absent from `PATH` (`command -v mmdc`). This is a best-effort early signal, not the enforcement point — the per-command preflight gates remain the authoritative check. See `README.md` `## Prerequisites` section for per-OS install commands (`npm install -g @mermaid-js/mermaid-cli` on macOS/Linux/WSL).
+
+### Related Architecture Decision
+
+[ADR-022 — Mermaid CLI Hard Prerequisite](../architecture/02_ADRs/ADR-022-mmdc-hard-prerequisite.md) establishes the new rule: **pipelines are fail-loud when a required CLI is absent, gated on input detection**. ADR-022 is the first ADR in tachi governing CLI-prerequisite posture and cross-references ADR-014 (optional external APIs) and ADR-021 (determinism).
+
+### Infrastructure Impact
+
+No new environment variables, no Docker services, no staging/production deployment changes. Prerequisites live on developer machines and CI runners only. Developer-facing docs (`README.md`, `docs/devops/01_Local/README.md`) and CI workflow docs (`docs/devops/CI_CD_GUIDE.md`) are the touchpoints.
+
+---
+
 ## Deployment Policy (MANDATORY)
 
 **ALL deployments MUST go through the devops agent.**

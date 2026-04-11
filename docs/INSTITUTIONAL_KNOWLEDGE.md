@@ -594,6 +594,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 
 ---
 
+### KB-029: Silent Dead-Code Fallbacks Are Invisible Failure Modes — Delete, Don't Preserve
+
+**Date**: 2026-04-11
+**Category**: Governance / ADR
+**Source**: Feature 130 delivery retrospective
+**Severity**: High (user-visible correctness regression)
+
+**Problem**: Feature 112 (attack-path-pages) shipped a Typst "text-fallback" branch in `templates/tachi/security-report/attack-path.typ` that emitted raw `flowchart TD` Mermaid source inline when `@mermaid-js/mermaid-cli` (`mmdc`) was unavailable. The branch was gated by an `else if mermaid-text != ""` clause in the template and supported by a silent `shutil.which("mmdc")` early-return in `scripts/extract-report-data.py::render_mermaid_to_png()` that flipped every entry's `has_image` to `False`, printed a one-line warning, and continued. The pipeline reported exit 0. CI reported success. The only way a user discovered the broken output was by flipping through a board-ready PDF and seeing 40+ lines of raw Mermaid source where a rendered attack tree should have been. This directly blocked the flagship "show to exec board" deliverable from spec 112 and violated AC#2 (legibility at page size).
+
+**Root Cause**: "Graceful degradation" became "silent failure" because the fallback branch was never reachable in any realistic user path — nobody runs `/tachi.security-report` *hoping* mmdc is missing and *hoping* the PDF ships with raw Mermaid source as a substitute. The fallback existed because the Feature 112 author treated it as a courtesy safety net. In practice it masked a prerequisite violation behind a success exit code. The same failure shape held for the rarer "mmdc installed but subprocess crashed" case: each failing entry was silently marked `has_image=False` and the same text fallback kicked in. Both modes violated SC-003 (legibility) and both were invisible to CI.
+
+**Solution**: For CLI prerequisites that are actually required at runtime (not optional external APIs in the ADR-014 sense), enforce at two entry points — shell-level at the command file (mirroring the Typst check that already existed) AND Python-level at the function boundary (`shutil.which(...) → raise RuntimeError(...)`). Gate the check on input detection so projects without the triggering input are unaffected (mmdc check fires only when `attack-trees/` contains Critical/High findings). Delete the fallback branch outright — no placeholder, no comment, no "removed in NNN" stub. Document the rule in a governing ADR (ADR-022 is the first tachi ADR covering CLI-prerequisite posture). Prove backward compatibility with a byte-deterministic baseline pair under `SOURCE_DATE_EPOCH` (ADR-021) before and after the refactor: happy path must be byte-identical.
+
+**Result**: 48/48 pytest green (9 new cases covering both preflight and mid-render aggregator). 5/5 byte-deterministic baselines remained byte-identical before/after the refactor — the happy path is provably unchanged. New fresh-install CI workflow on `ubuntu-latest` (no mmdc preinstalled) asserts the loud-failure path fires with all three canonical tokens in stderr, including a team-lead T4 enforcement assertion that fails the CI job if mmdc is unexpectedly present on PATH. The canonical install command `npm install -g @mermaid-js/mermaid-cli` appears in exactly 7 coordinated enforcement locations (extract-report-data.py raise, tachi.security-report.md shell echo, install.sh warning, README Prerequisites, test_mmdc_preflight.py assertion, tachi-mmdc-preflight.yml grep, ADR-022 decision body), verified by the T023 grep consistency check.
+
+**When to Apply**: Any time the codebase adds a runtime CLI prerequisite (third-party binary, language runtime, renderer, compiler, tool that must be on PATH). The two-gate defense-in-depth pattern is now the tachi convention for CLI prerequisites, analogous to how Feature 054 Typst checks already work. If a third CLI prerequisite is ever added, per ADR-022 Future Work, extract an `install.sh` prerequisite helper — three data points is the minimum for meaningful abstraction. Do NOT preserve a fallback branch as a "courtesy" — if the fallback is worse than a loud error, delete it. A silent fallback that produces a broken-looking output is worse than no fallback at all.
+
+**Tags**: #governance #adr #defense-in-depth #prerequisite-enforcement #fail-loud #cli-tools #feature-130
+
+**Quality Score**: 9/10
+
+---
+
 ## Bug Fixes
 
 *No entries yet. Use `/kb-create` to add the first bug fix.*

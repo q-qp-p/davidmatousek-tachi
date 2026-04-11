@@ -1,6 +1,6 @@
 # Architecture Documentation - tachi
 
-**Last Updated**: 2026-04-10
+**Last Updated**: 2026-04-11
 **Owner**: Architect
 **Status**: Template
 
@@ -44,6 +44,7 @@ Significant technical decisions with context and trade-offs
 - `ADR-019-shared-definitions-and-model-field-governance.md` - Shared cross-agent definitions and model field governance (Feature 078)
 - `ADR-020-maestro-layer-classification.md` - CSA MAESTRO seven-layer taxonomy for agentic AI component classification (Feature 084; Revision History adds canonical layer rename rule for enum-value-only minor schema bumps in Feature 136)
 - `ADR-021-source-date-epoch-for-deterministic-pdf-comparison.md` - SOURCE_DATE_EPOCH reproducible-builds convention for byte-deterministic PDF baseline comparison (Feature 128)
+- `ADR-022-mmdc-hard-prerequisite.md` - `mmdc` (Mermaid CLI) as hard prerequisite gated on attack-tree detection; establishes fail-loud-on-missing-CLI posture with defense-in-depth preflight gates — first ADR governing CLI-prerequisite posture (Feature 130)
 - `ADR-NNN-decision-title.md` - Individual ADRs
 
 ### 03_patterns/
