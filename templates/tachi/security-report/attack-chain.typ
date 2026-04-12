@@ -86,7 +86,7 @@
 
   if has-img and img-path != "" {
     align(center,
-      image(img-path, width: 80%, fit: "contain"),
+      image(img-path, height: 3.5in, fit: "contain"),
     )
     v(0.1in)
   }
