@@ -13,6 +13,7 @@ Canonical list of files and directories that must be copied when installing tach
 | `templates/tachi/infographics/` | Infographic design templates | threat-infographic |
 | `templates/tachi/security-report/` | Typst PDF report templates | report-assembler |
 | `scripts/` (3 Python files) | Deterministic extraction scripts | report-assembler, threat-infographic |
+| `.claude/skills/tachi-*/` (18 dirs) | Agent skill references (detection patterns, domain knowledge) | All threat agents, infographic, report-assembler |
 | `adapters/claude-code/agents/references/` | SARIF generation and validation guides | risk-scorer, control-analyzer |
 | `brand/` | Logo assets for branded PDF reports | report-assembler |
 | `docs/guides/DEVELOPER_GUIDE_TACHI.md` | Full walkthrough with worked examples | User reference |
@@ -95,6 +96,24 @@ The install script parses this section automatically. One path per line — dire
 .claude/commands/tachi.infographic.md
 .claude/commands/tachi.security-report.md
 .claude/commands/tachi.architecture.md
+.claude/skills/tachi-shared/
+.claude/skills/tachi-infographics/
+.claude/skills/tachi-orchestration/
+.claude/skills/tachi-risk-scoring/
+.claude/skills/tachi-report-assembly/
+.claude/skills/tachi-threat-reporting/
+.claude/skills/tachi-control-analysis/
+.claude/skills/tachi-spoofing/
+.claude/skills/tachi-tampering/
+.claude/skills/tachi-repudiation/
+.claude/skills/tachi-info-disclosure/
+.claude/skills/tachi-denial-of-service/
+.claude/skills/tachi-privilege-escalation/
+.claude/skills/tachi-prompt-injection/
+.claude/skills/tachi-agent-autonomy/
+.claude/skills/tachi-tool-abuse/
+.claude/skills/tachi-data-poisoning/
+.claude/skills/tachi-model-theft/
 schemas/
 templates/tachi/
 scripts/extract-report-data.py
