@@ -1,6 +1,6 @@
 # CI/CD Setup Guide - tachi
 
-**Last Updated**: 2026-04-10
+**Last Updated**: 2026-04-12
 **Owner**: DevOps Agent
 
 ---
@@ -320,10 +320,13 @@ tests/
 ├── conftest.py
 └── scripts/
     ├── test_smoke.py
+    ├── test_attack_chain_extraction.py
+    ├── test_attack_chains.py
     ├── test_backward_compatibility.py
     ├── test_command_dispatch.py
     ├── test_extract_infographic_data.py
     ├── test_extract_report_data.py
+    ├── test_mmdc_preflight.py
     ├── test_pdf_page_positioning.py
     └── fixtures/
         ├── exec_arch/
@@ -333,11 +336,12 @@ tests/
 
 **Local Execution**: See `docs/devops/01_Local/README.md` section "Python Test Suite" for full local setup and run commands.
 
-**Current CI Status (as of F-128 close, 2026-04-10)**:
-- Pytest harness **exists locally** and runs against ~150+ test cases across 6 modules
+**Current CI Status (as of F-141 close, 2026-04-12)**:
+- Pytest harness **exists locally** and runs against ~150+ test cases across 9 modules
+- Feature 141 added 2 new test modules (`test_attack_chains.py`, `test_attack_chain_extraction.py`) -- no new CI workflow
 - Pytest is **not yet wired** into any GitHub Actions workflow
-- Existing workflows (`release-please.yml`, `tachi.threat-model.yml`) are unchanged by F-128
-- Wiring pytest to CI is explicitly **out of scope for F-128** and is tracked as a follow-up
+- Existing workflows (`release-please.yml`, `tachi.threat-model.yml`, `tachi-mmdc-preflight.yml`) are unchanged by F-141
+- Wiring pytest to CI is tracked as a follow-up
 
 **Recommended Follow-Up Pipeline Step** (not implemented):
 When a future feature adds a CI workflow for Python tests, use the snippet in "Essential CI/CD Components -> Unit Tests" above. The workflow should install `requirements-dev.txt`, run `pytest tests/`, and surface coverage via `pytest-cov` on pull requests that modify `scripts/`, `tests/`, `pyproject.toml`, or `requirements-dev.txt`.

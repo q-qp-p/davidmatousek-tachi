@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-04-10
+**Last Updated**: 2026-04-12
 
-**Entry Count**: 28 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 29 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -637,6 +637,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #enrichment #sourcing #citations #primary-sources #owasp #mitre #nist #review-cycle #feature-082
 
 **Quality Score**: 8/10
+
+---
+
+### KB-031: Phase-Insertion Pattern Validates Pipeline Extensibility Without Script Changes
+
+**Date**: 2026-04-12
+**Category**: Architecture / Pipeline Extensibility
+**Source**: Feature 141 delivery retrospective
+**Severity**: Low (positive validation, no issue)
+
+**Problem**: Feature 141 (MAESTRO Phase 2 — Cross-Layer Attack Chain Analysis) required inserting a new correlation phase (Phase 3.5) between existing orchestrator phases, adding a new artifact type (`attack-chains.md`), extending the threat report with a new section, and adding new PDF pages — touching 38 files across schema, parser, orchestrator, report agent, Typst templates, and examples. The team-lead estimated 10-12.5 days for the 34-task, 7-wave build.
+
+**Root Cause**: N/A — this is a positive pattern observation, not a problem report.
+
+**Solution**: The data-driven pipeline architecture (agents reading shared references, schemas defining contracts, conditional gates on boolean flags like `has-attack-chains`) enabled the new phase to be inserted without modifying adjacent phases. The parser module (`tachi_parsers.py`) accepted a new `parse_attack_chains()` function following the same pattern as `parse_attack_trees()`. The Typst template system accepted a new `attack-chain.typ` with conditional inclusion via the same `has-attack-chains` flag pattern used by `has-attack-trees`. The threat report agent accepted a new Section 6 with conditional emission. No existing Python scripts required structural changes — only additive functions.
+
+**Result**: 34/34 tasks completed in a single session. 5 PDF baselines byte-identical (backward compatible). All governance checkpoints passed (P0, P1, P2 APPROVED). The phase-insertion pattern — adding a new orchestrator phase between existing phases with its own schema, parser, conditional gate, and downstream propagation — is now a validated extensibility mechanism for the tachi pipeline.
+
+**When to Apply**: Any time a new pipeline phase or artifact type needs to be added to the tachi pipeline. Follow the pattern: (1) define schema, (2) add parser function to `tachi_parsers.py`, (3) insert orchestrator phase with input/output contracts, (4) add conditional gate boolean, (5) extend downstream consumers (threat report, PDF) with conditional sections. The conditional gate pattern (`has-X` boolean) is the key enabler — it ensures backward compatibility by making new output entirely opt-in based on input detection.
+
+**Tags**: #architecture #pipeline #extensibility #phase-insertion #conditional-gates #feature-141
+
+**Quality Score**: 7/10
 
 ---
 

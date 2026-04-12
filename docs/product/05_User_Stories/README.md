@@ -1,6 +1,6 @@
 # User Stories - tachi
 
-**Last Updated**: 2026-04-10
+**Last Updated**: 2026-04-12
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -428,3 +428,56 @@ Each PRD should include relevant user stories:
 - **US-136-6** (P2): Pipeline Documentation and ADR Updates - Dispatch rules, finding format shared reference, README layer table, and ADR-020 (with Feature 136 revision note) all use canonical layer names; historical PRDs 084 and 091 preserved unchanged per immutability policy
 - **US-136-7** (P2): Wave 0 Pre-Edit Discovery Report - Committed `specs/136-maestro-canonical-layer/discovery-report.md` documenting pre-edit grep sweep results with file-by-file match inventory, providing audit trail that every hardcoded layer name reference was found and addressed before editing began
 - **US-136-8** (P1): Backward Compatibility Validation Gate - Five non-agentic-app example baselines (web-app, microservices, ascii-web-api, mermaid-agentic-app, free-text-microservice) regenerate byte-deterministically under `SOURCE_DATE_EPOCH=1700000000`; `test_backward_compatibility.py` passes against regenerated baselines with idempotency verified
+
+### Feature 082: Threat Agent Skill References
+
+**PRD**: [082-threat-agent-skill-references](../02_PRD/082-threat-agent-skill-references-2026-04-11.md)
+**Delivered**: 2026-04-11 | **PR**: #151 | **Tasks**: 68/68 complete | **Stories**: 5/5 passing
+
+- **US-082-1** (P0): Lean Agent Migration - All 11 threat detection agents (6 STRIDE + 5 AI) migrated from self-contained inline shape to lean + skill references pattern, with STRIDE agents at 50-54 lines and AI agents at 78-114 lines — every agent within FR-10 tier caps
+- **US-082-2** (P0): Detection Pattern Skill References - 11 new companion skill directories created at `.claude/skills/tachi-<name>/references/` with `detection-patterns.md` reference files loaded via single `**MANDATORY**: Read` directive at detection start
+- **US-082-3** (P0): Enrichment Floor Clearance - +30 new pattern categories added across the 11 agents against a >=22 aggregate floor, sourced from OWASP Top 10 2021, OWASP LLM Top 10 2025, MITRE ATT&CK v15+, MITRE ATLAS v5.1+, CWE Top 25 2024, and NIST AI 600-1
+- **US-082-4** (P1): Shared Reference Consolidation - `finding-format-shared.md` gains "For Threat Agents" producer section (additive-only); OWASP 3x3 risk matrix canonicalized to single file (`severity-bands-shared.md`)
+- **US-082-5** (P1): ADR-023 Detection Variant Documentation - New ADR records the sibling detection variant as a second documented lean-agent shape alongside the methodology variant
+
+### Feature 130: Fix Attack Path Mermaid Rendering
+
+**PRD**: [130-fix-attack-path-mermaid-rendering](../02_PRD/130-fix-attack-path-mermaid-rendering-2026-04-11.md)
+**Delivered**: 2026-04-11 | **PR**: #131 | **Tasks**: 23/23 complete | **Stories**: 4/4 passing
+
+- **US-130-1** (P0): Fail-Fast Preflight Gate - Shell-level preflight gate in `/tachi.security-report` and Python-level `shutil.which("mmdc")` raise in `extract-report-data.py` fire when attack trees contain Critical/High findings and mmdc is not installed
+- **US-130-2** (P0): Mid-Render Failure Aggregation - `_render_single` returns structured `error_record` dicts; `render_mermaid_to_png()` collects failures and raises `RuntimeError` with per-finding failure list instead of silently marking `has_image=False`
+- **US-130-3** (P0): Text Fallback Removal - Typst text-fallback branch deleted outright from `attack-path.typ`; silent text fallback is no longer a supported shipping mode
+- **US-130-4** (P1): ADR-022 Hard Prerequisite Policy - New ADR establishes fail-loud posture for absent CLI prerequisites, gated on input detection (mmdc required only when attack trees present)
+
+### Feature 128: Executive Threat Architecture Infographic
+
+**PRD**: [128-executive-threat-architecture](../02_PRD/128-executive-threat-architecture-2026-04-09.md)
+**Delivered**: 2026-04-10 | **PR**: #133 | **Tasks**: 51/51 complete | **Stories**: 4/4 passing
+
+- **US-128-1** (P0): Executive Architecture Template - New `executive-architecture` infographic template groups components into architectural layers, filters Critical/High findings, and selects one callout per layer for CISO-ready visualization
+- **US-128-2** (P0): Early-Page PDF Placement - Portrait JPEG output placed immediately after Executive Summary (pages 2-3) in the PDF security report using existing `infographic-page()` Typst function
+- **US-128-3** (P1): Command Integration - `exec` alias dispatch and inclusion in `all` shorthand expansion in `/tachi.infographic` command
+- **US-128-4** (P1): Graceful Degradation - Threat models with no qualifying Critical/High findings produce no executive-architecture infographic without errors
+
+### Feature 120: Architecture Lifecycle Command
+
+**PRD**: [120-architecture-lifecycle-command](../02_PRD/120-architecture-lifecycle-command-2026-04-09.md)
+**Delivered**: 2026-04-09 | **PR**: #123 | **Tasks**: 28/28 complete | **Stories**: 4/4 passing
+
+- **US-120-1** (P0): Version Tracking - YAML frontmatter (version, date, description, checksum, previous_version) added to generated architecture files
+- **US-120-2** (P0): Archive Mechanism - Previous versions archived to `{parent_dir}/.archive/v{N}/architecture.md` before updates; legacy files archived as v0
+- **US-120-3** (P1): Threat Model Snapshot - `/tachi.threat-model` copies architecture file verbatim into timestamped output folder
+- **US-120-4** (P1): Guided Update Mode - Walks users through change categories (services, components, data flows, trust boundaries, external entities, AI capabilities)
+
+### Feature 141: MAESTRO Phase 2 — Cross-Layer Attack Chain Analysis
+
+**PRD**: [141-maestro-cross-layer-attack-chains](../02_PRD/141-maestro-cross-layer-attack-chains-2026-04-12.md)
+**Delivered**: 2026-04-12 | **PR**: #159 | **Tasks**: 34/34 complete | **Stories**: 6/6 passing
+
+- **US-141-1** (P0): Cross-Layer Attack Chain Detection - Pipeline includes a cross-layer correlation phase that identifies attack chains by analyzing relationships between findings across different MAESTRO layers using component lineage, data flow dependencies, and layer adjacency; produces an attack-chains.md artifact enumerating chains with chain IDs, ordered finding references, layer progression, maximum severity, and causal narrative per transition
+- **US-141-2** (P0): Attack Chain Narrative in Threat Report - Threat report includes an "Attack Chains" section (Section 6) with narrative walkthroughs for each Critical and High chain, describing initial exploit, intermediate cascade steps with layer transitions, and final business impact
+- **US-141-3** (P0): Visual Chain Diagrams in PDF Security Report - PDF security report renders dedicated chain diagram pages showing vertical MAESTRO layer-stack progression with attack arrows, condensed narrative, and impacted finding references for board-ready executive communication
+- **US-141-4** (P0): Chain-Breaking Control Recommendations - Each chain identifies chain-breaking controls — findings whose remediation would interrupt the chain progression — with structural centrality rationale and heuristic disclaimer
+- **US-141-5** (P1): End-to-End Example Demonstration - At least one example architecture demonstrates a multi-layer attack chain end-to-end with attack chains artifact, threat report narrative, and PDF chain diagram pages
+- **US-141-6** (P1): Canonical MAESTRO Deliverable - Chain narratives follow the canonical CSA MAESTRO worked example format with causal vocabulary ("enables," "triggers," "shifts," "manifests as") and visual layer-stack diagrams matching the canonical MAESTRO representation

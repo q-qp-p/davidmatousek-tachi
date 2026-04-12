@@ -1,6 +1,6 @@
 # Local Development Environment - tachi
 
-**Last Updated**: 2026-04-10
+**Last Updated**: 2026-04-12
 **Owner**: DevOps Agent
 
 ---
@@ -232,10 +232,13 @@ tests/
 ├── conftest.py                          # Shared fixtures and pytest hooks
 └── scripts/
     ├── test_smoke.py                    # Fast sanity checks
+    ├── test_attack_chain_extraction.py  # Attack chain data extraction (Feature 141)
+    ├── test_attack_chains.py            # Cross-layer attack chain correlation (Feature 141)
     ├── test_backward_compatibility.py   # Legacy output compatibility
     ├── test_command_dispatch.py         # Command routing
     ├── test_extract_infographic_data.py # Infographic data extraction
     ├── test_extract_report_data.py      # Security report data extraction
+    ├── test_mmdc_preflight.py           # mmdc preflight gate and mid-render aggregator (Feature 130)
     ├── test_pdf_page_positioning.py     # PDF layout ordering
     └── fixtures/
         ├── exec_arch/                   # Executive architecture infographic inputs
