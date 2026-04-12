@@ -617,6 +617,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 
 ---
 
+### KB-030: Cite Primary Sources In The First Draft — Rebuild Cycles Are Avoidable
+
+**Date**: 2026-04-11
+**Category**: Enrichment / Sourcing Discipline
+**Source**: Feature 082 delivery retrospective
+**Severity**: Medium (downstream credibility, not correctness)
+
+**Problem**: Feature 082 (threat-agent-skill) added +30 new pattern categories across 11 detection skill reference files during Phase 4+5 rollout (Waves 9-11). Phase 7 security review (T048, Wave 13) flagged **5 of the new categories** for primary-source realignment — the first-draft citations referenced secondary summaries, blog posts, or paraphrased framework language rather than the authoritative originals (OWASP LLM v2025 section IDs, MITRE ATLAS technique IDs, NIST AI 600-1 subsections). Every flagged category was substantively correct; the issue was sourcing provenance, not content accuracy. T048a (Wave 13.5) rebuilt all 5 byte-verbatim preserving substance — the cost was an entire unscheduled wave (~3 tasks, a sub-phase signoff, and the overhead of re-attribution across multiple commits) for what was fundamentally a citation pass.
+
+**Root Cause**: During high-velocity enrichment waves, the natural writing flow was (a) open the primary framework, (b) internalize the category, (c) write the detection pattern in the agent's voice, (d) defer the citation to "later" when doing a sourcing sweep. Step (d) never happened inline — the authors moved to the next category as soon as the content was coherent. The T048 security review was the first full pass that checked every new category against its supposed primary, and it caught the 5 that had drifted to secondary attributions. The root cause is a *sequencing* bug, not a *knowledge* bug: the authors knew the primaries but didn't cite them in the same commit as the content.
+
+**Solution**: Cite the primary source (OWASP LLM v2025 section ID, MITRE ATLAS technique ID, NIST AI 600-1 subsection, CWE ID, OWASP Top 10 category) in the *same commit* as the detection pattern content. Do not defer attribution to a later "citation pass" or a downstream security review. When adding a new pattern category to any `.claude/skills/tachi-*/references/detection-patterns.md` file, the commit MUST include the primary-source URL or identifier in the pattern's header or footer. If the primary is not immediately at hand when drafting, write the pattern in a local scratch file and don't commit until the source is verified — one commit per category with the primary attribution inline, not one commit per wave with attribution debt to clean up later.
+
+**Result**: T048a rebuilds preserved 100% of substance while fixing all 5 primary-source attributions byte-verbatim. Phase 7 enrichment tally (T049, Wave 14) passed at 30 / 22 floor with +8 margin. The rebuild cycle added ~3 extra tasks and a sub-phase gate but did not delay delivery — Phase 7 completed in its planned wave. Zero de-scopes entered Phase 8. The Feature 082 pattern has now been codified as a first-class rule for all future enrichment waves on tachi detection references (and by extension, any detection-variant lean agent refactor).
+
+**When to Apply**: Any time a new detection pattern, finding category, threat technique, or compensating control reference is added to a skill reference file that cites an external framework (OWASP, MITRE ATT&CK, MITRE ATLAS, NIST, CWE, CIS). The inline-citation rule is now the tachi convention for enrichment commits. The broader principle applies to any content-authoring workflow where attribution is deferred: the cost of cleaning up a citation pass is always higher than the cost of citing inline, because every deferred citation becomes an unknown at review time. This lesson also generalizes to ADR-writing, architectural pattern documentation, and any other content where sourcing provenance matters for downstream credibility.
+
+**Tags**: #enrichment #sourcing #citations #primary-sources #owasp #mitre #nist #review-cycle #feature-082
+
+**Quality Score**: 8/10
+
+---
+
 ## Bug Fixes
 
 *No entries yet. Use `/kb-create` to add the first bug fix.*

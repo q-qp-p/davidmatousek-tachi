@@ -45,6 +45,7 @@ Significant technical decisions with context and trade-offs
 - `ADR-020-maestro-layer-classification.md` - CSA MAESTRO seven-layer taxonomy for agentic AI component classification (Feature 084; Revision History adds canonical layer rename rule for enum-value-only minor schema bumps in Feature 136)
 - `ADR-021-source-date-epoch-for-deterministic-pdf-comparison.md` - SOURCE_DATE_EPOCH reproducible-builds convention for byte-deterministic PDF baseline comparison (Feature 128)
 - `ADR-022-mmdc-hard-prerequisite.md` - `mmdc` (Mermaid CLI) as hard prerequisite gated on attack-tree detection; establishes fail-loud-on-missing-CLI posture with defense-in-depth preflight gates — first ADR governing CLI-prerequisite posture (Feature 130)
+- `ADR-023-threat-agent-skill-references-pattern.md` - Detection variant of the lean + skill references pattern as a sibling to the methodology variant; single-point `**MANDATORY**: Read` at detection start for all 11 threat agents (6 STRIDE + 5 AI); MAESTRO classification remains orchestrator-owned; shared reference edits are additive-only; `finding-format-shared.md` gains "For Threat Agents" producer section. Completes the lean-agent architecture migration for all 17 tachi agents (Feature 082)
 - `ADR-NNN-decision-title.md` - Individual ADRs
 
 ### 03_patterns/

@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-11T20:33:48Z.
+> Auto-generated from GitHub Issues on 2026-04-12T03:43:16Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -43,7 +43,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| — | *No items in this stage* | | |
+| #82 | Enrich threat detection quality via skill-referenced domain knowledge for 11 threat agents | 2026-04-12 | — | 2026-04-12 |
 
 ## Untracked
 
@@ -51,7 +51,6 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #82 | Enrich threat detection quality via skill-referenced domain knowledge for 11 threat agents | OPEN | 2026-04-11 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
 | #18 | Feature: Threat Infographic Agent | CLOSED | 2026-03-23 |
 | #15 | Feature 007: Threat Report Agent & Attack Trees | CLOSED | 2026-03-23 |

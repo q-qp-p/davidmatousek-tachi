@@ -1,6 +1,6 @@
 # Design Patterns - tachi
 
-**Last Updated**: 2026-04-02
+**Last Updated**: 2026-04-11
 **Owner**: Architect
 
 ---
@@ -257,8 +257,8 @@ aod_state_get_governance_cache() {
 
 ### Pattern: On-Demand Reference File Segmentation
 
-**Added**: Feature 030 (Context Efficiency of /aod.run), extended to agent prompts in Feature 029 (Agent Refactoring -- Right-Size), extended to agent-to-skill domain extraction in Feature 075 (Tachi Agent Best Practices), extended to shared cross-agent definitions and full-pipeline agent restructuring in Feature 078 (Agent Context Optimization)
-**ADR**: [ADR-002](../02_ADRs/ADR-002-prompt-segmentation.md)
+**Added**: Feature 030 (Context Efficiency of /aod.run), extended to agent prompts in Feature 029 (Agent Refactoring -- Right-Size), extended to agent-to-skill domain extraction in Feature 075 (Tachi Agent Best Practices), extended to shared cross-agent definitions and full-pipeline agent restructuring in Feature 078 (Agent Context Optimization), extended to the detection-tier lean refactor (11 threat agents) via the **detection variant** in Feature 082 (Threat Agent Skill References)
+**ADR**: [ADR-002](../02_ADRs/ADR-002-prompt-segmentation.md), extended by [ADR-023](../02_ADRs/ADR-023-threat-agent-skill-references-pattern.md) — introduces the detection variant as a sibling to the methodology variant, completing the lean-agent architecture migration for all 17 tachi agents
 
 #### Problem
 A monolithic skill or agent prompt file loads its entire content into the agent's context window at invocation, even when large sections are only needed conditionally (e.g., governance rules at stage boundaries, error recovery on failure, SARIF generation templates, attack tree formatting). This wastes context tokens that could be used for implementation work.
@@ -376,6 +376,34 @@ when entering the SARIF generation step in Phase 4.
 ```
 
 **Key difference from agent-to-skill**: Shared definitions introduce a cross-cutting concern -- content that multiple independent agents need but that must remain consistent across all consumers. The `tachi-shared` skill acts as a single-source-of-truth hub, preventing drift that occurred when severity bands, category definitions, and finding formats were duplicated across agent prompts. Additionally, Feature 078 applied the agent-to-skill extraction to the remaining 3 report agents (report-assembler, threat-report, threat-infographic), achieving full-pipeline coverage. Combined with model field governance (`model: sonnet` in all 17 agent YAML frontmatter), this yielded 40-60% prompt size reduction across all 6 restructured agents.
+
+#### Example 5: Detection Variant — Single-Point Load for Threat Agents (Feature 082)
+```
+# Directory structure — 11 threat agents, each paired with a single-reference companion skill
+.claude/agents/tachi/
+  spoofing.md                    # Core prompt (51 lines, down from 113)
+  tampering.md                   # Core prompt (≤120 lines)
+  prompt-injection.md            # Core prompt (95 lines, down from 167)
+  ... (8 more lean threat agents)
+.claude/skills/tachi-spoofing/
+  references/detection-patterns.md     # Detection pattern catalog + enriched categories
+.claude/skills/tachi-prompt-injection/
+  references/detection-patterns.md     # LLM-specific patterns + enriched categories
+... (9 more companion skill directories)
+
+# In threat agent file — single-point load at detection start
+## Detection Workflow
+**MANDATORY**: You MUST use the Read tool to load `.claude/skills/tachi-spoofing/references/detection-patterns.md`
+before proceeding with detection. Do NOT rely on memory of prior pattern content.
+**MANDATORY**: You MUST use the Read tool to load `.claude/skills/tachi-shared/references/finding-format-shared.md`
+for finding construction guidance. Read the "For Threat Agents (Producers)" section.
+
+1. For each dispatched component, match against the detection patterns.
+2. Construct findings using the shared finding format.
+3. Emit finding list.
+```
+
+**Key difference from methodology variant**: Detection agents are **single-pass** — they match dispatched components against pattern catalogs and emit findings once per invocation. There is no multi-phase control flow, so the companion reference file is loaded once at the start of `## Detection Workflow` rather than phase-gated like control-analyzer's 6-phase methodology pipeline (Example 3's `.claude/skills/tachi-control-analysis/` shape). ADR-023 records this as the **detection variant** — a sibling to the methodology variant — and mandates the `## Detection Workflow` section name as the contributor-visible signal that the agent is single-pass rather than multi-phase. This yielded line-count reductions of STRIDE 113-141 → 50-54 lines and AI 167-201 → 78-114 lines across all 11 threat agents (aggregate ~1,680 → ~1,100 lines), every agent within its tier cap (STRIDE ≤120, AI ≤150, hard ceiling ≤180). A secondary structural change: `finding-format-shared.md` gained a "For Threat Agents (Producers)" section via additive-only edit, making the file dual-audience (existing consumer sections for risk-scorer/control-analyzer/threat-report remain byte-identical). **After Feature 082, all 17 tachi agents are on the lean + skill references pattern** — no remaining self-contained inline-pattern agents.
 
 #### When to Use
 - Skill files exceeding ~500 lines where content divides into always-needed vs. conditionally-needed

@@ -3,7 +3,8 @@ prd:
   number: "082"
   topic: threat-agent-skill-references
   created: 2026-04-11
-  status: Approved
+  status: Delivered
+  delivered: 2026-04-11
   type: feature
 triad:
   pm_signoff: { agent: product-manager, date: 2026-04-11, status: APPROVED, notes: "PRD grounded in research phase (spoofing extraction analysis, PRD 029/075/078 predecessor data). Scope disciplined via prototype-first gate + de-scopable enrichment floor. Proceeding to /aod.plan." }
@@ -16,8 +17,9 @@ source:
 
 # Threat Agent Skill References: Externalize Detection Knowledge for All 11 Threat Agents
 
-**Status**: Approved
+**Status**: Delivered
 **Created**: 2026-04-11
+**Delivered**: 2026-04-11 (PR #151, merge commit 6f9a40d)
 **Author**: product-manager
 **Reviewers**: architect, team-lead
 **Priority**: P1 (High Impact, High Confidence)
