@@ -96,6 +96,7 @@
     }
   ],
   "template_data": {
+    "control_coverage_pct": 23.5,
     "funnel_tiers": [
       {
         "count": 34,
@@ -122,6 +123,7 @@
         "tier": 3
       }
     ],
+    "inherent_score": 214.5,
     "missing_enrichments": [],
     "reduction_percentages": [
       {
@@ -140,6 +142,8 @@
         "to_tier": 3
       }
     ],
+    "residual_score": 156.8,
+    "risk_reduction": 26.9,
     "risk_weights": [
       {
         "annotation": "4 High + 5 Medium + 2 Low findings",

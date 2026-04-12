@@ -1042,10 +1042,24 @@ def compute_risk_funnel(tier, severity, threats_content, artifacts,
     # --- T031: Missing enrichments ---
     missing_enrichments = _compute_missing_enrichments(artifacts)
 
+    # --- Score-based risk metrics from compensating-controls Section 1 ---
+    risk_metrics = {
+        "risk_reduction": None,
+        "inherent_score": None,
+        "residual_score": None,
+        "control_coverage_pct": None,
+    }
+    if cc_data:
+        risk_metrics["risk_reduction"] = cc_data.get("risk_reduction")
+        risk_metrics["inherent_score"] = cc_data.get("inherent_score")
+        risk_metrics["residual_score"] = cc_data.get("residual_score")
+        risk_metrics["control_coverage_pct"] = cc_data.get("control_coverage_pct")
+
     return {
         "funnel_tiers": funnel_tiers,
         "reduction_percentages": reduction_percentages,
         "missing_enrichments": missing_enrichments,
+        **risk_metrics,
     }
 
 
@@ -1521,7 +1535,14 @@ def main():
     # Build template-specific data
     template_data = {}
     if args.template == "baseball-card":
-        template_data = {"risk_weights": risk_weights}
+        # Risk metrics from compensating-controls Section 1 (Tier 1 only)
+        template_data = {
+            "risk_weights": risk_weights,
+            "risk_reduction": cc_data.get("risk_reduction") if cc_data else None,
+            "inherent_score": cc_data.get("inherent_score") if cc_data else None,
+            "residual_score": cc_data.get("residual_score") if cc_data else None,
+            "control_coverage_pct": cc_data.get("control_coverage_pct") if cc_data else None,
+        }
     elif args.template == "system-architecture":
         arch_overlay = compute_architecture_overlay(scope, findings, tier, heat_map)
         template_data = {
@@ -1538,6 +1559,10 @@ def main():
             "funnel_tiers": funnel["funnel_tiers"],
             "reduction_percentages": funnel["reduction_percentages"],
             "missing_enrichments": funnel["missing_enrichments"],
+            "risk_reduction": funnel.get("risk_reduction"),
+            "inherent_score": funnel.get("inherent_score"),
+            "residual_score": funnel.get("residual_score"),
+            "control_coverage_pct": funnel.get("control_coverage_pct"),
         }
     elif args.template == "maestro-stack":
         # Per-layer finding summaries: up to 2 top findings per layer

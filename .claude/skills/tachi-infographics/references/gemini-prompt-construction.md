@@ -121,12 +121,27 @@ Apply these labels in the Gemini prompt based on `metadata.data_source_type`:
 
 ```yaml
 gemini_config:
-  default_model: "gemini-3-pro-image-preview"
+  default_model: "gemini-2.5-flash-image"
+  fallback_chain:
+    - "gemini-3-pro-image-preview"      # Highest quality (preview — may not be available on all API keys)
+    - "gemini-3.1-flash-image-preview"   # Fast, production-scale (preview)
+    - "gemini-2.5-flash-image"           # Stable GA — broadest availability, reliable fallback
   resolution: "2K"
 ```
 
-- **default_model**: The primary Gemini model for image generation. Configurable -- do not hardcode.
+- **default_model**: The GA-stable Gemini model for image generation. Use this when preview models are unavailable. Configurable -- do not hardcode.
+- **fallback_chain**: Try models in order. Preview models (`-preview` suffix) produce higher quality output but may not be accessible on all API keys or regions. The agent should attempt the first available model and fall back through the chain on 404 or model-not-found errors.
 - **resolution**: Target output resolution. "2K" produces images at approximately 1920x1080 for 16:9 aspect ratio.
+
+**Model aliases** (for reference — these are NOT model IDs, just human-friendly names):
+
+| Alias | Model ID | Status | Best For |
+|-------|----------|--------|----------|
+| nano-banana | `gemini-2.5-flash-image` | **Stable (GA)** | Reliable fallback, broad availability |
+| nano-banana-2 | `gemini-3.1-flash-image-preview` | Preview | Speed-optimized production workflows |
+| nano-banana-pro | `gemini-3-pro-image-preview` | Preview | Highest quality, best text rendering |
+
+**IMPORTANT**: The `-image` and `-image-preview` suffixed models are DIFFERENT model IDs from the base text models. `gemini-2.5-flash` (text) does NOT support image generation output — you must use `gemini-2.5-flash-image` (with the `-image` suffix). The standard `models.list` API endpoint may not show preview models; their absence does not mean they are unavailable for `generateContent` calls.
 
 ---
 
@@ -139,7 +154,7 @@ gemini_config:
 POST https://generativelanguage.googleapis.com/v1beta/models/{model_id}:generateContent
 ```
 
-Where `{model_id}` is the configured model (default: `gemini-3-pro-image-preview`).
+Where `{model_id}` is the configured model. Try the fallback chain in order: `gemini-3-pro-image-preview` first (highest quality), then `gemini-3.1-flash-image-preview`, then `gemini-2.5-flash-image` (GA stable). On a 404 or model-not-found error, move to the next model in the chain.
 
 **Request Headers**:
 ```

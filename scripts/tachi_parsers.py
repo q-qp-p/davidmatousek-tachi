@@ -647,12 +647,35 @@ def parse_compensating_controls_md(content: str) -> dict:
         "controls": [],
         "coverage_summary": {"total-found": 0, "total-partial": 0, "total-missing": 0},
         "severity": {"critical": 0, "high": 0, "medium": 0, "low": 0, "note": 0, "total": 0},
+        "risk_reduction": None,      # e.g. 22.9
+        "inherent_score": None,      # e.g. 270.3
+        "residual_score": None,      # e.g. 208.5
+        "control_coverage_pct": None, # e.g. 26.0 (Found percentage)
     }
 
     if not content or not content.strip():
         return result
 
     lines = content.split("\n")
+
+    # ---- Section 1: Executive Summary risk metrics ----
+    # Parse: **Risk Reduction**: 270.3 inherent -> 208.5 residual (**22.9%** reduction)
+    rr_match = re.search(
+        r"\*\*Risk Reduction\*\*:\s*([\d.]+)\s*inherent\s*->\s*([\d.]+)\s*residual\s*\(\*\*([\d.]+)%\*\*",
+        content,
+    )
+    if rr_match:
+        result["inherent_score"] = float(rr_match.group(1))
+        result["residual_score"] = float(rr_match.group(2))
+        result["risk_reduction"] = float(rr_match.group(3))
+
+    # Parse: **Coverage**: 26% Found | 34% Partial | 40% Missing
+    cov_match = re.search(
+        r"\*\*Coverage\*\*:\s*([\d.]+)%\s*Found",
+        content,
+    )
+    if cov_match:
+        result["control_coverage_pct"] = float(cov_match.group(1))
 
     # ---- Section 4: Recommendations (parse first to merge into findings) ----
     recommendations = {}  # threat_id -> recommendation text
