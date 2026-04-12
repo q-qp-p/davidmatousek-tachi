@@ -215,9 +215,15 @@ The script outputs a JSON file with this top-level structure:
   "top_findings": [
     { "id": "S-001", "component": "API Gateway", "threat": "...", "risk_level": "Critical", "score": 9.2 }
   ],
-  "template_data": { }
+  "template_data": { },
+  "prompt_scaffold": {
+    "preamble": "Create a premium, professional... [locked styling scaffold]",
+    "postamble": "FOOTER: ... [locked closing statement]"
+  }
 }
 ```
+
+When `prompt_scaffold` is present, it contains the **locked visual design directives** extracted from the infographic template file. See "Gemini Prompt Construction — Scaffold" below for how to use it.
 
 The complete JSON schema is defined in `specs/071-deterministic-infographic-extraction/data-model.md`. The `template_data` object varies by template -- see the data model for `baseball-card`, `system-architecture`, and `risk-funnel` schemas.
 
@@ -232,6 +238,20 @@ The complete JSON schema is defined in `specs/071-deterministic-infographic-extr
 **MANDATORY**: Read `.claude/skills/tachi-infographics/references/visual-design-system.md` for Section 6 color palette, layout structure, typography, background/theme selection, and template file references.
 
 The output `threat-{template-name}-spec.md` contains YAML frontmatter and 6 required sections. All sections must be present and non-empty.
+
+---
+
+## Gemini Prompt Construction — Scaffold
+
+**MANDATORY**: Read `.claude/skills/tachi-infographics/references/gemini-prompt-construction.md` Section "Design Template Loading — Prompt Scaffold (Option D)" for the full protocol.
+
+When the JSON output contains a `prompt_scaffold` object, you **MUST** use it:
+
+1. **Copy `prompt_scaffold.preamble` VERBATIM** — do NOT rewrite any part of it (background color, styling directives, aesthetic target are LOCKED)
+2. **Write DATA CONTENT sections** from JSON data (severity counts, findings, heat map, scores) — this is where you have creative flexibility
+3. **Copy `prompt_scaffold.postamble` VERBATIM** — do NOT rewrite the footer or closing statement
+
+This ensures every run uses the same dark-navy (or template-appropriate) background, severity colors, and layout directives. Without the scaffold, previous runs produced white-background flat images instead of the premium dark-themed 3D visuals.
 
 ---
 

@@ -79,6 +79,125 @@ def _canonical_severity(finding):
 
 
 # =============================================================================
+# Gemini Prompt Scaffold Extraction
+# =============================================================================
+
+# Templates that have a Gemini prompt section with the standard
+# PREAMBLE → DATA CONTENT → POSTAMBLE structure.
+_SCAFFOLD_TEMPLATES = frozenset({
+    "baseball-card", "risk-funnel", "system-architecture",
+    "maestro-stack", "maestro-heatmap",
+})
+
+_TEMPLATE_FILES = {
+    "baseball-card": "infographic-baseball-card.md",
+    "risk-funnel": "infographic-risk-funnel.md",
+    "system-architecture": "infographic-system-architecture.md",
+    "maestro-stack": "infographic-maestro-stack.md",
+    "maestro-heatmap": "infographic-maestro-heatmap.md",
+}
+
+
+def extract_prompt_scaffold(template_name: str, repo_root: Path = None) -> dict:
+    """Extract the fixed Gemini prompt scaffold from an infographic template.
+
+    Reads the template file, locates the Gemini prompt section (between
+    triple-backtick fences), and splits it at the "DATA CONTENT" marker.
+
+    Returns:
+        Dict with:
+        - preamble: everything from prompt start through "DATA CONTENT (render
+          this as visible text):" — includes opening aesthetic instruction,
+          IMPORTANT note, and STYLING DIRECTIVES block.
+        - postamble: the FOOTER line through the closing aesthetic instruction.
+        - found: True if scaffold was successfully extracted.
+
+    If the template file or prompt section is not found, returns
+    found=False with empty strings (graceful degradation — agent falls
+    back to its own prompt construction).
+    """
+    result = {"preamble": "", "postamble": "", "found": False}
+
+    if template_name not in _SCAFFOLD_TEMPLATES:
+        return result
+
+    if repo_root is None:
+        repo_root = Path(__file__).resolve().parent.parent
+
+    template_path = repo_root / "templates" / "tachi" / "infographics" / _TEMPLATE_FILES[template_name]
+    if not template_path.exists():
+        return result
+
+    content = template_path.read_text(encoding="utf-8")
+
+    # Extract the Gemini prompt block (first triple-backtick fence after
+    # a heading containing "Gemini" and "Prompt")
+    prompt_text = None
+    lines = content.split("\n")
+    in_prompt_section = False
+    in_fence = False
+    fence_lines = []
+
+    for line in lines:
+        stripped = line.strip()
+        if re.match(r"^#{1,4}\s+.*[Gg]emini.*[Pp]rompt", stripped):
+            in_prompt_section = True
+            continue
+        if in_prompt_section and not in_fence and stripped.startswith("```"):
+            in_fence = True
+            continue
+        if in_fence and stripped.startswith("```"):
+            prompt_text = "\n".join(fence_lines)
+            break
+        if in_fence:
+            fence_lines.append(line)
+
+    if not prompt_text:
+        return result
+
+    # Split at the standalone "DATA CONTENT" section marker.
+    # The phrase "DATA CONTENT" also appears inside the IMPORTANT note
+    # ("...specified in the DATA CONTENT sections."), so we match the
+    # full section header form to avoid a false-positive split.
+    data_marker = "DATA CONTENT (render this"
+    marker_idx = prompt_text.find(data_marker)
+    if marker_idx == -1:
+        # Fallback: try bare marker at start of line
+        for m in re.finditer(r"^DATA CONTENT", prompt_text, re.MULTILINE):
+            # Skip if this is the IMPORTANT note reference
+            line_end = prompt_text.find("\n", m.start())
+            line = prompt_text[m.start():line_end if line_end != -1 else len(prompt_text)]
+            if "sections." not in line:
+                marker_idx = m.start()
+                break
+    if marker_idx == -1:
+        return result
+
+    # Find the full marker line end
+    marker_line_end = prompt_text.find("\n", marker_idx)
+    if marker_line_end == -1:
+        marker_line_end = len(prompt_text)
+
+    preamble = prompt_text[:marker_line_end + 1].rstrip() + "\n"
+
+    # Postamble: from "FOOTER" to end of prompt
+    footer_marker = "\nFOOTER"
+    footer_idx = prompt_text.find(footer_marker)
+    if footer_idx == -1:
+        # Try without leading newline
+        footer_idx = prompt_text.find("FOOTER")
+    if footer_idx != -1:
+        postamble = prompt_text[footer_idx:].strip()
+    else:
+        postamble = ""
+
+    result["preamble"] = preamble
+    result["postamble"] = postamble
+    result["found"] = True
+    return result
+
+
+# =============================================================================
 # T009: Largest Remainder Method
 # =============================================================================
 
@@ -1395,6 +1514,10 @@ def build_json_output(data, template):
     if "delta" in data:
         output["delta"] = data["delta"]
 
+    # Add prompt scaffold when extracted from template
+    if "prompt_scaffold" in data:
+        output["prompt_scaffold"] = data["prompt_scaffold"]
+
     # Add template to metadata
     output["metadata"]["template"] = template
 
@@ -1611,6 +1734,14 @@ def main():
             "delta_counts": compute_delta_counts(findings, resolved),
         }
 
+    # Extract prompt scaffold from template file (Option D: locked styling,
+    # flexible data narrative). The scaffold contains the opening aesthetic
+    # instruction, STYLING DIRECTIVES, and closing statement — all the fixed
+    # visual directives that must not be rewritten by the agent.
+    scaffold = extract_prompt_scaffold(args.template)
+    if scaffold["found"]:
+        print(f"Prompt scaffold extracted from template ({args.template})", file=sys.stderr)
+
     # Assemble data dict
     data = {
         "metadata": metadata,
@@ -1620,6 +1751,11 @@ def main():
         "findings_ids": findings_ids,
         "template_data": template_data,
     }
+    if scaffold["found"]:
+        data["prompt_scaffold"] = {
+            "preamble": scaffold["preamble"],
+            "postamble": scaffold["postamble"],
+        }
     if delta_data:
         data["delta"] = delta_data
 

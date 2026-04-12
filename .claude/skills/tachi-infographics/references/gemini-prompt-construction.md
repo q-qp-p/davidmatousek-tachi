@@ -4,11 +4,33 @@ Rules and patterns for constructing Gemini API image generation prompts from inf
 
 ---
 
-## Design Template Loading
+## Design Template Loading — Prompt Scaffold (Option D)
 
-After generating the specification (`threat-{template-name}-spec.md`), construct a Gemini image generation prompt using the active design template.
+The extraction script (`scripts/extract-infographic-data.py`) outputs a `prompt_scaffold` object in the JSON with two fields:
+- **`preamble`**: the opening aesthetic instruction, IMPORTANT note, and STYLING DIRECTIVES block — everything up to and including the "DATA CONTENT (render this as visible text):" header.
+- **`postamble`**: the FOOTER specification and closing aesthetic instruction.
 
-### Template Location
+### MANDATORY: Use Scaffold Verbatim
+
+When `prompt_scaffold` is present in the JSON output, you **MUST** construct the Gemini prompt by:
+
+1. **Copy `prompt_scaffold.preamble` VERBATIM** as the start of the prompt. Do NOT rewrite, paraphrase, or modify ANY part of it — the background color, styling directives, layout instructions, and aesthetic target are locked.
+2. **Write the DATA CONTENT sections** using data from the JSON (severity counts, findings, heat map grid, etc.). This is the ONLY section where you have creative control.
+3. **Copy `prompt_scaffold.postamble` VERBATIM** as the end of the prompt. Do NOT rewrite the footer text or closing instructions.
+
+```
+[preamble — VERBATIM from JSON, includes opening + IMPORTANT + STYLING DIRECTIVES + "DATA CONTENT" header]
+
+[Your DATA CONTENT sections — written from JSON data, with specific counts, scores, finding descriptions]
+
+[postamble — VERBATIM from JSON, includes FOOTER + closing aesthetic instruction]
+```
+
+**Why this matters**: The scaffold locks the visual design (dark navy background, severity colors, typography, layout). Previous runs where the agent rewrote the scaffold produced white-background flat images instead of the premium dark-themed 3D visuals the templates specify.
+
+### Fallback (no scaffold)
+
+If `prompt_scaffold` is NOT present in the JSON (e.g., executive-architecture template, or older script version):
 
 Load `templates/tachi/infographics/infographic-{name}.md` and use its **Gemini Prompt Template** section. Replace all `{placeholders}` with actual data from the infographic spec.
 
