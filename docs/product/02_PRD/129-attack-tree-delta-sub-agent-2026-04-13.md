@@ -3,8 +3,11 @@ prd:
   number: 129
   topic: attack-tree-delta-sub-agent
   created: 2026-04-13
-  status: Approved
+  delivered: 2026-04-14
+  status: Delivered
   type: feature
+  pr: 162
+  spec: specs/129-attack-tree-delta/spec.md
 triad:
   pm_signoff: { agent: product-manager, date: 2026-04-13, status: APPROVED, notes: "PRD author — problem well-evidenced, scope contained" }
   architect_signoff: { agent: architect, date: 2026-04-13, status: APPROVED_WITH_CONCERNS, notes: "5 items (3 MEDIUM, 2 LOW): leaf label matching granularity, gate-type detection, attack_tree_count reversal framing. Details: .aod/results/architect-prd-129.md" }
@@ -16,8 +19,9 @@ source:
 
 # Attack Tree Delta Sub-Agent - Product Requirements Document
 
-**Status**: Draft
+**Status**: Delivered
 **Created**: 2026-04-13
+**Delivered**: 2026-04-14 (PR #162 squash-merged to main)
 **Author**: product-manager
 **Reviewers**: architect, team-lead
 **Priority**: P1 (ICE: 24/30)

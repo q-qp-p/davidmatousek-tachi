@@ -6,7 +6,7 @@ Canonical list of files and directories that must be copied when installing tach
 
 | Directory | Purpose | Required By |
 |-----------|---------|-------------|
-| `.claude/agents/tachi/` | 17 threat analysis agent definitions | All commands |
+| `.claude/agents/tachi/` | 18 threat analysis agent definitions | All commands |
 | `.claude/commands/` (6 files) | Slash command definitions | User invocation |
 | `schemas/` | YAML contracts (finding, input, output, scoring) | orchestrator, risk-scorer, control-analyzer |
 | `templates/tachi/output-schemas/` | Canonical output format templates | orchestrator, risk-scorer, control-analyzer, threat-report |
@@ -54,6 +54,7 @@ Copy the entire `.claude/agents/tachi/` directory. Current agents:
 | `control-analyzer.md` | Compensating controls analysis |
 | `threat-infographic.md` | Visual infographic generator |
 | `report-assembler.md` | PDF report assembler |
+| `attack-tree-delta.md` | Attack tree generation sub-agent (invoked by threat-report for Section 5) |
 
 ## Script Files
 
