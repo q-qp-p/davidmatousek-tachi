@@ -21,9 +21,9 @@ Run each `/aod.define` in order. Items on the same line can run in parallel.
 | ~~4~~ | ~~`/aod.define 141`~~ **[DONE]** | [#141](https://github.com/davidmatousek/tachi/issues/141) | ~~MAESTRO Phase 2: cross-layer attack chain analysis~~ — **DELIVERED 2026-04-12. Cross-layer attack chain correlation engine (orchestrator Phase 3.5), attack-chains.md artifact, threat report Section 6 narrative, PDF chain diagram pages, schema (attack-chain.yaml v1.0), parser (parse_attack_chains), 800+ lines test coverage. 34 tasks across 7 waves. PR #159, v4.13.0.** |
 | **Wave 2 — Sequential follow-on (week 5) — DELIVERED 2026-04-14** ||||
 | ~~5~~ | ~~`/aod.define 129`~~ **[DONE]** | [#129](https://github.com/davidmatousek/tachi/issues/129) | ~~Attack tree delta sub-agent (must wait for #82)~~ — **DELIVERED 2026-04-14 via PR #162. New leaf agent `tachi-attack-tree-delta` extracts Section 5 generation from threat-report (-56 lines). Deterministic Rule 1 (carry-forward) / Rule 2 (fresh + per-finding Rule 3 reconciliation) / no-baseline fallback dispatch on `delta_counts`. Rule 3 structural similarity algorithm with named constants (LEAF_MATCH_THRESHOLD=0.70, TREE_SIMILARITY_THRESHOLD=0.80, NODE_COUNT_VARIANCE=0.20). `attack_tree_count` definition unified across schema/template/sub-agent (reverses Feature 104 metric). 13 tasks complete, ~1 day wall-clock against 1-2 day estimate, smooth sailing per retrospective. Sidecar bugfix PR #164 added auto-detection of newest `docs/security/<timestamp>/` run directory across the four downstream tachi commands.** |
-| **Wave 3 — ADR spikes (week 5, run alongside Wave 2 as a pair)** ||||
-| 6 | `/aod.define 143` | [#143](https://github.com/davidmatousek/tachi/issues/143) | MAESTRO Phase 4: OWASP AIVSS evaluation ADR |
-| 7 | `/aod.define 144` | [#144](https://github.com/davidmatousek/tachi/issues/144) | MAESTRO companion: NIST AI RMF integration ADR |
+| **Wave 3 — ADR spikes (week 5, run alongside Wave 2 as a pair) — #143 DELIVERED 2026-04-15** ||||
+| ~~6~~ | ~~`/aod.define 143`~~ **[DONE]** | [#143](https://github.com/davidmatousek/tachi/issues/143) | ~~MAESTRO Phase 4: OWASP AIVSS evaluation ADR~~ — **DELIVERED 2026-04-15 via PR #167. ADR-024 (Accepted) documents tachi's decision to **diverge** from OWASP AIVSS at present time; existing four-dimensional weighted-sum composite remains canonical. Three-surface comparison (dimension space / formula shape / severity bands) and five-criteria justification (maturity, adoption, compatibility, effort, compliance value) recorded inline. Re-evaluation trigger: AIVSS v1.0 + first external adopter case study (tracked separately as Issue #168). 32 tasks complete + 1 N/A (T023 conditional skip — Option C path). Single-session, ~15min wall-clock against 1-2 day estimate; smooth sailing per retrospective. KB-032 captures three-surface comparison as a reusable pattern for future framework-evaluation ADRs. **Closes umbrella MAESTRO compliance discovery #136** (Phase 1 = 084 + Phase 2 = 141 + Phase 3 = 082 + Phase 4 = 143 all delivered).** |
+| 7 | `/aod.define 144` | [#144](https://github.com/davidmatousek/tachi/issues/144) | MAESTRO companion: NIST AI RMF integration ADR — **paired research phase with #143 dissolved on solo run; runs standalone now** |
 | **Wave 4 — MAESTRO enhancements (weeks 6-8)** ||||
 | 8 | ~~*(re-scope check)*~~ **DONE 2026-04-14** | [#98](https://github.com/davidmatousek/tachi/issues/98) | ~~MAESTRO coverage matrix — investigate whether #141 subsumed this~~ — **NOT subsumed. Shrunk from 2-3 weeks to ~1 day. Real gap: every layer-aware view (threats.md "Risk by MAESTRO Layer", PDF MAESTRO Layer Analysis page, maestro-stack infographic) silently omits layers with zero findings (per `output-schemas.md` spec rule and `extract-report-data.py:388` filter). Reviewers cannot tell "analyzed but clean" from "not applicable" or "never analyzed." Fix: invert the omission rule across the 3 enforcement points; activate the existing dead-code empty-layer branch in `maestro-findings.typ:151-155`. Reschedule from Wave 4 to Wave 5 opportunistic. See [#98 comment](https://github.com/davidmatousek/tachi/issues/98#issuecomment-4247897465).** |
 | 9 | `/aod.define 142` | [#142](https://github.com/davidmatousek/tachi/issues/142) | MAESTRO Phase 3: agentic threat pattern expansion |
@@ -41,14 +41,16 @@ Run each `/aod.define` in order. Items on the same line can run in parallel.
 3. ~~Post re-scope comments on #98 and #69 to prevent duplicate work~~ **DONE 2026-04-12** — scope overlap flag posted on #98 (gated on #141), scope adjacency flag posted on #69 (gated on #145).
 4. ~~Run `/aod.validate 126` and `/aod.validate 62` to get bodies and ICE scores on stub issues~~ **DONE 2026-04-12** — #126 "Auto-detect architecture drift" scored ICE 17 (I:9 C:5 E:3), #62 "Custom brand presets" scored ICE 16 (I:6 C:5 E:5). Both above defer gate, both remain Wave 5 opportunistic.
 
-**All immediate actions complete.** Waves 0, 1, and 2 fully delivered.
+**All immediate actions complete.** Waves 0, 1, 2 fully delivered. Wave 3 half delivered (#143 done 2026-04-15; #144 remains).
 
-**Next up now that Waves 0, 1, 2 are fully delivered**:
+**Next up now that Waves 0, 1, 2 and the AIVSS half of Wave 3 are delivered**:
+- **#143 DELIVERED 2026-04-15** — OWASP AIVSS evaluation ADR shipped as PR #167. ADR-024 (Accepted) documents tachi's posture: **diverge** from AIVSS at present time. Three-surface comparison (dimension space / formula shape / severity bands) + five-criteria justification recorded inline. Re-evaluation trigger encoded inline (AIVSS v1.0 + first external adopter case study) and tracked as Issue #168. **Closes umbrella MAESTRO compliance discovery #136** — all four phases (084/141/082/143) delivered. KB-032 captures the three-surface comparison as a reusable pattern. ADR-024 is the second tachi ADR to use a "When to Re-Evaluate" trigger clause (joining ADR-022's Future Work pattern) — this is now the recommended ADR shape for any decision that has a known external dependency timeline.
 - **#129 DELIVERED 2026-04-14** — attack tree delta sub-agent shipped as PR #162. Parent-leaf decomposition with structured JSON manifest IPC. Rule 3 reconciliation now actually fires (the original bug — it never fired in practice). Sidecar PR #164 added auto-detection of newest `docs/security/<timestamp>/` run directory across the four downstream tachi commands.
-- **Recommended next: Wave 3 ADR pair — `/aod.define 143` + `/aod.define 144`** (OWASP AIVSS ADR + NIST AI RMF ADR). Pure research/documentation scope, paired research phase, single `/aod.define` cycle covers both in ~1 week vs 2 weeks if sequenced. Both reference canonical MAESTRO complementary frameworks.
+- **Recommended next: `/aod.define 144`** (NIST AI RMF integration ADR). Original plan paired #143 + #144 in a single `/aod.define` cycle for overlapping research economy; #143 ran solo and shipped under the original 1-week estimate, so #144 is now a standalone ADR spike. Same shape as #143 (research → ADR → optional follow-on Issue per FR-7 conditionality). The three-surface comparison pattern from KB-032 should apply to the NIST AI RMF evaluation as well.
 - **#98 re-scope check DONE 2026-04-14** — NOT subsumed by #141. Shrunk from 2-3 weeks to ~1 day; rescheduled to Wave 5 opportunistic. Gap is real: layer-aware views silently omit zero-finding layers, hiding "analyzed but clean" vs "not applicable." Fix is a 3-point omission-rule inversion. See [#98 comment](https://github.com/davidmatousek/tachi/issues/98#issuecomment-4247897465).
-- **Wave 4 (after Wave 3)**: #142 (MAESTRO Phase 3 agentic patterns), #145 (MAESTRO canonical worked example). Both unblocked, both benefit from Phase 2 chains being in place.
+- **Wave 4 (after #144 lands or in parallel with #144)**: #142 (MAESTRO Phase 3 agentic patterns), #145 (MAESTRO canonical worked example). Both unblocked, both benefit from Phase 2 chains being in place.
 - **ADR-022 (Feature 130 output) establishes new precedent** — any future CLI prerequisite (third-party binary, renderer, compiler required at runtime) now follows the defense-in-depth two-gate pattern: shell-level preflight in the command file + Python-level `shutil.which` raise at the function boundary, gated on input detection, with a Future Work clause for helper extraction once a third CLI prereq is added.
+- **ADR-024 (Feature 143 output) establishes second precedent** — any future evaluation of an external scoring framework (CVSS variants, AI risk models, alternative composite schemes) should use the three-surface decomposition (dimension space + formula shape + severity bands) backed by a five-criteria justification (maturity, adoption, compatibility, effort, compliance value) and a "When to Re-Evaluate" trigger clause with concrete external conditions. Per KB-032.
 
 ---
 
@@ -80,7 +82,7 @@ These are small ADR-only scopes where `/aod.run` can handle research and draftin
 
 | Issue | Why pause before Build |
 |-------|------------------------|
-| [#143](https://github.com/davidmatousek/tachi/issues/143) AIVSS ADR | Output is literally a decision document; review before committing |
+| ~~[#143](https://github.com/davidmatousek/tachi/issues/143) AIVSS ADR~~ **[DONE 2026-04-15]** | ~~Output is literally a decision document; review before committing~~ — **Delivered via PR #167. Manual orchestration (Triad-governed `/aod.define` → `/aod.plan` → `/aod.build`) chosen over `/aod.run` because the decision (Diverge / Adopt-Primary / Adopt-Supplementary) required human judgment on AIVSS maturity and CVSS-version conflict. ADR-024 Accepted. The "review before committing" guidance held — architect approval at PR review served as the Accepted-at-merge attestation per ADR-024 frontmatter.** |
 | [#144](https://github.com/davidmatousek/tachi/issues/144) NIST AI RMF ADR | Same — review draft before Build commits the ADR |
 
 ### Manual orchestration (avoid `/aod.run`)
@@ -174,16 +176,16 @@ Both items run in parallel because they touch different parts of the pipeline. #
 |-------|-------|---------------|--------|---------------|
 | ~~5~~ | ~~[#129](https://github.com/davidmatousek/tachi/issues/129) Attack tree delta sub-agent~~ | ~~Correctness fix for delta reconciliation (Rule 3 never fires in practice); important for incremental threat modeling quality~~ | ~~1-2 weeks~~ | **DELIVERED 2026-04-14** — PR #162, ~1 day wall-clock against 1-2d estimate. New leaf agent extracts Section 5 generation; deterministic Rule 1/2/3 dispatch; named-constant heuristics; `attack_tree_count` unification reverses Feature 104. Sidecar PR #164 fixed cwd auto-detection bug across the four downstream tachi commands. |
 
-### Wave 3 — ADR spikes (week 5, pair, run alongside Wave 2)
+### Wave 3 — ADR spikes (week 5, pair, run alongside Wave 2) — #143 DELIVERED 2026-04-15
 
-These two are pure documentation and research work with overlapping research phases. They can happen during the same weeks as Wave 1 or Wave 2 implementation without competing for engineering resources.
+These two are pure documentation and research work with originally-overlapping research phases. The pairing was dissolved on solo run — #143 shipped standalone in a single session and well under estimate; #144 now runs as a standalone ADR spike.
 
-| Order | Issue | Why now | Effort | Pairing |
-|-------|-------|---------|--------|---------|
-| 6 | [#143](https://github.com/davidmatousek/tachi/issues/143) OWASP AIVSS ADR | ICE 22 but tiny scope (ADR only); canonical MAESTRO references AIVSS as companion scoring framework | ~1 week | Pair with #144 |
-| 7 | [#144](https://github.com/davidmatousek/tachi/issues/144) NIST AI RMF ADR | ICE 20; canonical MAESTRO references NIST AI RMF alongside AIVSS as complementary framework | ~1 week | Pair with #143 |
+| Order | Issue | Why now | Effort | Actual result / pairing |
+|-------|-------|---------|--------|-------------------------|
+| ~~6~~ | ~~[#143](https://github.com/davidmatousek/tachi/issues/143) OWASP AIVSS ADR~~ | ~~ICE 22 but tiny scope (ADR only); canonical MAESTRO references AIVSS as companion scoring framework~~ | ~~~1 week~~ | **DELIVERED 2026-04-15** — PR #167, single-session ~15min wall-clock against 1-2d estimate. ADR-024 Accepted. Decision: Diverge (Option C). Closes umbrella MAESTRO #136. KB-032 captures the three-surface comparison pattern as reusable. |
+| 7 | [#144](https://github.com/davidmatousek/tachi/issues/144) NIST AI RMF ADR | ICE 20; canonical MAESTRO references NIST AI RMF alongside AIVSS as complementary framework | ~1 week | Standalone now (pairing dissolved on #143 solo run) |
 
-Run both as a single `/aod.define` cycle because the research phase overlaps almost entirely: read canonical MAESTRO sources, evaluate external framework integration depth, commit ADRs. One week total for both paired versus two weeks if sequenced.
+The original "single `/aod.define` cycle for paired research" plan was dissolved when #143 shipped solo well under its own estimate. #144 should now be planned as a standalone ADR spike following the same shape: research → ADR → optional follow-on Issue per FR-7 conditionality. Apply the three-surface comparison pattern (KB-032) to NIST AI RMF for shape consistency with ADR-024.
 
 ### Wave 4 — MAESTRO enhancements (weeks 6-8)
 
@@ -218,14 +220,14 @@ Run both as a single `/aod.define` cycle because the research phase overlaps alm
 
 #82 [DONE 2026-04-12] ─── #129 [DONE 2026-04-14] ─── (Wave 2 closed)
 
-#143 ─┬─ pair (overlapping research phase) — RECOMMENDED NEXT
-#144 ─┘
+#143 [DONE 2026-04-15] ─── (umbrella #136 closes; pairing with #144 dissolved on solo run)
+#144 ─── standalone ADR spike — RECOMMENDED NEXT
 
 #55, #126, #62, #46 ─── all independent
 #69 ─── overlaps #145, re-scope after #145 lands
 ```
 
-**Waves 0, 1, 2 fully delivered** — all 5 prerequisite items closed by 2026-04-14. Wave 3 (#143 + #144 ADR pair) is the recommended next item. Wave 4 (#142, #145, #98 re-scope) follows.
+**Waves 0, 1, 2 fully delivered; Wave 3 half delivered** — all 5 prerequisite items closed by 2026-04-14, plus #143 closed 2026-04-15. The umbrella MAESTRO compliance discovery #136 is now closed (all four phases — 084 / 141 / 082 / 143 — delivered). Wave 3 remainder (#144) is the recommended next item; Wave 4 (#142, #145, #98 re-scope) follows.
 
 ---
 
@@ -280,7 +282,9 @@ This plan is a snapshot as of 2026-04-10. Re-generate or revise when:
 - ~~#141 ships (re-scope #98 and #69; #142 and #145 become high-priority)~~ **Triggered 2026-04-12 — PR #159, #142 and #145 now high-priority, #98 re-scope actionable**
 - ~~#82 ships (#129 becomes unblocked)~~ **Triggered 2026-04-12 — #129 now unblocked, Wave 2 is actionable**
 - ~~#129 ships (closes Wave 2)~~ **Triggered 2026-04-14 — PR #162, ~1 day wall-clock; sidecar PR #164 fixed cwd auto-detection bug across four tachi commands. Wave 3 (#143 + #144 ADR pair) is the recommended next item.**
-- **Wave 2 fully delivered 2026-04-14** — Wave 3 ADR pair is the active frontier; Wave 4 (#142, #145, #98 re-scope) follows.
+- **Wave 2 fully delivered 2026-04-14** — Wave 3 ADR pair was the active frontier; Wave 4 (#142, #145, #98 re-scope) follows.
+- ~~#143 ships (half of Wave 3 closes; #144 remains as standalone ADR spike; umbrella #136 may close)~~ **Triggered 2026-04-15 — PR #167, single-session ~15min wall-clock against 1-2d estimate. ADR-024 Accepted (Diverge from AIVSS at present time). Wave 3 pairing dissolved on solo run; #144 now runs standalone. Umbrella MAESTRO compliance #136 closed (all four phases — 084/141/082/143 — delivered). KB-032 captures three-surface comparison as reusable pattern for future framework-evaluation ADRs. Issue #168 created to track AIVSS v1.0 + first external adopter case study (the inline re-evaluation trigger from ADR-024).**
+- **Wave 3 half delivered 2026-04-15** — #143 (AIVSS) closed; #144 (NIST AI RMF) remains as the next standalone ADR spike. Wave 4 (#142, #145, #98 re-scope) is the next major frontier.
 - A critical bug enters the backlog that pre-empts Wave 0
 
 Source of truth is always GitHub Issues, not this file or BACKLOG.md.
