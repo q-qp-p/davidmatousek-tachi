@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-15T22:07:10Z.
+> Auto-generated from GitHub Issues on 2026-04-15T22:46:48Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -8,6 +8,7 @@
 
 | # | Title | ICE | Evidence | Updated |
 |---|-------|-----|----------|---------|
+| #168 | Track OWASP AIVSS v1.0 release and first external adopter case study | Impact: —, Confidence: —, Effort: — = **Not yet scored** | Retrospective: Emerged during delivery of Feature 143 (MA... | 2026-04-15 |
 | #145 | MAESTRO canonical worked example: multi-agent reference architecture in examples/ | Impact: 5, Confidence: 8, Effort: 7 = **20** | Identified during MAESTRO compliance audit alongside #136... | 2026-04-10 |
 | #144 | MAESTRO companion: NIST AI RMF integration evaluation ADR | Impact: 6, Confidence: 7, Effort: 7 = **20** | Identified during MAESTRO compliance audit alongside #136... | 2026-04-10 |
 | #142 | MAESTRO Phase 3: Agentic threat pattern expansion (Collusion, Emergent Behavior, Temporal, Trust, Communication, Resource) | Impact: 7, Confidence: 6, Effort: 5 = **18** | Follow-on from #136 per PM recommendation. Canonical MAES... | 2026-04-10 |
@@ -40,7 +41,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| — | *No items in this stage* | | |
+| #143 | MAESTRO Phase 4: OWASP AIVSS evaluation ADR | 2026-04-15 | — | 2026-04-15 |
 
 ## Untracked
 
@@ -49,7 +50,6 @@
 | # | Title | State | Updated |
 |---|-------|-------|---------|
 | #154 | fix: PDF security report — attack tree images missing, MAESTRO headings empty, landscape infographic whitespace | CLOSED | 2026-04-12 |
-| #143 | MAESTRO Phase 4: OWASP AIVSS evaluation ADR | OPEN | 2026-04-15 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
 | #18 | Feature: Threat Infographic Agent | CLOSED | 2026-03-23 |
 | #15 | Feature 007: Threat Report Agent & Attack Trees | CLOSED | 2026-03-23 |

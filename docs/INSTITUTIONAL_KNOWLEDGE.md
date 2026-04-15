@@ -663,6 +663,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 
 ---
 
+### KB-032: Three-Surface Comparison Is a Reusable Pattern for External Scoring Framework Evaluation
+
+**Date**: 2026-04-15
+**Category**: Architecture / Decision Pattern
+**Source**: Feature 143 delivery retrospective
+**Severity**: Low (positive pattern)
+
+**Problem**: When evaluating whether tachi should adopt an external scoring framework (e.g., OWASP AIVSS), a single-axis comparison ("is the formula compatible?") collapses three structurally different concerns into one prose argument and obscures which axis actually drives the decision. Reviewers cannot replay the comparison, and the ADR ages poorly because no one can re-derive the decision from the summary.
+
+**Root Cause**: N/A — positive pattern observation from Feature 143's ADR-024 evaluation of OWASP AIVSS.
+
+**Solution**: Decompose the evaluation across **three orthogonal surfaces**: (1) **Dimension space** — what dimensions does each model score and how do they map across (Conflict / Gap / No equivalent)? (2) **Formula shape** — is the composite function a weighted sum, a product, or a different aggregation? (3) **Severity bands** — do the threshold ranges align even when the underlying numerics differ? Each surface produces an independent "compatible / incompatible / partial" verdict. The aggregate decision (Adopt-Primary / Adopt-Supplementary / Diverge) is justified by citing the per-surface verdicts. ADR-024 used this pattern to document tachi's divergence from AIVSS v0.8 with reproducible reasoning.
+
+**Result**: ADR-024 produced a CISO-readable Decision section that answers "does tachi align with AIVSS?" in one paragraph, backed by a worked-example table showing per-surface findings. Architect approval cited the three-surface decomposition as making the rationale auditable. The pattern is reusable for any future framework-evaluation ADR (CVSS variants, future AI risk frameworks, alternative composite scoring schemes).
+
+**When to Apply**: Any ADR that evaluates an external scoring framework, taxonomy, or numeric model against a tachi-native equivalent. Use the three-surface decomposition as the structural backbone of the Alternatives Considered and Decision sections. Combine with a "When to Re-Evaluate" trigger clause (concrete external event — version release, adopter case study, regulatory citation) so the ADR has a built-in expiration condition rather than aging silently.
+
+**Tags**: #architecture #decision-pattern #adr #scoring #framework-evaluation #three-surface #feature-143
+
+**Quality Score**: 7/10
+
+---
+
 ## Bug Fixes
 
 *No entries yet. Use `/kb-create` to add the first bug fix.*
