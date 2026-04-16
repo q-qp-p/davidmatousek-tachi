@@ -3,7 +3,9 @@ prd:
   number: "142"
   topic: maestro-agentic-pattern-expansion
   created: 2026-04-16
-  status: Approved
+  status: Delivered
+  delivered: 2026-04-16
+  pr: 172
   type: feature
 triad:
   pm_signoff: { agent: product-manager, date: 2026-04-16, status: APPROVED, notes: "Closes the final structural gap in tachi's MAESTRO compliance umbrella (Phases 1, 2, 4, 5 already shipped). Surfaces six canonical CSA patterns as named filterable categories; correctly scoped P0 detection for the three previously-uncovered patterns (Agent Collusion, Emergent Behavior, Temporal Attack). FR-2 four-option mechanism analysis defers final architecture call to ADR-026 in /aod.plan." }
@@ -16,8 +18,9 @@ source:
 
 # MAESTRO Phase 3: Agentic Threat Pattern Expansion
 
-**Status**: Approved
+**Status**: Delivered
 **Created**: 2026-04-16
+**Delivered**: 2026-04-16 (PR #172, commit c0b7378)
 **Author**: product-manager
 **Reviewers**: architect, team-lead
 **Priority**: P1 (High)

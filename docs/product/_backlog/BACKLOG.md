@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-16T19:28:16Z.
+> Auto-generated from GitHub Issues on 2026-04-16T21:08:50Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -39,7 +39,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| — | *No items in this stage* | | |
+| #142 | MAESTRO Phase 3: Agentic threat pattern expansion (Collusion, Emergent Behavior, Temporal, Trust, Communication, Resource) | 2026-04-16 | — | 2026-04-16 |
 
 ## Untracked
 
@@ -49,7 +49,6 @@
 |---|-------|-------|---------|
 | #170 | chore: relocate internal strategy docs to _internal/ and update .gitignore | CLOSED | 2026-04-16 |
 | #154 | fix: PDF security report — attack tree images missing, MAESTRO headings empty, landscape infographic whitespace | CLOSED | 2026-04-12 |
-| #142 | MAESTRO Phase 3: Agentic threat pattern expansion (Collusion, Emergent Behavior, Temporal, Trust, Communication, Resource) | OPEN | 2026-04-16 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
 | #18 | Feature: Threat Infographic Agent | CLOSED | 2026-03-23 |
 | #15 | Feature 007: Threat Report Agent & Attack Trees | CLOSED | 2026-03-23 |

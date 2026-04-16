@@ -326,21 +326,29 @@ tests/
     ├── test_command_dispatch.py
     ├── test_extract_infographic_data.py
     ├── test_extract_report_data.py
+    ├── test_finding_pattern_parser.py
     ├── test_mmdc_preflight.py
+    ├── test_pattern_classification_rules.py
+    ├── test_pattern_extraction.py
+    ├── test_pattern_synthesis.py
     ├── test_pdf_page_positioning.py
     └── fixtures/
         ├── exec_arch/
+        ├── finding_pattern_parser/
+        ├── pattern_extraction/
+        ├── pattern_synthesis/
         ├── report_data/
         └── golden/
 ```
 
 **Local Execution**: See `docs/devops/01_Local/README.md` section "Python Test Suite" for full local setup and run commands.
 
-**Current CI Status (as of F-141 close, 2026-04-12)**:
-- Pytest harness **exists locally** and runs against ~150+ test cases across 9 modules
+**Current CI Status (as of F-142 close, 2026-04-16)**:
+- Pytest harness **exists locally** and runs against ~150+ test cases across 13 modules
+- Feature 142 added 4 new test modules (`test_pattern_synthesis.py`, `test_pattern_classification_rules.py`, `test_pattern_extraction.py`, `test_finding_pattern_parser.py`) covering MAESTRO Phase 3 agentic threat pattern expansion -- no new CI workflow
 - Feature 141 added 2 new test modules (`test_attack_chains.py`, `test_attack_chain_extraction.py`) -- no new CI workflow
 - Pytest is **not yet wired** into any GitHub Actions workflow
-- Existing workflows (`release-please.yml`, `tachi.threat-model.yml`, `tachi-mmdc-preflight.yml`) are unchanged by F-141
+- Existing workflows (`release-please.yml`, `tachi.threat-model.yml`, `tachi-mmdc-preflight.yml`) are unchanged by F-142
 - Wiring pytest to CI is tracked as a follow-up
 
 **Recommended Follow-Up Pipeline Step** (not implemented):
