@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-04-12
+**Last Updated**: 2026-04-16
 
-**Entry Count**: 29 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 30 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -681,6 +681,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **When to Apply**: Any ADR that evaluates an external scoring framework, taxonomy, or numeric model against a tachi-native equivalent. Use the three-surface decomposition as the structural backbone of the Alternatives Considered and Decision sections. Combine with a "When to Re-Evaluate" trigger clause (concrete external event — version release, adopter case study, regulatory citation) so the ADR has a built-in expiration condition rather than aging silently.
 
 **Tags**: #architecture #decision-pattern #adr #scoring #framework-evaluation #three-surface #feature-143
+
+**Quality Score**: 7/10
+
+---
+
+### KB-033: MAESTRO-Companion ADR Rhythm — Two Consecutive Posture ADRs Reveal a Repeatable Compliance-Documentation Pattern
+
+**Date**: 2026-04-16
+**Category**: Process / Delivery Rhythm
+**Source**: Feature 144 delivery retrospective
+**Severity**: Low (positive pattern)
+
+**Problem**: Compliance frameworks in the agentic-AI space arrive at different maturities (OWASP AIVSS pre-1.0, NIST AI RMF 1.0 mature-but-tier-mismatched, future frameworks unknown). Without a shared structural template, each posture ADR reinvents its own Context / Alternatives / Decision shape and the collection ages as a disconnected set of one-off documents. Reviewers have to re-learn each ADR's geometry, and the MAESTRO compliance umbrella stays legible only while the maintainer remembers it.
+
+**Root Cause**: N/A — positive pattern observation from two consecutive deliveries (Feature 143 ADR-024 AIVSS evaluation; Feature 144 ADR-025 NIST AI RMF evaluation) converging on the same structural spine despite arriving at opposite decisions (ADR-024 diverge, ADR-025 documentation-only mapping).
+
+**Solution**: Establish the **MAESTRO-companion ADR** as a reusable three-part pattern: (1) **Three-surface evaluation** (KB-032) as the analytical backbone — dimension/formula/severity for scoring frameworks, Functions/Subcategories/risk-taxonomy for governance frameworks; (2) **Decision-noun discipline** — the Decision section's first paragraph names the posture unambiguously ("diverge", "documentation-only mapping", "shallow wired integration", "deep wired integration") without framework-adoption hedging; (3) **Five-criteria Rationale** — maturity, adoption, compatibility, effort, compliance value — scored against named re-evaluation triggers (concrete external events: version release, regulatory citation, adopter case study). Runtime-adjacent skill files pick up a companion "NIST AI RMF Relationship" / "AIVSS Relationship" section (80-200 words) with a relative-path pointer back to the canonical ADR — verbatim decision-noun consistency checked via SC-007 byte-equality assertion.
+
+**Result**: Features 143 and 144 delivered the MAESTRO compliance umbrella's two regulated-adopter-facing ADRs back-to-back without structural drift. Both ADRs landed with zero-drift on `schemas/` / `scripts/` / `.claude/agents/` / `examples/` (SC-006 git-diff guard). Both preserved decision-noun byte-equality between the skill-file paragraph and the ADR (SC-007). The 143→144 rhythm produced a second data point confirming that docs-only spike deliveries can close a compliance umbrella without coupling the pipeline to the evaluated framework — even when the frameworks themselves disagree about maturity and integration shape.
+
+**When to Apply**: Any future compliance framework that appears in canonical MAESTRO sources or in regulated-adopter inquiries. Start with a PRD scoped as evaluation-first (decision options A/B/C) rather than implementation-first. Reuse the three-surface analytical backbone (KB-032), the decision-noun discipline, the five-criteria rationale, and the named re-evaluation triggers. If the decision is Option A (documentation-only), expect ≈43 tasks across ≈1 day of focused work; if the decision is a wired-integration option, file a follow-on implementation Issue per the ADR's FR-007 / FR-008 conditional branch rather than expanding the evaluation PRD's scope.
+
+**Tags**: #process #delivery-rhythm #adr #maestro-companion #compliance #documentation-only-spike #feature-144
 
 **Quality Score**: 7/10
 

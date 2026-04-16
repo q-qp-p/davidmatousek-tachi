@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-16T00:02:26Z.
+> Auto-generated from GitHub Issues on 2026-04-16T16:10:50Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -48,8 +48,8 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
+| #170 | chore: relocate internal strategy docs to _internal/ and update .gitignore | OPEN | 2026-04-16 |
 | #154 | fix: PDF security report — attack tree images missing, MAESTRO headings empty, landscape infographic whitespace | CLOSED | 2026-04-12 |
-| #144 | MAESTRO companion: NIST AI RMF integration evaluation ADR | OPEN | 2026-04-15 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
 | #18 | Feature: Threat Infographic Agent | CLOSED | 2026-03-23 |
 | #15 | Feature 007: Threat Report Agent & Attack Trees | CLOSED | 2026-03-23 |
