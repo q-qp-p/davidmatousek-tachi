@@ -481,3 +481,14 @@ Each PRD should include relevant user stories:
 - **US-141-4** (P0): Chain-Breaking Control Recommendations - Each chain identifies chain-breaking controls — findings whose remediation would interrupt the chain progression — with structural centrality rationale and heuristic disclaimer
 - **US-141-5** (P1): End-to-End Example Demonstration - At least one example architecture demonstrates a multi-layer attack chain end-to-end with attack chains artifact, threat report narrative, and PDF chain diagram pages
 - **US-141-6** (P1): Canonical MAESTRO Deliverable - Chain narratives follow the canonical CSA MAESTRO worked example format with causal vocabulary ("enables," "triggers," "shifts," "manifests as") and visual layer-stack diagrams matching the canonical MAESTRO representation
+
+### Feature 144: NIST AI RMF Integration Evaluation ADR
+
+**PRD**: [144-nist-ai-rmf-evaluation-adr](../02_PRD/144-nist-ai-rmf-evaluation-adr-2026-04-15.md)
+**Delivered**: 2026-04-16 | **PR**: #169 | **Tasks**: 43/43 complete (T027 N/A per FR-008 XOR) | **Stories**: 5/5 passing
+
+- **US-144-1** (P1): Compliance Officer NIST Mapping Decision - A single ADR (ADR-025) whose Decision section names tachi's NIST AI RMF posture unambiguously in the first paragraph and whose Context section contains three labeled mapping surfaces (Functions × pipeline phases, Subcategories × compensating-control categories, GAI risks × STRIDE+AI) with every row annotated as Overlap, Gap, Conflict, or "No equivalent"
+- **US-144-2** (P1): Security Engineer Procurement Justification - Exactly one ADR Decision section addresses NIST AI RMF; the tachi-control-analysis SKILL.md "NIST AI RMF Relationship" paragraph contains the same decision-noun phrase as ADR-025's Decision section (verbatim string-equality check, modulo case, per SC-007)
+- **US-144-3** (P1): CISO Audit Preparation - A tachi-curated reference file at `.claude/skills/tachi-shared/references/nist-ai-rmf-mapping.md` ships either a complete Option A mapping table covering all 8 tachi compensating-control categories to NIST AI RMF Subcategory equivalents, or a relationship-only stub naming the wired-integration site and linking to a follow-on implementation Issue; links resolve on main via relative path
+- **US-144-4** (P2): Maintainer Decision Traceability - ADR-025 Alternatives Considered enumerates ≥3 options (A/B/C) each with pros, cons, effort, compliance value, and "Why Chosen" or "Why Not Chosen"; Status reads "Accepted"; Related ADRs line cross-references ADR-024 (companion AIVSS evaluation) bidirectionally
+- **US-144-5** (P1): Non-Disruption Guarantee for Unregulated Adopters - Zero drift on `schemas/`, `scripts/`, `.claude/agents/`, and `examples/` (SC-006 git-diff guard); backward-compatibility pytest 5/5 PASS byte-identical under SOURCE_DATE_EPOCH=1700000000 (ADR-021 baseline preserved); no new runtime dependencies or CLI prerequisites for adopters who do not need regulatory alignment
