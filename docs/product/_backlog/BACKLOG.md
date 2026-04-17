@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-17T18:57:20Z.
+> Auto-generated from GitHub Issues on 2026-04-17T21:39:07Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -46,7 +46,11 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #180 | F-A1 — Taxonomy Crosswalk Collection [Foundation] | OPEN | 2026-04-17 |
+| #186 | F-A1.3 follow-on: MITRE ATT&CK + ATLAS catalog expansion | OPEN | 2026-04-17 |
+| #185 | F-A1.2 follow-on: cwe.yaml expansion — add CWE records discovered in T029 drift analysis | OPEN | 2026-04-17 |
+| #184 | F-A1.1 follow-on: NIST AI 600-1 GAI Risk taxonomy addition — Surface C transcription (ADR-027 / FR-010 enum expansion) | OPEN | 2026-04-17 |
+| #183 | F-A1 follow-on: citation-URL link-rot monitoring | OPEN | 2026-04-17 |
+| #182 | F-A1 follow-on: crosswalk related and superseded edge expansion | OPEN | 2026-04-17 |
 | #170 | chore: relocate internal strategy docs to _internal/ and update .gitignore | CLOSED | 2026-04-16 |
 | #154 | fix: PDF security report — attack tree images missing, MAESTRO headings empty, landscape infographic whitespace | CLOSED | 2026-04-12 |
 | #27 | Developer Guide: Automated Threat Modeling for Your Architecture | CLOSED | 2026-03-24 |
