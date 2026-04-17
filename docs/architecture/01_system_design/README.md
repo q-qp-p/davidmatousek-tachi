@@ -4,6 +4,120 @@ Auto-generated from approved plan.md files. Each feature section captures compon
 
 ---
 
+### Feature 145: Canonical MAESTRO Worked Example
+
+## Components
+
+This feature does not add or modify runtime components. The deliverable is a content-only example directory that doubles as an integration-test / regression fixture for the MAESTRO pipeline.
+
+| Component | Type | File Path | Change Type | Rationale |
+|-----------|------|-----------|-------------|-----------|
+| Canonical MAESTRO reference example | New example directory | `examples/maestro-reference/` | Create (content-only) | Spec FR-001/FR-002/FR-003 — adopter-facing canonical walkthrough spanning all 7 MAESTRO layers |
+| Hand-authored architecture input | New Mermaid architecture | `examples/maestro-reference/architecture.md` | Create | Spec FR-002/FR-004/FR-005 — 18-component Healthcare CDSS multi-agent scenario satisfying Pre-Execution Architecture Review Checklist (multi-agent gate predicate TRUE; R-01/R-02/R-03 preconditions green) |
+| Adopter-facing tour | New README | `examples/maestro-reference/README.md` | Create | Spec FR-003 — 7 required sections (introduction, domain overview with disclaimer, MAESTRO layer coverage table, what to look for in output, reading-order recommendation, compliance posture cross-references to ADR-024 + ADR-025, limitations) |
+| Feature 120 version frontmatter | Injected YAML frontmatter | `examples/maestro-reference/architecture.md` (frontmatter block) | Inject last | Spec FR-012 / SC-012 — version "1.0", SHA-256 body checksum, `/tachi.architecture` "create" mode on frozen body |
+| Pipeline-generated outputs | Full output artifact set | `examples/maestro-reference/{threats.md, threats.sarif, threat-report.md, risk-scores.md, risk-scores.sarif, compensating-controls.md, compensating-controls.sarif, attack-trees/, attack-chains.md, 6× infographic JPEGs + specs, security-report.pdf, security-report.pdf.baseline}` | Generated | Spec FR-006/FR-007/FR-008 — standard pipeline invocation; demonstrates MAESTRO layer coverage (7/7), cross-layer attack chains (≥1 chain ≥3 layers), agentic pattern analysis (≥3 of 6 canonical patterns) |
+| Byte-deterministic PDF baseline | New baseline file | `examples/maestro-reference/security-report.pdf.baseline` | Create | Spec FR-009 / SC-007 — byte-identical regeneration under `SOURCE_DATE_EPOCH=1700000000` per ADR-021 |
+| Top-level examples README update | Modify existing file | `examples/README.md` | Update (additive) | Spec FR-010 / SC-006 — canonical MAESTRO walkthrough positioned as recommended first-read for MAESTRO users; existing 6 examples retain listings |
+| Backward-compatibility regression fixture | Modify existing test | `tests/scripts/test_backward_compatibility.py` (`BASELINE_EXAMPLES`) | Update (additive) | Spec FR-011 / SC-013 — adds `maestro-reference` as 6th baseline alongside the existing 5 non-multi-agent baselines; conditional on mmdc CI availability (verified in Wave 0) |
+
+**Architectural posture**: additive-only. No existing agent, schema, template, script, or ADR is modified. The five existing non-multi-agent baselines (web-app, microservices, ascii-web-api, mermaid-agentic-app, free-text-microservice) remain byte-identical under `SOURCE_DATE_EPOCH=1700000000` per ADR-021 (spec FR-013 / SC-008). The `agentic-app` example is unchanged (spec FR-014 / SC-009). The 11 STRIDE+AI detection agents stabilized in Feature 082 are unchanged per the zero-edit invariant (ADR-023); the orchestrator is unchanged.
+
+**Strategic positioning**: The maestro-reference example is the canonical first-read teaching artifact that demonstrates the complete MAESTRO umbrella produced end-to-end by a single pipeline run — Phase 1 layer-tagged findings (Features 084/136), Phase 2 cross-layer attack chains (Feature 141), Phase 3 agentic pattern classifications (Feature 142), and Phase 4 + 5 compliance posture (Features 143/144 via ADR-024 + ADR-025 cross-references in the README). It closes the "read this first" gap in tachi's MAESTRO documentation surface. The example is purpose-built to naturally exercise multi-layer chains and multi-pattern findings (≥14 components across all 7 layers, inter-agent data flows, persistent-state components, emergent-behavior descriptions), so future MAESTRO feature work (Phase 2 chain refactor, Phase 3 pattern synthesis tuning, future phases) has a validated regression target without architectural contortion.
+
+## Data Flow
+
+**No runtime data flow changes.** The feature is purely content authoring consuming the existing pipeline.
+
+### Author-time flow (implementer's workflow)
+
+```
+Wave 0 (Domain + Structure + CI gates — ≤2h timebox)
+  architect + team-lead + PM → lock: domain (Healthcare CDSS),
+                                     structure (flat top-level per Y),
+                                     mmdc CI availability (verified present)
+
+Wave 1 (Architecture Authorship)
+  architect → draft architecture.md body (18 components, 7 layers)
+           → static-verify Pre-Execution Architecture Review Checklist:
+               (a) multi-agent gate predicate TRUE
+               (b) R-01 precondition (inter-agent data flow present)
+               (c) R-02 precondition (persistent-state component present)
+               (d) R-03 precondition (multi-agent topology + emergent-behavior keywords)
+           → freeze body
+           → /tachi.architecture create-mode → inject Feature 120 frontmatter last
+
+Wave 2 (Pipeline Invocation — standard command sequence)
+  /tachi.threat-model → threats.md + threats.sarif (Phase 1 layer tags, Phase 3 patterns, Phase 3.5 chains)
+  /tachi.risk-score → risk-scores.md + risk-scores.sarif (4-dimensional composite per ADR-018)
+  /tachi.compensating-controls → compensating-controls.md + .sarif (scanned against tachi repo codebase)
+  /tachi.infographic all → 6× JPEGs + co-committed specs
+  /tachi.security-report → security-report.pdf + security-report.pdf.baseline
+
+Wave 3 (Adopter-Facing README)
+  architect → hand-author README.md with 7 required sections
+           → PM reviews for neutral factual tone before commit
+
+Wave 4 (Regression-Fixture Integration — conditional)
+  IF mmdc CI available (Wave 0 gate green):
+    devops → append "maestro-reference" to BASELINE_EXAMPLES in tests/scripts/test_backward_compatibility.py
+          → commit baseline PDF under SOURCE_DATE_EPOCH=1700000000
+          → verify byte-identity on rerun
+  ELSE:
+    FR-011 deferred to follow-up PR per Risk 145.3 contingency
+
+Wave 5 (Top-Level examples/README.md Update)
+  architect → add "maestro-reference" row to Standardized Examples table
+           → add prominent first-read callout near top of examples/README.md
+           → preserve all 6 existing example listings
+```
+
+### Read-time flow (adopter's workflow — post-merge)
+
+```
+Security engineer evaluating tachi for MAESTRO
+  → opens examples/README.md → sees first-read callout pointing at maestro-reference
+  → opens examples/maestro-reference/README.md → reads 7-section tour
+  → follows reading-order recommendation to threats.md → threat-report.md → attack-chains.md → PDF
+  → cross-references ADR-024 (AIVSS posture) + ADR-025 (NIST AI RMF posture) for compliance context
+  → optionally inspects architecture.md for component-to-MAESTRO-layer lineage
+```
+
+### Regression flow (CI / maintainer workflow)
+
+```
+Maintainer adding new MAESTRO-adjacent feature
+  → runs pytest tests/scripts/test_backward_compatibility.py with SOURCE_DATE_EPOCH=1700000000
+  → maestro-reference is parametrized alongside the other 5 baselines
+  → pytest compiles each architecture through the full PDF pipeline
+  → compares output byte-for-byte against each committed *.pdf.baseline
+  → all 7 MAESTRO layers populated, ≥1 cross-layer chain surfaced, ≥3 agentic patterns populated — regression target invariant
+```
+
+## Tech Stack
+
+### New Dependencies
+
+**None.** This feature introduces zero new runtime or development dependencies. Empty diff on `requirements*.txt`, `pyproject.toml`, `package.json`.
+
+### Tools Used (all pre-existing)
+
+| Tool | Purpose | Source |
+|------|---------|--------|
+| Markdown | `architecture.md` + `README.md` authorship | Native to repository |
+| YAML | Feature 120 frontmatter injection on `architecture.md` | Feature 120 lifecycle command |
+| `/tachi.architecture` (create mode) | Frontmatter injection on frozen body | Feature 120 |
+| `/tachi.threat-model`, `/tachi.risk-score`, `/tachi.compensating-controls`, `/tachi.infographic`, `/tachi.security-report` | Standard pipeline invocation | Feature 121 namespace |
+| `mmdc` (Mermaid CLI) | Attack-tree Mermaid → PNG rendering for PDF | Pre-existing per ADR-022 (hard prerequisite when attack trees present) |
+| `typst` | PDF compilation | Pre-existing |
+| Gemini API | Infographic JPEG generation (one-time cost per regeneration) | Pre-existing per ADR-014 (optional, graceful degradation) |
+| `SOURCE_DATE_EPOCH=1700000000` | Byte-deterministic PDF baseline generation | Pre-existing per ADR-021 |
+| `pytest` | Backward-compatibility regression fixture | Pre-existing per Feature 128 |
+
+**No new technology introduced.** Content-authoring feature only. Zero schema changes, zero script changes, zero agent changes, zero ADRs added.
+
+---
+
 ### Feature 091: Delivery Document Generation
 
 ## Components

@@ -1,6 +1,6 @@
 # Architecture Documentation - tachi
 
-**Last Updated**: 2026-04-16
+**Last Updated**: 2026-04-17
 **Owner**: Architect
 **Status**: Template
 
@@ -9,6 +9,8 @@
 ## Overview
 
 This directory contains all technical architecture documentation for tachi.
+
+**Canonical MAESTRO Worked Example**: For the end-to-end demonstration of the MAESTRO umbrella (Phases 1-5 delivered across Features 084 / 136 / 141 / 142 / 143 / 144), see [`examples/maestro-reference/`](../../examples/maestro-reference/) — the Healthcare CDSS multi-agent reference scenario spanning all seven MAESTRO layers, with cross-layer attack chains, agentic pattern classifications, and compliance posture cross-references (ADR-024 AIVSS, ADR-025 NIST AI RMF) surfaced end-to-end by a single pipeline run. Delivered in Feature 145 (content-authoring only — zero code, schema, or agent changes).
 
 ---
 

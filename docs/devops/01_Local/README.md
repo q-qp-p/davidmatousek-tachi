@@ -1,7 +1,13 @@
 # Local Development Environment - tachi
 
-**Last Updated**: 2026-04-12
+**Last Updated**: 2026-04-17
 **Owner**: DevOps Agent
+
+---
+
+## First-Read for Local Contributors
+
+New contributors walking through the tachi pipeline for the first time should start with **`examples/maestro-reference/`** (Feature 145). It is the canonical MAESTRO worked example and contains a complete set of pipeline outputs — `threats.md`, `risk-scores.md`, `compensating-controls.md`, `threat-report.md`, `attack-trees/`, `attack-chains.md`, all infographic JPEGs, and `security-report.pdf` — rendered from a multi-agent agentic-AI architecture that surfaces findings across all seven MAESTRO layers and several of the six canonical agentic patterns (Feature 142). Reading these artifacts end-to-end is the fastest way to build a mental model of what each tachi stage produces and how they compose into the final PDF. The example is also committed to the byte-deterministic backward-compatibility baseline set (see Python Test Suite below), so its outputs are stable across regeneration.
 
 ---
 

@@ -1,6 +1,6 @@
 # User Stories - tachi
 
-**Last Updated**: 2026-04-12
+**Last Updated**: 2026-04-17
 **Owner**: Product Manager (product-manager)
 **Status**: Template - Complete after MVP launch
 
@@ -504,3 +504,15 @@ Each PRD should include relevant user stories:
 - **US-142-4** (P1): Coverage Mapping Documentation - Adopters evaluating tachi's MAESTRO completeness read the coverage mapping table in `maestro-agentic-patterns-shared.md` with one row per canonical pattern and three constrained Coverage Strength values (Full / Partial / None — Coverage Required), with Partial assessments requiring a Gap justification preventing overclaiming
 - **US-142-5** (P1): Pattern-Tagged Output for Downstream Tooling - MAESTRO practitioners integrating tachi output can rely on the `agentic_pattern` field being present on every finding with `none` as default (no null-safety logic needed); SARIF output exposes `maestro-pattern:<name>` tags for non-`none` patterns matching the existing `maestro-layer:` convention
 - **US-142-6** (P0): End-to-End Multi-Agent Example - Designated multi-agent example demonstrates all three previously-uncovered patterns (Agent Collusion, Emergent Behavior, Temporal Attack) end-to-end with findings in threats.md, populated Agentic Pattern Analysis section in threat-report.md, and corresponding SARIF tags; 5 non-multi-agent baselines show zero new pattern findings under the multi-agent gate predicate
+
+### Feature 145: MAESTRO Canonical Worked Example
+
+**PRD**: [145-maestro-canonical-worked-example](../02_PRD/145-maestro-canonical-worked-example-2026-04-16.md)
+**Delivered**: 2026-04-17 | **PR**: #175 | **Tasks**: 53/53 complete | **Stories**: 6/6 passing
+
+- **US-145-1** (P0): New Adopter Canonical First-Read - A security engineer evaluating tachi opens `examples/README.md`, sees the canonical MAESTRO example called out as the recommended first read for MAESTRO users, opens the example's `README.md`, and gets an adopter-facing tour covering domain overview, MAESTRO layer coverage table, what to look for in the output, and how to read the accompanying files (threats.md, threat-report.md, PDF, infographics)
+- **US-145-2** (P0): Evaluator Cross-Layer Attack Chain Demonstration - A security engineer performing a tools evaluation reads the example's generated `threat-report.md` and sees the Cross-Layer Attack Chains section (Feature 141) render at least one attack chain spanning three or more MAESTRO layers with a causal narrative comparable in shape to the CSA canonical financial-trading kill-chain; `attack-chains.md` confirms chain membership traces architectural data-flow lineage (not keyword coincidence)
+- **US-145-3** (P0): Canonical Comparison Surface for Multi-Agent Threat Modeling - A CISO, security team lead, or MAESTRO practitioner reviews the example's `threat-report.md` Agentic Pattern Analysis section (Feature 142) and finds at least three of the six canonical agentic patterns populated with narratives; the README's MAESTRO layer coverage table maps every architecture component to one or more MAESTRO layers in a format directly comparable to the CSA canonical mapping
+- **US-145-4** (P1): MAESTRO Regression Fixture for Maintainers - A tachi maintainer adding a new feature touching MAESTRO capability runs the backward-compatibility test suite and sees the canonical example regression-check the full MAESTRO surface (all seven layers populated, cross-layer chains surfaced, agentic patterns populated, infographics generated); PDF baseline regenerates byte-identical under `SOURCE_DATE_EPOCH=1700000000` (per ADR-021)
+- **US-145-5** (P1): Purpose-Built Validation Target for Future MAESTRO Work - A developer implementing Phase 2 cross-layer chain logic, Phase 3 agentic pattern synthesis, or any follow-on MAESTRO phase has a regression target that naturally exercises multi-layer chains and multi-pattern findings without architectural contortion; seven-layer coverage, inter-agent data flows, persistent-state components, and emergent-behavior descriptions all pre-verified by the Pre-Execution Architecture Review Checklist
+- **US-145-6** (P1): Adopter Compliance Framework Cross-References - An adopter reading the canonical MAESTRO example's README encounters a short compliance-posture section (approximately 100-150 words) summarizing tachi's AIVSS (ADR-024) and NIST AI RMF (ADR-025) posture with links to the authoritative ADRs; `examples/README.md` positions the canonical MAESTRO example as distinct from the existing six examples (baseline STRIDE, input-format fixtures, dual-dispatch demo)
