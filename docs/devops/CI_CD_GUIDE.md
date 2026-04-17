@@ -1,6 +1,6 @@
 # CI/CD Setup Guide - tachi
 
-**Last Updated**: 2026-04-12
+**Last Updated**: 2026-04-17 (Feature 180: F-A1 Taxonomy Crosswalk Collection)
 **Owner**: DevOps Agent
 
 ---
@@ -318,6 +318,8 @@ addopts = "-ra --strict-markers"
 ```
 tests/
 ├── conftest.py
+├── schemas/
+│   └── test_taxonomy_integrity.py       # Feature 180 (F-A1): FR-027..FR-032 integrity tests
 └── scripts/
     ├── test_smoke.py
     ├── test_attack_chain_extraction.py
@@ -343,12 +345,13 @@ tests/
 
 **Local Execution**: See `docs/devops/01_Local/README.md` section "Python Test Suite" for full local setup and run commands.
 
-**Current CI Status (as of F-142 close, 2026-04-16)**:
-- Pytest harness **exists locally** and runs against ~150+ test cases across 13 modules
+**Current CI Status (as of F-180 close, 2026-04-17)**:
+- Pytest harness **exists locally** and runs against ~150+ test cases across 14 modules
+- Feature 180 added 1 new test module under a new top-level directory (`tests/schemas/test_taxonomy_integrity.py`) containing 4+1 integrity tests (FR-027..FR-032) covering taxonomy schema validation, crosswalk referential integrity, bidirectional consistency, cycle detection, uniqueness, and a performance guard -- no new runtime dependencies, no new CI workflow. Runs under the existing `pytest tests/` invocation
 - Feature 142 added 4 new test modules (`test_pattern_synthesis.py`, `test_pattern_classification_rules.py`, `test_pattern_extraction.py`, `test_finding_pattern_parser.py`) covering MAESTRO Phase 3 agentic threat pattern expansion -- no new CI workflow
 - Feature 141 added 2 new test modules (`test_attack_chains.py`, `test_attack_chain_extraction.py`) -- no new CI workflow
 - Pytest is **not yet wired** into any GitHub Actions workflow
-- Existing workflows (`release-please.yml`, `tachi.threat-model.yml`, `tachi-mmdc-preflight.yml`) are unchanged by F-142
+- Existing workflows (`release-please.yml`, `tachi.threat-model.yml`, `tachi-mmdc-preflight.yml`) are unchanged by F-180
 - Wiring pytest to CI is tracked as a follow-up
 
 **Recommended Follow-Up Pipeline Step** (not implemented):

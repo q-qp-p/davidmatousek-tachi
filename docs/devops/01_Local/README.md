@@ -1,6 +1,6 @@
 # Local Development Environment - tachi
 
-**Last Updated**: 2026-04-17
+**Last Updated**: 2026-04-17 (Feature 180: F-A1 Taxonomy Crosswalk Collection)
 **Owner**: DevOps Agent
 
 ---
@@ -236,6 +236,8 @@ pytest tests/scripts/test_smoke.py
 ```
 tests/
 ├── conftest.py                          # Shared fixtures and pytest hooks
+├── schemas/
+│   └── test_taxonomy_integrity.py       # Taxonomy crosswalk integrity tests (Feature 180, FR-027..FR-032)
 └── scripts/
     ├── test_smoke.py                    # Fast sanity checks
     ├── test_attack_chain_extraction.py  # Attack chain data extraction (Feature 141)
@@ -251,6 +253,8 @@ tests/
         ├── report_data/                 # Report extraction inputs
         └── golden/                      # Expected outputs for golden-file tests
 ```
+
+**Feature 180 addition**: `tests/schemas/test_taxonomy_integrity.py` contains the 4+1 integrity tests (FR-027 schema validation, FR-028 crosswalk referential integrity, FR-029 bidirectional consistency, FR-030 cycle detection, FR-031 uniqueness — plus FR-032 performance guard). The tests run under the **existing** pytest invocation (`pytest tests/`) — no new runtime dependencies, no new CI workflow. Reuses the Feature 128 pytest bootstrap (`pyproject.toml`, `requirements-dev.txt`). Static YAML data assets live at `schemas/taxonomy/` (9 files: `crosswalk.yaml`, `cwe.yaml`, `mitre-atlas.yaml`, `mitre-attack.yaml`, `nist-ai-rmf.yaml`, `owasp.yaml`, `tachi-control-category.yaml`, `tachi-stride-ai-category.yaml`, `README.md`) — no build step required.
 
 ### Adding New Tests
 

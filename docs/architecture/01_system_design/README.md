@@ -4,7 +4,139 @@ Auto-generated from approved plan.md files. Each feature section captures compon
 
 ---
 
-### Feature 145: Canonical MAESTRO Worked Example
+### Feature 180: F-A1 Taxonomy Crosswalk Collection
+
+## Components
+
+This feature does not add or modify runtime components. The deliverable is a machine-readable reference data directory consumed by no pipeline stage at F-A1 — F-A2 (finding-level source attribution) and F-B (coverage attestation report section) are the planned downstream consumers.
+
+| Component | Type | File Path | Change Type | Rationale |
+|-----------|------|-----------|-------------|-----------|
+| Taxonomy catalog + crosswalk directory | New reference-data directory | `schemas/taxonomy/` | Create (9 files) | Spec FR-001/FR-002 — machine-readable foundation for downstream cross-framework ID resolution |
+| 5 external framework catalog YAMLs | New data files | `schemas/taxonomy/{owasp,mitre-attack,mitre-atlas,nist-ai-rmf,cwe}.yaml` | Create | Spec FR-015/FR-017/FR-020/FR-021 — 5-field `{id, full_id, name, url, cwe_refs}` shape per FR-003; OWASP ≥60, MITRE ATT&CK ≥38, MITRE ATLAS ≥12 (7 seed + 5 curated AML.T0058-T0062), NIST AI RMF = 72 exactly (GOVERN 19 + MAP 18 + MEASURE 22 + MANAGE 13, primary-source-corrected from historical 68), CWE ≥53 (41 seed + 12 net-new from CWE Top 25 2025) |
+| 2 tachi pseudo-taxonomy catalog YAMLs | New data files | `schemas/taxonomy/{tachi-control-category,tachi-stride-ai-category}.yaml` | Create | Spec FR-018/FR-019 — 8 canonical control-category slugs (seeded from `.claude/skills/tachi-control-analysis/references/control-categories.md`) + 11 STRIDE+AI category slugs (6 STRIDE + 5 AI, seeded from `.claude/skills/tachi-shared/references/stride-categories-shared.md`) |
+| Crosswalk edge file | New data file | `schemas/taxonomy/crosswalk.yaml` | Create (526 primary edges) | Spec FR-009/FR-025 — 5-field edge shape `{source: {taxonomy, id}, target: {taxonomy, id}, edge_type, confidence, citation}`; ≥500 primary-edge floor under R3 Tier 1 default (achieved 526); `related` and `superseded` edges deferred to follow-on Issue |
+| Curation methodology README | New documentation | `schemas/taxonomy/README.md` | Create | Spec FR-033 — §Purpose (with runnable Python snippet), §Harvest methodology, §Per-framework provenance (7 sections), §Confidence calibration rubric with anti-drift rule, §Canonical-URL conventions, §Update procedures (5 external frameworks), §Crosswalk methodology, §Single-source-of-truth cross-reference to `nist-ai-rmf-mapping.md`, §"What F-A1 does NOT give you today" subsection naming deferred downstream capabilities (F-A2, F-B, agent-reference migration, Surface C transcription) |
+| Referential integrity test suite | New pytest module | `tests/schemas/test_taxonomy_integrity.py` + `tests/schemas/__init__.py` | Create | Spec FR-027 through FR-032 — 4+1 test functions: `test_framework_yamls_load` (FR-028), `test_crosswalk_loads` (FR-029), `test_crosswalk_referential_integrity` (FR-030), `test_citation_shape` (FR-031), optional `test_records_sorted` (FR-032 with numeric-within-function NIST sort clarification) |
+| New ADR | New governance record | `docs/architecture/02_ADRs/ADR-027-taxonomy-crosswalk-schema.md` | Create (Proposed→Accepted) | Spec FR-039/FR-040/FR-041 — 8 numbered decisions covering per-item record shape (with unidirectional OWASP→CWE `cwe_refs` rule), per-edge record shape, 7-value `taxonomy` enum, 3-value `edge_type` enum, 3-value `confidence` enum (with anti-drift rule), citation non-empty-and-resolvable rule, Interpretation C single-feature cadence exception bounded to foundation-data features, and Proposed→Accepted dual-commit governance protocol; Proposed at Day 1 Wave 1.1 schema-lock commit; Accepted at PR #181 merge (commit `8b7c7bf`) |
+| Cross-reference link on top-level README | Additive edit | `README.md` | Update (1 link) | Spec FR-038a — single link to `schemas/taxonomy/README.md` |
+| Cross-reference link on Tech Stack | Additive edit | `docs/architecture/00_Tech_Stack/README.md` | Update (1 link) | Spec FR-038b — single link under Schemas / Standards sections |
+
+**Architectural posture**: additive-only with zero runtime surface-area touch. No existing agent, schema under `schemas/*.yaml` (excluding new `schemas/taxonomy/`), script, template, or example file is modified. The 5 non-agentic example PDFs (web-app, microservices, ascii-web-api, mermaid-agentic-app, free-text-microservice) regenerate byte-identically under `SOURCE_DATE_EPOCH=1700000000` per ADR-021 (spec FR-036 / SC-004 verified via `tests/scripts/test_backward_compatibility.py`). Zero new runtime dependencies — `pyyaml` and `pytest` were already declared in `requirements-dev.txt` per Feature 128.
+
+**Scope amendments during implementation** (both recorded in ADR-027 Revision History):
+- **NIST Subcategory count 68 → 72** (pm_signoff_amendment_1): Day 2 harvest of the authoritative NIST AI RMF 1.0 Playbook pages (airc.nist.gov, fetched 2026-04-17) surfaced 72 Subcategories (GOVERN 19 + MAP 18 + MEASURE 22 + MANAGE 13), not the 68 historically cited in the PRD era. Amendment approved under FR-024 primary-source-correction discipline; FR-022 transcribed IDs (MAP 4.2, MEASURE 2.6-2.10, MANAGE 1.3, MANAGE 2.4, GOVERN 1.4) remain within the 68-subset ⊂ 72-superset, so no ADR-025 or `nist-ai-rmf-mapping.md` edits required.
+- **Surface C scope narrow 41 → 27 edges** (pm_signoff_amendment_2): T023 implementation surfaced that Surface C row identifiers (NIST AI 600-1 §2.X GAI Risks) are structurally distinct from AI RMF Subcategories per ADR-025's three-surface structure and cannot be represented under the closed 7-value `taxonomy` enum or in `nist-ai-rmf.yaml` (which holds AI RMF 1.0 Subcategories only). Option (c) selected: defer Surface C to follow-on Issue F-A1.1 which will add `nist-ai-600-1` as an 8th taxonomy enum value, author `schemas/taxonomy/nist-ai-600-1.yaml` with 12 GAI risk records, and transcribe the 15 Surface C Overlap rows as `tachi-stride-ai-category → nist-ai-600-1` edges. **Total NIST-derived edges in F-A1: 27 (Surface B only)**; Surface C transcription deferred to F-A1.1.
+
+**Follow-on Issues filed on PR #181 merge**: (1) F-A1.1 — add `nist-ai-600-1` as 8th taxonomy enum value + author 12-record GAI Risk catalog + transcribe 15 Surface C edges (0.5-1 day, schema-minor additive release); (2) F-A1.2 — `related` and `superseded` edge expansion beyond the F-A1 `primary`-only floor; (3) F-A1.3 — periodic citation URL link-rot monitoring for the external-framework URLs recorded in the 526-edge crosswalk.
+
+## Data Flow
+
+**No runtime data flow changes.** F-A1 is a reference-data authoring feature. The data is consumed offline by adopter integrations and by downstream F-A2 / F-B features that have not yet shipped.
+
+### Author-time flow (implementer's workflow)
+
+```
+Day 1 (parallel 3-agent execution — schema freeze + first catalog + spike)
+  architect    → freeze schema via data-model.md + contracts/ + ADR-027 Proposed
+  senior-backend-engineer → author owasp.yaml ≥60 items (6 OWASP lists)
+  web-researcher → 50-edge diverse-slice spike (10 OWASP↔CWE + 10 ATT&CK↔CWE
+                   + 10 ATT&CK↔ATLAS + 10 LLM↔NIST + 10 Agentic↔MITRE)
+                 → measure per-edge authoring time → R3 tier decision
+                   (Tier 1 default ≥500 / Tier 2 ≥300 / Tier 3 ≥150)
+
+Day 2 (parallel — external frameworks + pseudo-taxonomies + citations)
+  senior-backend-engineer → author mitre-attack.yaml (38 seed)
+                           + mitre-atlas.yaml (7 seed + 5 curated Oct 2025)
+                           + cwe.yaml (41 seed + 12 Top 25 2025)
+                           + tachi-control-category.yaml (8 slugs)
+                           + tachi-stride-ai-category.yaml (11 slugs)
+                           + nist-ai-rmf.yaml start (→ 72 Subcategories)
+  web-researcher → continue crosswalk citation discovery
+  architect    → README.md draft + 2 cross-reference link edits
+
+Day 3 (complete NIST + crosswalk assembly)
+  senior-backend-engineer → complete nist-ai-rmf.yaml (72 records)
+                           + author ~27 NIST Surface B edges (Surface C deferred per T027 Option c)
+                           + assemble crosswalk records
+  web-researcher → continue citation harvest toward ≥500
+  architect    → finalize README
+
+Day 4 (integrity tests + Accepted ADR + PR open)
+  senior-backend-engineer → author tests/schemas/test_taxonomy_integrity.py
+                           (authoring MUST occur AFTER all 8 YAMLs committed
+                            per Architect F3 sequencing constraint)
+  code-reviewer → backward-compat byte-identity verification
+  architect    → ADR-027 Proposed→Accepted transition
+  team-lead    → PR opened, 3 follow-on Issues filed
+
+Day 5 (PR review + merge)
+  PR #181 squash-merged to main (commit 8b7c7bf, 2026-04-17)
+  T039 post-merge ADR-027 SHA fill → replaces <pending-T039-post-merge-fill>
+```
+
+### Consumer flow (adopter's workflow — post-merge)
+
+```
+Adopter integrating tachi output into a downstream system
+  → pip install pyyaml
+  → python: yaml.safe_load(open('schemas/taxonomy/owasp.yaml'))
+  → iterate records to resolve an OWASP ID (e.g., LLM05) to canonical {id, full_id, name, url, cwe_refs}
+  → yaml.safe_load(open('schemas/taxonomy/crosswalk.yaml'))
+  → filter edges where source.taxonomy == 'owasp' && source.id == 'LLM05'
+    to enumerate cross-framework mappings (CWE refs, MITRE ATT&CK
+    adversary-objective links, NIST AI RMF subcategory coverage)
+  → no text-parsing of agent markdown prose required
+```
+
+### Integrity enforcement flow (CI / maintainer workflow)
+
+```
+Contributor proposing a new crosswalk edge
+  → pytest tests/schemas/test_taxonomy_integrity.py
+  → test_framework_yamls_load — record-shape + uniqueness + URL/path validation
+  → test_crosswalk_loads      — edge shape + no-duplicate (source, target, edge_type) 3-tuple
+  → test_crosswalk_referential_integrity — every source.id / target.id resolves
+                                          in the catalog named by source.taxonomy / target.taxonomy;
+                                          every enum value in closed 7/3/3-value domains
+  → test_citation_shape       — every citation non-empty + URL-regex OR existing file path
+  → optional test_records_sorted — alphabetical by id within each catalog YAML;
+                                   lexicographic on (source.taxonomy, source.id, target.taxonomy, target.id)
+                                   for crosswalk edges; numeric-within-function sort for nist-ai-rmf.yaml
+                                   (GOVERN, MANAGE, MAP, MEASURE alphabetical; then X.Y as 2-tuple of ints)
+  → merge-time violation → PR blocked with per-finding error message
+```
+
+## Tech Stack
+
+### New Dependencies
+
+**None.** This feature introduces zero new runtime or development dependencies. Empty diff on `requirements*.txt`, `pyproject.toml`, `package.json`. `pyyaml>=6.0` and `pytest>=8.0` were already declared in `requirements-dev.txt` per Feature 128 (Q7 / Assumption A6 verified at spec time).
+
+### Tools Used (all pre-existing)
+
+| Tool | Purpose | Source |
+|------|---------|--------|
+| YAML | Block-style data authoring for 7 catalog files + crosswalk | Native to repository (matches existing `schemas/finding.yaml` / `schemas/attack-chain.yaml` / `schemas/report.yaml` conventions) |
+| `pyyaml` | `yaml.safe_load` parsing at integrity-test time and for adopter consumption | Pre-existing in `requirements-dev.txt` per Feature 128 |
+| `pytest` | Integrity test suite harness | Pre-existing per Feature 128 |
+| `pathlib.Path.is_file()` | Citation file-path existence check (stdlib) | Pre-existing Python 3.11 stdlib |
+| `ADR-000-template.md` | ADR-027 authoring scaffold | Pre-existing governance template |
+
+### Standards Consumed
+
+`schemas/taxonomy/` catalog YAMLs reference the following external standards (no runtime dependency on any of them — data is transcribed from authoritative sources at authoring time):
+
+- **OWASP LLM Top 10:2025**, **OWASP Top 10 for Agentic Applications:2026**, **OWASP Top 10:2021**, **OWASP API Security Top 10:2023**, **OWASP Mobile Top 10:2024**, **OWASP Machine Learning Security Top 10:2023**
+- **MITRE ATT&CK Enterprise matrix** (38 seed techniques per Feature 082 detection-patterns.md baseline)
+- **MITRE ATLAS v5.4** — includes the October 2025 agent techniques AML.T0058-T0062 (curated as a +5 extension beyond the 7-technique seed)
+- **NIST AI 100-1 (NIST AI RMF 1.0)** — 72-Subcategory Playbook catalog per airc.nist.gov (primary-source-corrected from historical 68 per pm_signoff_amendment_1)
+- **CWE Top 25 (2025)** — published 2025-12-11 by MITRE/CISA (+12 net-new entries beyond the 41-CWE seed)
+
+**No runtime integration.** All 5 external standards are documented in `schemas/taxonomy/README.md` with per-framework provenance (seed source + count, external-curation source, what was added beyond the seed), canonical-URL conventions, and update procedures for future framework revisions. Runtime consumption begins in F-A2 (finding-level source attribution) and F-B (coverage attestation report section) — neither of which has shipped.
+
+---
+
 
 ## Components
 

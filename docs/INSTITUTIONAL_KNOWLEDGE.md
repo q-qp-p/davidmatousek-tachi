@@ -3,9 +3,9 @@
 **Project**: tachi - Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: 2026-04-16
+**Last Updated**: 2026-04-17
 
-**Entry Count**: 34 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 35 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -727,6 +727,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **When to Apply**: Any additive schema bump (new enum-typed field with default, new optional field) on the finding IR or any shared pipeline IR. Require: (1) a committed byte-identical baseline for each non-targeted example, (2) a deterministic timestamp pin captured in an ADR (ADR-021 precedent), (3) the new field's default value preserving the "N outputs, N-1 untouched" invariant. Do NOT apply to breaking schema bumps (enum-value renames, required-field additions) — those cannot preserve byte-equality and require a different test strategy. The pattern composes with pytest fixture-based test authoring: if adding 4 new test files feels expensive, the fixtures are the gap — not the tests themselves.
 
 **Tags**: #tooling #pytest #deterministic-builds #schema-versioning #backward-compatibility #source-date-epoch #feature-142
+
+**Quality Score**: 8/10
+
+---
+
+### KB-035: Primary-Source-Correction Discipline Protects Spec Integrity Under Time Pressure
+
+**Date**: 2026-04-17
+**Category**: Process improvement
+**Source**: Feature 180 delivery retrospective
+**Severity**: Low (positive process pattern)
+
+**Problem**: PRD-era cited values (framework counts, ID sets, row counts) drift as source taxonomies evolve. When mid-feature harvest surfaces a divergence from the PRD, the default temptation is to match the PRD text verbatim — either to avoid re-signoff friction or to ship on timeline. Matching the stale PRD text ships textually-wrong data; re-opening the PRD mid-flight without a guardrail invites unbounded scope churn.
+
+**Root Cause**: N/A — positive pattern observation. Feature 180 (F-A1 Taxonomy Crosswalk Collection) encountered two primary-source drifts during the 5-day build and landed both as in-place PRD+spec amendments with scoped PM re-signoff rather than shipping wrong data or deferring the feature.
+
+**Solution**: Treat primary-source-correction as a **first-class amendment path** governed by three rules: (1) the correction must be a spec-integrity predicate, not a user-value capability change — no adopter integration story should read "exactly N" where N is the stale value; (2) the correction must be authoritatively-sourced and recorded in the signoff notes with the harvest URL + fetch date; (3) the re-signoff scope must narrow to only the drifted field + dependent FR/SC/acceptance updates, explicitly preserving all other PRD FRs. Feature 180 applied this twice: Day 2 NIST AI RMF Subcategory count amendment 68→72 (authoritative NIST catalog harvested 2026-04-17, primary-source correction), and Day 3 Surface C scope-narrow 41→27 edges with deferral to F-A1.1 follow-on when architect first-principles check surfaced a PRD-era conflation of Surface B and Surface C target taxonomies. Both amendments were absorbed by amending in place with PM re-signoff and continuing the build — zero wall-clock loss, zero textually-wrong data shipped.
+
+**Result**: Feature 180 delivered 41/41 tasks with 526 primary crosswalk edges (≥500 floor) against a 5-day PRD estimate, actual ~1-day sustained delivery session on 2026-04-17. Two in-place PRD amendments with scoped PM re-signoff protected spec integrity without deferring the feature or blocking downstream F-A2 consumers. Follow-on Issues (F-A1.1 Surface C, F-A1.2 related/superseded edges, F-A1.3 citation link-rot) captured out-of-scope work cleanly. Architect concurrence was logged in `.aod/results/architect.md` for each amendment, creating an auditable decision trail.
+
+**When to Apply**: Mid-feature harvests of external primary sources (framework catalogs, standards revisions, authoritative ID sets). Require: (1) amendment scope narrows to drift-only (no opportunistic re-scoping), (2) authoritative source URL + fetch date recorded in signoff notes, (3) architect concurrence as written artifact for decisions touching schema shape or referential integrity, (4) dependent FR/SC/acceptance-scenario updates landed in the same commit sequence as the amendment. Do NOT apply to drifts that change user-value capabilities (e.g., "must include X subcategory" where X is the user integration surface) — those require a full PRD re-scope path, not an in-place amendment. The pattern composes with the ADR-027-style Proposed→Accepted-at-merge cadence: Proposed-tier ADRs can absorb amendments before merge without re-opening.
+
+**Tags**: #process #workflow #primary-source #prd-amendment #signoff-discipline #feature-180
 
 **Quality Score**: 8/10
 
