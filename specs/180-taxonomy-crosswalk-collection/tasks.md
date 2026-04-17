@@ -168,12 +168,12 @@ R6 fallback: if only senior-backend-engineer is available, wall-clock extends to
 
 ### Wave 5.2 — Merge
 
-- [ ] **T039** [architect] Squash-merge PR to `main` per tachi convention. Tag commit with message `feat(180): F-A1 Taxonomy Crosswalk Collection (#NNN)`. Verify `git log` on main shows squash commit.
-- [ ] **T040** [team-lead] Post-merge: update PRD 180 status to "Delivered" in `docs/product/02_PRD/INDEX.md`. Update BACKLOG.md via `.aod/scripts/bash/backlog-regenerate.sh`. Move GitHub Issue #180 to `stage:done`.
+- [X] **T039** [architect] Squash-merge PR to `main` per tachi convention. Tag commit with message `feat(180): F-A1 Taxonomy Crosswalk Collection (#NNN)`. Verify `git log` on main shows squash commit. **COMPLETED 2026-04-17**: PR #181 squash-merged to main at `8b7c7bf59a6de93a0d3f5016a4395755de19c79e` (subject `feat(180): F-A1 Taxonomy Crosswalk Collection (#181)`). ADR-027 post-merge SHA-fill landed at `f2fecd1b2b424edeca29276fc3d012423fabe441` replacing `<pending-T039-post-merge-fill>` placeholder with the actual squash-merge SHA (Accepted-date 2026-04-21 retained as provisional per T032 contract; new Revision History entry 2026-04-17 appended documenting SHA fill). PR state=MERGED, mergedAt=2026-04-17T21:35:37Z. Full details `.aod/results/architect.md §T039`.
+- [X] **T040** [team-lead] Post-merge: update PRD 180 status to "Delivered" in `docs/product/02_PRD/INDEX.md`. Update BACKLOG.md via `.aod/scripts/bash/backlog-regenerate.sh`. Move GitHub Issue #180 to `stage:done`. **COMPLETED 2026-04-17**: 3 artifacts updated in commit `7f532f5dca983fb252b88121dabef100ee7a20de` on main — (1) INDEX.md row for Feature 180 status → Delivered with PR #181 link + 2026-04-17 date + merge SHA `8b7c7bf`; (2) BACKLOG.md regenerated from GitHub Issues via `.aod/scripts/bash/backlog-regenerate.sh` (62 issues, Feature 180 absent from active sections as expected for terminal stage); (3) Issue #180 moved to `stage:done` via `aod_gh_update_stage 180 done` helper (verified via `gh issue view 180 --json labels`). Issue remains OPEN (closure deferred to `/aod.deliver` per convention). Full details `.aod/results/team-lead.md §T040`.
 
 ### Day 5 Exit Gate
 
-- [ ] **T041** [team-lead] Verify PR merged. Verify PRD status updated. Verify BACKLOG regenerated. Verify Issue #180 at stage:done. **F-A1 Complete**.
+- [X] **T041** [team-lead] Verify PR merged. Verify PRD status updated. Verify BACKLOG regenerated. Verify Issue #180 at stage:done. **F-A1 Complete**. **COMPLETED 2026-04-17 — Day 5 Exit Gate PASSES**: 4/4 verifications green — (1) `gh pr view 181 --json state` → `MERGED`; mergeCommit oid = `8b7c7bf59a6de93a0d3f5016a4395755de19c79e`; mergedAt 2026-04-17T21:35:37Z. (2) `docs/product/02_PRD/INDEX.md` Feature 180 row shows Delivered status with 2026-04-17 date + PR #181 link. (3) `BACKLOG.md` regenerated from 62 GitHub Issues; Feature 180 absent from active stages (terminal stage behavior matches 20+ prior delivered features). (4) `gh issue view 180 --json labels` → `stage:done` label present (Issue remains OPEN, closure deferred to `/aod.deliver`). **F-A1 Complete — 41/41 tasks done (100%)**.
 
 ---
 
