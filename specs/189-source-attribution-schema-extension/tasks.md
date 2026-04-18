@@ -154,7 +154,7 @@ triad:
 - [X] T035 Submit PR — title "feat(189): F-A2 source attribution schema extension (#189)". Body references spec, plan, research, ADR-028, quickstart. Includes SC audit output summary, pytest output summary, test-coverage numbers, 22-file zero-edit confirmation. **PR URL**: https://github.com/davidmatousek/tachi/pull/190
 
 **Post-merge**:
-- [ ] T036 Post-merge hook — update ADR-028 `Accepted-commit-SHA` placeholder with actual squash-merge SHA. Single-line commit: `docs(adr): ADR-028 post-merge SHA fill`. Mirrors F-A1 Wave 5.2 post-merge fill precedent.
+- [X] T036 Post-merge hook — update ADR-028 `Accepted-commit-SHA` placeholder with actual squash-merge SHA. Single-line commit: `docs(adr): ADR-028 post-merge SHA fill`. Mirrors F-A1 Wave 5.2 post-merge fill precedent.
 
 **Checkpoint 6**: All 7 SC gates green. PR merged. Follow-on F-A3 Issue filed with F-A2 contract as dependency satisfied.
 
