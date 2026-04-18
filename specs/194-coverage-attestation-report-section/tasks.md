@@ -210,7 +210,7 @@ triad:
 
 - [X] T043 Transition ADR-029 Proposed → Accepted on Day 4 at PR pre-merge — architect updates `docs/architecture/02_ADRs/ADR-029-coverage-attestation-report-section.md` Status: line to `Status: Accepted` with provisional merge-date `2026-04-23` and placeholder `<pending-post-merge-fill>` preserved on `Accepted-commit-SHA` (T044 post-merge fills actual SHA). Revision History entry added dated 2026-04-23 recording the transition plus a T012 guard-pattern selection note (Typst `at(..., default: ...)` idiom preferred over `!= none` for absent-name handling). No Decision text amended. Commit on feature branch.
 
-- [ ] T044 Post-merge SHA fill on ADR-029 — after PR squash-merges to main, amend the ADR's `merge-sha:` placeholder with the actual squash commit SHA; commit directly to main (per Feature 180/189 post-merge SHA fill precedent). Tracked as a separate commit, not amended into the PR.
+- [X] T044 Post-merge SHA fill on ADR-029 — after PR squash-merges to main, amend the ADR's `merge-sha:` placeholder with the actual squash commit SHA; commit directly to main (per Feature 180/189 post-merge SHA fill precedent). Tracked as a separate commit, not amended into the PR. **Completed 2026-04-18**: `Accepted-commit-SHA: c4b8dc68f36b59ee7ab49cc587661526ffd1a818` (PR #195 squash-merge); Revision History entry appended.
 
 - [X] T045 [P] Update `docs/architecture/01_system_design/README.md` with a new `### Feature 194: coverage-attestation-report-section` subsection referencing plan.md's System Design block (Components, Data Flow, Tech Stack). Mirrors Feature 143 / 144 architecture documentation precedent.
 
