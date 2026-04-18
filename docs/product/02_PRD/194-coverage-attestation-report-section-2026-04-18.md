@@ -3,7 +3,10 @@ prd:
   number: 194
   topic: coverage-attestation-report-section
   created: 2026-04-18
-  status: Approved
+  status: Delivered
+  delivered: 2026-04-18
+  pr: 195
+  merge_sha: c4b8dc6
   type: feature
 triad:
   pm_signoff: {agent: product-manager, date: 2026-04-18, status: APPROVED, notes: "Problem statement grounded in F-A2 delivery (Feature 189 same-day lineage). 3 user stories preserved verbatim from Issue #194 with job-story restructuring. 9 success criteria (SC-1 to SC-9). MVP classification narrowed to 3-value (Covered/Partial/Gap) per architect Q6-D; Out-of-Scope deferred to follow-on. PRD R2 factual error corrected in v1.1: MITRE ATT&CK is 38 records (F-A1 curated subset), not 600+; Q2 collapses to trivial Q2-A full YAML record count. Q-P1 resolved NO per Feature 189 precedent — sample records belong in test fixtures, not example outputs. Ready for /aod.plan."}
@@ -16,11 +19,13 @@ source:
 
 # F-B — Coverage Attestation Report Section: Product Requirements Document
 
-**Status**: Approved
+**Status**: Delivered
 **Created**: 2026-04-18
+**Delivered**: 2026-04-18 (PR [#195](https://github.com/davidmatousek/tachi/pull/195), squash commit `c4b8dc6`)
+**Spec**: [specs/194-coverage-attestation-report-section/spec.md](../../../specs/194-coverage-attestation-report-section/spec.md)
 **Author**: product-manager
 **Reviewers**: architect, team-lead
-**Phase**: BLP-01 Coverage Attestation Reporting tier — downstream demand-side consumer of the Foundation tier (F-A1 + F-A2 + F-A3)
+**Phase**: BLP-01 Coverage Attestation Reporting tier — first downstream demand-side consumer of the Foundation tier (F-A1 + F-A2)
 **Priority**: P1
 
 ---

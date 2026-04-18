@@ -196,6 +196,33 @@ No new environment variables, no Docker services, no staging/production deployme
 
 ---
 
+## Coverage Attestation Report Section (Feature 194)
+
+Feature 194 (F-B / BLP-01 Reporting tier) added a conditional coverage-attestation section to the `/tachi.security-report` PDF rendering, gated on a new `has-source-attribution` boolean in the Typst data contract. The aggregator lives in `scripts/extract-report-data.py` (new function `_load_framework_yaml_records` + coverage-attestation emission); the rendering lives in `templates/tachi/security-report/coverage-attestation.typ` (new file) plus 3 coordinated edits to `templates/tachi/security-report/main.typ`. F-194 is the downstream consumer of Feature 180 (F-A1 taxonomy catalogs) and Feature 189 (F-A2 `source_attribution` schema field), with no cross-framework JOIN — per-framework aggregates only.
+
+### Infrastructure Impact
+
+**Zero new runtime dependencies** (empty diff on `pyproject.toml` / `requirements*.txt` / `package.json`). **Zero new CI workflows**, zero changes to existing workflows (`release-please.yml`, `tachi.threat-model.yml`, `tachi-mmdc-preflight.yml`), zero changes to `scripts/install.sh`. No new environment variables, no Docker services, no staging/production deployment changes. A post-merge follow-up deferred `import yaml` inside `_load_framework_yaml_records` to preserve the stdlib-only module-load invariant for runtime scripts — `pyyaml` remains dev-only per Feature 128 precedent.
+
+### Backward Compatibility
+
+The conditional gate (`has-source-attribution: false` by default + default-value guards in `main.typ` + `.len() > 0` belt-and-suspenders check) ensures the 5 non-agentic example PDFs (`web-app`, `microservices`, `ascii-web-api`, `free-text-microservice`, `maestro-reference`) regenerate byte-identically under `SOURCE_DATE_EPOCH=1700000000` (ADR-021). SC-002 byte-identity regression passes 5/5.
+
+### Test Suite Additions
+
+- `tests/scripts/test_coverage_attestation.py` — aggregator unit tests (per-finding rows, per-framework aggregates, classification, partition invariant, zero-denominator edge)
+- `tests/scripts/test_coverage_attestation_pagination.py` — pagination smoke on a 100-finding × 5-framework synthetic fixture
+- `tests/scripts/generate_pagination_fixture.py` — committed, deterministic fixture generator
+- `tests/scripts/fixtures/coverage_attestation/` — 3 fixtures (`empty_attribution.yaml`, `one_primary_attribution.yaml`, `multi_mixed_attribution.yaml`)
+
+Full suite: 305 passed + 1 skipped (the skip is the `mermaid-agentic-app` known limitation, unrelated to F-194).
+
+### Related Architecture Decision
+
+[ADR-029 — Coverage Attestation Report Section](../architecture/02_ADRs/ADR-029-coverage-attestation-report-section.md) documents the 7 decision surfaces (Typst data contract shape, Covered / Partial / Gap classification rule, zero-denominator handling, partition invariant, Mermaid-independent rendering, F-A3 coordination, dual-commit Proposed → Accepted governance). F-194 follows the Feature 141 `has-attack-chains` precedent verbatim and the Feature 128 pytest bootstrap precedent.
+
+---
+
 ## Deployment Policy (MANDATORY)
 
 **ALL deployments MUST go through the devops agent.**

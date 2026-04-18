@@ -1,6 +1,6 @@
 # CI/CD Setup Guide - tachi
 
-**Last Updated**: 2026-04-17 (Feature 189: F-A2 Source Attribution Schema Extension)
+**Last Updated**: 2026-04-18 (Feature 194: F-B Coverage Attestation Report Section)
 **Owner**: DevOps Agent
 
 ---
@@ -326,6 +326,8 @@ tests/
     ├── test_attack_chains.py
     ├── test_backward_compatibility.py
     ├── test_command_dispatch.py
+    ├── test_coverage_attestation.py
+    ├── test_coverage_attestation_pagination.py
     ├── test_extract_infographic_data.py
     ├── test_extract_report_data.py
     ├── test_finding_pattern_parser.py
@@ -335,7 +337,9 @@ tests/
     ├── test_pattern_synthesis.py
     ├── test_pdf_page_positioning.py
     ├── test_source_attribution.py
+    ├── generate_pagination_fixture.py
     └── fixtures/
+        ├── coverage_attestation/
         ├── exec_arch/
         ├── finding_pattern_parser/
         ├── pattern_extraction/
@@ -346,14 +350,15 @@ tests/
 
 **Local Execution**: See `docs/devops/01_Local/README.md` section "Python Test Suite" for full local setup and run commands.
 
-**Current CI Status (as of F-189 close, 2026-04-17)**:
-- Pytest harness **exists locally** and runs against 284 passed + 1 skipped under `SOURCE_DATE_EPOCH=1700000000` across 15 modules
+**Current CI Status (as of F-194 close, 2026-04-18)**:
+- Pytest harness **exists locally** and runs against 305 passed + 1 skipped under `SOURCE_DATE_EPOCH=1700000000` across 17 modules (the 1 skip is the `mermaid-agentic-app` known-limitation carry-over, unrelated to F-194)
+- Feature 194 added 2 new test modules (`tests/scripts/test_coverage_attestation.py` — aggregator unit tests over per-finding rows, per-framework aggregates, Covered / Partial / Gap classification, zero-denominator `N/A` handling, partition invariant; `tests/scripts/test_coverage_attestation_pagination.py` — pagination smoke on a synthetic 100-finding × 5-framework fixture) plus 1 committed fixture generator (`tests/scripts/generate_pagination_fixture.py`). **Zero new runtime dependencies** (empty diff on `pyproject.toml` / `requirements*.txt` / `package.json`), **zero new CI workflow**, zero changes to existing workflows, zero changes to `scripts/install.sh`. A post-merge follow-up deferred `import yaml` inside `_load_framework_yaml_records` in `scripts/extract-report-data.py` to preserve the stdlib-only module-load invariant for runtime scripts — `pyyaml` remains dev-only per Feature 128 precedent. Runs under the existing `pytest tests/` invocation. SC-002 byte-identity on the 5 non-agentic baselines under `SOURCE_DATE_EPOCH=1700000000` (ADR-021) continues unchanged
 - Feature 189 added 1 new test module (`tests/scripts/test_source_attribution.py`) containing 9 tests covering `schemas/finding.yaml` 1.4 -> 1.5 minor-bump additive `source_attribution` field — two-tier validation (parser-tier V1/V2/V3 closed-enum + validator-tier V4 referential integrity against `schemas/taxonomy/`), round-trip fidelity, and absent-vs-empty-array semantics. No new runtime dependencies (empty diff on `pyproject.toml` / `requirements-dev.txt` / `package.json`), no new CI workflow, no changes to existing workflows, no changes to `scripts/install.sh`. Runs under the existing `pytest tests/` invocation
 - Feature 180 added 1 new test module under a new top-level directory (`tests/schemas/test_taxonomy_integrity.py`) containing 4+1 integrity tests (FR-027..FR-032) covering taxonomy schema validation, crosswalk referential integrity, bidirectional consistency, cycle detection, uniqueness, and a performance guard -- no new runtime dependencies, no new CI workflow. Runs under the existing `pytest tests/` invocation
 - Feature 142 added 4 new test modules (`test_pattern_synthesis.py`, `test_pattern_classification_rules.py`, `test_pattern_extraction.py`, `test_finding_pattern_parser.py`) covering MAESTRO Phase 3 agentic threat pattern expansion -- no new CI workflow
 - Feature 141 added 2 new test modules (`test_attack_chains.py`, `test_attack_chain_extraction.py`) -- no new CI workflow
 - Pytest is **not yet wired** into any GitHub Actions workflow
-- Existing workflows (`release-please.yml`, `tachi.threat-model.yml`, `tachi-mmdc-preflight.yml`) are unchanged by F-189 and F-180
+- Existing workflows (`release-please.yml`, `tachi.threat-model.yml`, `tachi-mmdc-preflight.yml`) are unchanged by F-194, F-189, and F-180
 - Wiring pytest to CI is tracked as a follow-up
 
 **Recommended Follow-Up Pipeline Step** (not implemented):

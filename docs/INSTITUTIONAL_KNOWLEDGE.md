@@ -5,7 +5,7 @@
 **Created**: {{PROJECT_START_DATE}}
 **Last Updated**: 2026-04-17
 
-**Entry Count**: 35 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 36 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: 2026-03-30
 **Status**: ✅ Manual mode (file-based)
 
@@ -775,6 +775,32 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 **Tags**: #governance #adr #schema-versioning #dual-commit #foundation-tier #feature-180 #feature-189
 
 **Quality Score**: 8/10
+
+---
+
+### KB-037: Defer Non-Stdlib Imports Inside Functions to Protect Cross-Feature Invariants
+
+**Date**: 2026-04-18
+**Category**: Tooling insight
+**Source**: Feature 194 delivery retrospective (F-B Coverage Attestation Report Section)
+**Severity**: Medium (CI breakage, caught at PR gate)
+
+**Problem**: Feature 194's aggregator added `import yaml` at module level to `scripts/extract-report-data.py` to load `schemas/taxonomy/*.yaml` for the per-framework coverage denominator. The Feature 130 mmdc preflight CI workflow runs the same script against `examples/mermaid-agentic-app/` on a fresh Ubuntu image with no pip install — the script crashed with `ModuleNotFoundError: No module named 'yaml'` at module load, BEFORE the preflight gate could fire its 3 canonical error tokens. The mmdc preflight check went red on PR #195 even though the aggregator's happy path was fully green under local pytest.
+
+**Root Cause**: Two invariants collided at the import line:
+1. Feature 128 declared runtime scripts stdlib-only (`tachi_parsers.py:646,804` comments: "Stdlib-only to keep scripts/ free of the pyyaml runtime dependency")
+2. Feature 130 expects the mmdc preflight gate to fire before any other failures, with `pyyaml` deliberately absent on the CI runner
+Feature 194 needed yaml but inherited the ambient assumption that module-level imports are free. Neither invariant was referenced by the other's code — the collision surfaced only through a cross-feature CI gate.
+
+**Solution**: Move `import yaml` inside `_load_framework_yaml_records`, the sole yaml-using function. The pattern: non-stdlib imports that are gated by runtime conditions (here: `has_source_attribution == true`) should be deferred into the functions that need them, so module load remains stdlib-only. `_load_framework_yaml_records` is only called when the aggregator actually runs — which only happens when a finding carries `source_attribution`, which is never the case on the mmdc preflight fixture (`examples/mermaid-agentic-app/` has no source_attribution). Paired with a test patch-target update (`patch.object(yaml, "safe_load", ...)` instead of `patch.object(extract_report_data.yaml, ...)`).
+
+**Result**: Single-commit fix (6136e6b) pushed to the PR branch; mmdc preflight went green, backward-compat baselines remained byte-identical, and 16/16 coverage-attestation aggregator tests stayed green. PR #195 merged cleanly as squash commit c4b8dc6.
+
+**When to Apply**: Any feature adding a non-stdlib import to a runtime script in `scripts/*.py` when (a) the script is already stdlib-only, AND (b) the import is guarded by a runtime condition (feature flag, conditional artifact, gate predicate). Defer the import inside the guarded function. Two CI signals to watch: (1) `.github/workflows/tachi-mmdc-preflight.yml` runs without pip install, so any module-level non-stdlib import breaks it, (2) `pyproject.toml` + `requirements*.txt` diff should remain empty per Feature 128 (confirm via `git diff main...HEAD -- pyproject.toml requirements*.txt package.json`). Test implication: patch targets need to reference the shared module (`yaml.safe_load`) rather than a module-level attribute (`extract_report_data.yaml`) because the attribute no longer exists at module scope.
+
+**Tags**: #tooling #ci #import-hygiene #stdlib-only #feature-128 #feature-130 #feature-194
+
+**Quality Score**: 7/10
 
 ---
 
