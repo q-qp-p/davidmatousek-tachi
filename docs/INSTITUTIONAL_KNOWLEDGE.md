@@ -755,6 +755,29 @@ Captured during structured delivery retrospective. Smooth sailing — everything
 
 ---
 
+### KB-036: Dual-Commit Proposed → Accepted ADR Governance Is a Reusable Foundation-Tier Pattern
+
+**Date**: 2026-04-17
+**Category**: Governance pattern reuse
+**Source**: Feature 189 delivery retrospective (F-A2 Source Attribution Schema Extension)
+**Severity**: Low (positive process pattern)
+
+**Problem**: Foundation-tier schema extensions that ship a new ADR + schema bump + parser touch traditionally risk getting stuck behind ADR finalization: "Accept the ADR" is a pre-merge decision, but the SHA that proves the ADR is adopted is a post-merge artifact. Without a durable governance pattern for this gap, each feature re-invents the sequencing — sometimes amending the ADR's Accepted status retroactively, sometimes deferring Accepted to post-merge.
+
+**Root Cause**: N/A — positive pattern observation. Feature 180 (F-A1 Taxonomy Crosswalk Collection) established the dual-commit Proposed → Accepted ADR governance pattern at ADR-027 Decision 8: (a) Proposed at Day 1 Wave 1.1 schema-lock commit (unblocks parallel authoring), (b) Accepted at pre-merge transition with `<pending-post-merge-fill>` SHA placeholder, (c) post-merge T039 SHA fill commit directly to main (provenance-only). Feature 189 (F-A2 Source Attribution Schema Extension) consumed the pattern structurally identically one day later — ADR-028 Decision 7 mirrors ADR-027 Decision 8 verbatim, and T036 post-merge SHA fill mirrors T039.
+
+**Solution**: Codify the dual-commit pattern as the **default governance protocol for foundation-tier schema extensions**: any feature that ships a new ADR + schema minor bump + parser surface change should adopt (a) Proposed commit at schema-lock (not at PR-open — earlier), (b) Accepted transition at pre-merge, (c) post-merge SHA fill committed directly to main with a single-line `docs(adr): ADR-NNN post-merge SHA fill` message, mirroring F-A1 / ADR-027 T039 precedent. The pattern composes with the in-place amendment path (KB-035) — ADRs in Proposed status can absorb spec amendments without re-signoff friction.
+
+**Result**: Feature 189 delivered 36/36 tasks with full 6-wave build + Checkpoint 5.5 + T036 post-merge fill in a single day (2026-04-17), against a 2-3 day plan.md estimate. Schema 1.4 → 1.5 minor bump + new ADR-028 (Accepted) + parser round-trip + two-tier validation + 9 new tests + 22-file zero-edit invariant preserved — all delivered same-day as F-A1 / Feature 180 landed. Zero governance friction at ADR finalization because the Proposed → Accepted transition was a mechanical step (no new decision content at Accepted; SHA placeholder replaced post-merge).
+
+**When to Apply**: Foundation-tier features that ship (a) a new per-feature ADR + (b) a schema minor bump + (c) a parser or pipeline-script surface change. Require: (1) ADR body fully populated at Proposed time with no deferred decisions, (2) `<pending-post-merge-fill>` SHA placeholder used in the frontmatter + Revision History narrative, (3) Accepted-date recorded as provisional at pre-merge transition without retroactive correction if merge slips (provenance is strengthened by the new SHA field, not by revising the provisional date), (4) post-merge SHA fill commits directly to main as a provenance-only change. Do NOT apply to features without a new ADR (e.g., config-only changes that amend an existing ADR's Revision History — those stay as single-commit amendments). The pattern has now been applied twice consecutively (F-A1 / ADR-027, F-A2 / ADR-028) with identical shape — foundation-tier candidates should adopt it by default.
+
+**Tags**: #governance #adr #schema-versioning #dual-commit #foundation-tier #feature-180 #feature-189
+
+**Quality Score**: 8/10
+
+---
+
 ## Bug Fixes
 
 *No entries yet. Use `/kb-create` to add the first bug fix.*

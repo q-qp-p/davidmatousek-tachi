@@ -3126,9 +3126,9 @@ Architecture Description + Components + Data Flows (Phase 1 output)
 
 ### Feature 189: Source Attribution Schema Extension (F-A2)
 
-**PR**: TBD | **Status**: In Planning | **Date**: 2026-04-17
+**PR**: [#190](https://github.com/davidmatousek/tachi/pull/190) | **Status**: Delivered | **Date**: 2026-04-17 | **Squash-merge commit**: `6d5d890`
 
-Additive schema extension introducing `source_attribution` as an optional list-of-RECORD field on findings. Schema version bumps 1.4 → 1.5 per ADR-026's Complex-Shape Addition Clarifier extension (list-of-RECORD case). No new runtime dependencies. No edits to the 22-file zero-edit scope (11 threat-detection agents + 11 companion skill-reference files) per ADR-023.
+Additive schema extension introducing `source_attribution` as an optional list-of-RECORD field on findings. Schema version bumps 1.4 → 1.5 per [ADR-028](../02_ADRs/ADR-028-source-attribution-schema-extension.md) Decision 1 ("Complex-Shape Addition Clarifier" extending the ADR-026 minor-bump rule from scalar to list-of-RECORD fields). Contract-only: parser round-trip with conditional-key emission (Feature 104 `delta_status` precedent) and two-tier validation — parser-tier V1/V2/V3/V5 enum checks inline in `parse_threats_findings`, plus a new post-parse `validate_source_attribution` V4 referential-integrity helper invokable from orchestrator Phase 4 against the F-A1 catalog YAMLs. Populator wiring (threat agents emitting attribution records) is deferred to F-A3. No new runtime or developer dependencies. No edits to the 22-file zero-edit scope (11 threat-detection agents + 11 companion skill-reference files) per ADR-023. 36/36 tasks complete; triple sign-off.
 
 ## Components
 
