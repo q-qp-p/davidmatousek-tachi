@@ -126,7 +126,7 @@ See Phase 2 T009, T010, T011 — ADR-030 Proposed authoring happens at Wave 1.1 
 
 ### Post-Merge (Wave 5 or later)
 
-- [ ] T025 [US3] After PR squash-merge: update ADR-030 Revision History with `| YYYY-MM-DD | Accepted with post-merge SHA fill | squash commit {SHORT_SHA} | confirmed |` (ADR-027/028/029 precedent).
+- [X] T025 [US3] After PR squash-merge: update ADR-030 Revision History with `| YYYY-MM-DD | Accepted with post-merge SHA fill | squash commit {SHORT_SHA} | confirmed |` (ADR-027/028/029 precedent).
 
 **Checkpoint**: Heuristic A determination locked in public ADR; F-4 unblocked for `/aod.discover`.
 
