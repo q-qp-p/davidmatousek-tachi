@@ -804,6 +804,35 @@ Feature 194 needed yaml but inherited the ambient assumption that module-level i
 
 ---
 
+### KB-038: Dual-Commit ADR Governance Extends Cleanly to Tier-1 Downstream Features
+
+**Date**: 2026-04-19
+**Category**: Technical pattern
+**Source**: Feature 201 delivery retrospective (F-1 `output-integrity` Threat Agent, OWASP LLM05:2025)
+**Severity**: N/A (pattern validation)
+
+**Problem**: When the dual-commit Proposed → Accepted ADR governance protocol (KB-036) was first established in Feature 180 (ADR-027 / F-A1), it was unclear whether the pattern was a Foundation-tier-only ritual or a broader tachi governance rhythm. The three Foundation-tier features (F-A1, F-A2, F-B) all used it, but until a Tier-1 downstream feature tried the same protocol, the pattern's transferability was unvalidated.
+
+**Root Cause**: The dual-commit protocol carries two load-bearing properties: (a) the Day-1 Proposed commit serves as a decision-lock signal that unblocks parallel authoring (catalog / agent / tests) without waiting for PR merge, and (b) the pre-merge Accepted commit + post-merge SHA fill completes the provenance chain in a single round-trip. Foundation-tier features benefit from (a) because their schema / contract decisions need to freeze early; Tier-1 features benefit from (a) because their agent-shape decisions need to freeze early. The underlying need — early decision-lock for parallel work plus late provenance completion — generalizes cleanly.
+
+**Solution**: Feature 201 (F-1) ran the same protocol with no adaptation: ADR-030 authored Proposed at Day 1 Wave 1.1 schema-lock commit, transitioned to Accepted at Wave 5 T022 with provisional date + `<pending-post-merge-fill>` placeholder, post-merge T025 fills the placeholder with the squash-merge short SHA (`558e75eb333a`) and appends a Revision History row. The protocol accommodates a Tier-1 downstream feature's additional concern — "does this ADR cite all the downstream predecessors correctly?" — because Cross-references to ADR-027/028/029 are all stable by Day 1.
+
+**Result**: The dual-commit pattern is now validated across 4 consecutive features (F-A1, F-A2, F-B, F-1) spanning Foundation-tier and Tier-1, ratifying it as the default cadence for any ADR carrying pre-merge policy decisions that need post-merge provenance completion. Feature 201 delivered on a compressed 1-day cycle (PRD 2026-04-18 → merged 2026-04-19) with all 8 ADR-030 decisions ratified at Proposed time and zero scope change at Accepted — consistent with KB-030 compressed-delivery pattern and KB-036 dual-commit baseline.
+
+**When to Apply**: Any feature producing a per-feature ADR with pre-merge policy decisions (schema bumps, scope clarifications, new agent shapes, new contract fields, new enum values, new ID prefixes). The protocol is:
+1. Author ADR Proposed at the earliest decision-lock commit (typically Wave 1.1 or 1.0, after architect / PM / team-lead sign-off but before parallel authoring waves start).
+2. Transition Proposed → Accepted at Wave 5 (or pre-PR-open wave) with a provisional Accepted-date and `<pending-post-merge-fill>` placeholder on the `Accepted-commit-SHA` field.
+3. After PR squash-merge, commit a post-merge SHA fill: replace `<pending-post-merge-fill>` with the 12-char short SHA AND append a Revision History row recording the transition.
+4. The provisional Accepted-date is preserved (not retconned to the merge date) per ADR-027 T039 / ADR-028 T036 guidance.
+
+Future Tier-1 features (F-2 rag-poisoning, F-3 memory-corruption, F-4 trust-exploitation, F-5 workflow-bypass per BLP-01 §8) should each author their own Proposed → Accepted ADR following the ADR-030 template. Extension of the ADR-026 Complex-Shape Clarifier to regex-alternation prefix additions (ADR-030 D8) also sets durable precedent — each future Tier-1 feature that introduces a new ID prefix cites D8 and inherits the minor-bump rule.
+
+**Tags**: #architecture #pattern #adr-governance #dual-commit #blp-01 #tier-1 #feature-201
+
+**Quality Score**: 8/10
+
+---
+
 ## Bug Fixes
 
 *No entries yet. Use `/kb-create` to add the first bug fix.*
