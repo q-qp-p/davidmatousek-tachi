@@ -211,3 +211,11 @@ __pycache__/
 htmlcov/
 .venv/
 venv/
+
+# AOD-kit F129 (downstream template update mechanism) — adopter-side state
+# Lock file is already covered by .aod/*.lock above (.aod/update.lock)
+# Transient staging directory for in-flight updates
+.aod/update-tmp/
+# Personalization values — remove this line for reproducible installs
+# (committing personalization.env locks substitution values into git history).
+.aod/personalization.env
