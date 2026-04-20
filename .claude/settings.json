@@ -27,14 +27,7 @@
       "Bash(source .aod/scripts/bash/*)",
       "Bash(.aod/scripts/bash/*)",
       "Edit",
-      "Write",
-      "Bash(wc -l templates/tachi/infographics/*.md)",
-      "Edit(/.claude/skills/code-execution-helper/**)",
-      "Edit(/.claude/skills/tachi-report-assembly/**)"
-    ],
-    "additionalDirectories": [
-      ".claude/agents/tachi",
-      ".claude/commands"
+      "Write"
     ]
   },
   "hooks": {

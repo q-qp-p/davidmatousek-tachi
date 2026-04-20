@@ -1,6 +1,6 @@
-# Staging Environment - tachi
+# Staging Environment - {{PROJECT_NAME}}
 
-**Last Updated**: 2026-04-06
+**Last Updated**: {{CURRENT_DATE}}
 **Owner**: DevOps Agent
 **Status**: Template
 
@@ -90,7 +90,6 @@ Managed via {{PLATFORM}} dashboard or CLI.
 4. Merge to main branch
 5. Monitor production deployment
 6. Verify production health checks
-7. Review release-please PR (auto-created after merge to main) for version bump and CHANGELOG accuracy
 
 ---
 

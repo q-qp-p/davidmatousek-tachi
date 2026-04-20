@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "tachi-mcp": {
+    "{{PROJECT_NAME}}-mcp": {
       "command": "node",
       "args": [
         "{{PROJECT_PATH}}/path/to/mcp-server.js"
@@ -12,17 +12,17 @@
     }
   },
   "comments": {
-    "description": "MCP (Model Context Protocol) Configuration for tachi",
+    "description": "MCP (Model Context Protocol) Configuration for {{PROJECT_NAME}}",
     "usage": [
-      "Replace tachi with your actual project name",
+      "Replace {{PROJECT_NAME}} with your actual project name",
       "Replace {{PROJECT_PATH}} with the absolute path to your project root",
       "Update the path to your MCP server implementation",
       "Add environment variables as needed for your MCP server"
     ],
     "example": {
       "projectName": "my-awesome-app",
-      "projectPath": "/path/to/my-awesome-app",
-      "serverPath": "/path/to/my-awesome-app/backend/mcp/server.js"
+      "projectPath": "/Users/yourname/projects/my-awesome-app",
+      "serverPath": "/Users/yourname/projects/my-awesome-app/backend/mcp/server.js"
     },
     "notes": [
       "MCP servers enable AI agents to access project-specific context and tools",

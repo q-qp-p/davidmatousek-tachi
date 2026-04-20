@@ -29,7 +29,7 @@ Claude Code uses **hierarchical memory loading** to provide context-appropriate 
 When Claude Code starts, it traverses **UP** from your current directory to the filesystem root, loading every CLAUDE.md it finds. These load **immediately at startup**.
 
 ```
-my-project/src/api/
+/Users/david/Projects/CISO_Agent/src/api/
   ↑ loads src/CLAUDE.md
   ↑ loads CLAUDE.md (root)
 ```
@@ -38,7 +38,7 @@ my-project/src/api/
 CLAUDE.md files in subdirectories below your current location use **lazy loading** - they're only included when Claude reads/writes files in those directories.
 
 ```
-Working in /my-project/:
+Working in /CISO_Agent/:
   ✅ CLAUDE.md loads immediately (current directory)
   ⏳ src/CLAUDE.md loads when Claude touches src/ files
   ⏳ deployment/CLAUDE.md loads when Claude touches deployment/ files
@@ -53,7 +53,7 @@ Files in sibling directories **never load automatically**. This is the key optim
 ### Required Structure
 
 ```
-my-project/
+CISO_Agent/
 ├── CLAUDE.md                    # Root - always loads (~70 lines) ✅
 ├── src/
 │   └── CLAUDE.md                # Source code context ✅

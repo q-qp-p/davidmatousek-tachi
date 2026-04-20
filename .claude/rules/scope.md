@@ -12,7 +12,7 @@ This file defines what tachi is (and isn't) to set clear expectations for templa
 ## What This Is
 
 **tachi is:**
-- Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
+- Automated threat modeling sidecar for your projects.
 - Agentic-oriented development with clear governance workflows
 - Works with any agent workflow or framework (not Claude Code-specific)
 - Methodology and governance template (not application code)

@@ -648,4 +648,7 @@ try {
 - **Troubleshooting Guide**: `docs/troubleshooting/code-execution-errors.md`
 - **API Wrapper Functions**: `.claude/skills/code-execution-helper/references/api-wrapper.md`
 
-For additional support, see the project documentation and GitHub Issues.
+For additional support:
+- Documentation: https://docs.ai-security-scanner.com
+- Email: support@ai-security-scanner.com
+- Status Page: https://status.ai-security-scanner.com

@@ -6,7 +6,7 @@ changelog:
   - version: 2.0.0
     date: 2026-01-31
     changes:
-      - Refactored for modularity
+      - Refactored per CISO_Agent best practices
       - Applied 8-section standard structure
       - Reduced from 1,026 to 250 lines (77% reduction)
       - Moved 550+ lines of code examples to skill references

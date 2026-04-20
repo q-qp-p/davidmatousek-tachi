@@ -6,7 +6,7 @@ changelog:
   - version: 2.0.0
     date: 2026-01-31
     changes:
-      - Refactored for modularity
+      - Refactored per CISO_Agent best practices
       - Applied 8-section standard structure
       - Reduced from 578 to 291 lines (50% reduction)
       - Moved Docker/CI examples to skill references
@@ -60,7 +60,7 @@ Create deployment solutions appropriate to development stage - from simple local
 - Infrastructure as Code (IaC)
 - CI/CD pipeline automation
 - Containerization (Docker, Compose)
-- Cloud deployment (local-filesystem)
+- Cloud deployment ({{CLOUD_PROVIDER}})
 - Monitoring and observability
 - Multi-environment management
 
@@ -119,7 +119,7 @@ Determine operating mode before proceeding:
 
 2. **Environment Configuration**
    - Configure target environment (dev/staging/prod)
-   - Setup secrets in local-filesystem Environment Variables
+   - Setup secrets in {{CLOUD_PROVIDER}} Environment Variables
    - Validate infrastructure dependencies
    - Output: Environment ready for deployment
 
@@ -147,8 +147,8 @@ Determine operating mode before proceeding:
 | Environment | Platform | Purpose | Cost |
 |-------------|----------|---------|------|
 | Development | Docker Compose | Local iteration | $0 |
-| Staging | local-filesystem Preview | Production-like testing | $0 (free tier) |
-| Production | local-filesystem Production | Live deployment | Varies |
+| Staging | {{CLOUD_PROVIDER}} Preview | Production-like testing | $0 (free tier) |
+| Production | {{CLOUD_PROVIDER}} Production | Live deployment | Varies |
 
 ---
 
@@ -198,7 +198,7 @@ cat docs/devops/{01_Local|02_Staging|03_Production}/README.md
 
 ### Secrets Management
 
-**Storage**: local-filesystem Environment Variables (not local files)
+**Storage**: {{CLOUD_PROVIDER}} Environment Variables (not local files)
 
 **Required Secrets**:
 - DATABASE_URL - Auto-configured by {{DATABASE_PROVIDER}}
@@ -256,7 +256,7 @@ This agent defers to:
 
 ### References
 
-Docker: project Dockerfiles | local-filesystem: provider docs | {{CI_PLATFORM}}: .github/workflows/ | Runbooks: docs/devops/
+Docker: project Dockerfiles | {{CLOUD_PROVIDER}}: provider docs | {{CI_PLATFORM}}: .github/workflows/ | Runbooks: docs/devops/
 
 ### Code Execution
 

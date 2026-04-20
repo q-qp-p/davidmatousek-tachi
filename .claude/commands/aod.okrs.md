@@ -49,7 +49,7 @@ triad:
   pm_signoff: null  # Populated after review
 ---
 
-# tachi OKRs — {YYYY-QN}
+# {{PROJECT_NAME}} OKRs — {YYYY-QN}
 
 **Quarter**: {QN} {YYYY}
 **Status**: Draft
