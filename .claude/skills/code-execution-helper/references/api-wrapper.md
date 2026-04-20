@@ -433,7 +433,7 @@ const results = await scanFile('/path');
 
 ### Syntax Validation:
 ```bash
-deno check --no-lock .claude/skills/code-execution-helper/references/api-wrapper.md
+deno check --no-lock /Users/david/Documents/GitHub/CISO_Agent/.claude/skills/code-execution-helper/references/api-wrapper.md
 ```
 
 ### Integration Test:
@@ -462,9 +462,9 @@ console.log(`Recent scans: ${history.length}`);
 
 ## Documentation References
 
-- **Feature 025 API Reference**: `/path/to/project/docs/api/mcp-tools-reference.md`
-- **Architecture Review (AR-001)**: `/path/to/project/docs/agents/architect/2025-11-17_feature-026-architecture-review_ARCH.md`
-- **Research Analysis**: `/path/to/project/specs/026-api-abstraction/research.md#research-area-8-api-abstraction-layer-design`
+- **Feature 025 API Reference**: `/Users/david/Documents/GitHub/CISO_Agent/docs/api/mcp-tools-reference.md`
+- **Architecture Review (AR-001)**: `/Users/david/Documents/GitHub/CISO_Agent/docs/agents/architect/2025-11-17_feature-026-architecture-review_ARCH.md`
+- **Research Analysis**: `/Users/david/Documents/GitHub/CISO_Agent/specs/026-users-david-documents/research.md#research-area-8-api-abstraction-layer-design`
 
 ---
 

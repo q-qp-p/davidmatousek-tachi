@@ -183,7 +183,7 @@ Copy "Scope Boundaries" section to `.claude/rules/scope.md`:
 # Scope Boundaries
 
 **WHAT THIS IS:**
-- Automated threat modeling toolkit extending STRIDE with AI-specific threat agents for agentic applications
+- {{PROJECT_DESCRIPTION}}
 - Agentic oriented development with clear governance
 - Works with any agent workflow or framework
 
@@ -328,7 +328,7 @@ git push origin migrate-modular-rules
 
 **Before** (192 lines):
 ```markdown
-# CLAUDE.md - tachi
+# CLAUDE.md - {{PROJECT_NAME}}
 
 ## Core Constraints
 - Product-Led: Start with product vision, PRDs, and user stories
@@ -364,7 +364,7 @@ The SDLC Triad ensures Product-Architecture-Engineering alignment:
 
 **After** (80 lines):
 ```markdown
-# CLAUDE.md - tachi
+# CLAUDE.md - {{PROJECT_NAME}}
 
 ## Core Constraints
 - Product-Led: Start with product vision, PRDs, and user stories
@@ -858,7 +858,7 @@ EOF
 Open `CLAUDE.md` and add a new section with @-reference:
 
 ```markdown
-# CLAUDE.md - tachi
+# CLAUDE.md - {{PROJECT_NAME}}
 
 <!-- ... existing sections ... -->
 
