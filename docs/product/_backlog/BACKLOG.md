@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-19T13:50:32Z.
+> Auto-generated from GitHub Issues on 2026-04-20T14:54:00Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -38,6 +38,12 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
+| — | *No items in this stage* | | |
+
+## Document
+
+| # | Title | Status | Updated |
+|---|-------|--------|---------|
 | — | *No items in this stage* | | |
 
 ## Untracked
