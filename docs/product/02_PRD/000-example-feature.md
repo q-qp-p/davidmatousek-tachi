@@ -124,8 +124,8 @@
 
 **PM Approval**: ✅ Approved on 2026-03-21
 
-**Next Step**: Create spec with `/triad.specify`
+**Next Step**: Create spec with `/aod.spec`
 
 ---
 
-**Template Instructions**: This is an annotated example. Delete this PRD after creating your first real PRD. Use `/triad.prd <topic>` to generate a new PRD with automatic Triad validation.
+**Template Instructions**: This is an annotated example. Delete this PRD after creating your first real PRD. Use `/aod.define <topic>` to generate a new PRD with automatic Triad validation.

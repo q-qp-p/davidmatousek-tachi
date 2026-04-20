@@ -15,24 +15,24 @@ update: ## Apply upstream template updates (AOD-kit → tachi); pass flags via A
 	@./scripts/update.sh $(ARGS)
 
 # Triad Workflow shortcuts
-spec: ## Run /triad.specify
-	@echo "Use /triad.specify in Claude Code"
+spec: ## Run /aod.spec
+	@echo "Use /aod.spec in Claude Code"
 
-plan: ## Run /triad.plan
-	@echo "Use /triad.plan in Claude Code"
+plan: ## Run /aod.plan
+	@echo "Use /aod.plan in Claude Code"
 
-tasks: ## Run /triad.tasks
-	@echo "Use /triad.tasks in Claude Code"
+tasks: ## Run /aod.tasks
+	@echo "Use /aod.tasks in Claude Code"
 
-analyze: ## Run /triad.analyze
-	@echo "Use /triad.analyze in Claude Code"
+analyze: ## Run /aod.analyze
+	@echo "Use /aod.analyze in Claude Code"
 
 # Governance shortcuts
 review-spec: ## Review spec.md with PM
-	@echo "Use product-manager agent or /triad.specify for auto-review"
+	@echo "Use product-manager agent or /aod.spec for auto-review"
 
 review-plan: ## Review plan.md with PM + Architect
-	@echo "Use product-manager + architect agents or /triad.plan for auto-review"
+	@echo "Use product-manager + architect agents or /aod.plan for auto-review"
 
 # Python test suite
 test: ## Run the Python test suite
