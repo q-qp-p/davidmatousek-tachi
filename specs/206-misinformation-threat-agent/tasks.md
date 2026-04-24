@@ -126,7 +126,7 @@ See Phase 2 T009, T010, T011 — ADR-031 Proposed authoring happens at Wave 1.1 
 
 ### Post-Merge (Wave 6 or later)
 
-- [ ] T025 [US3] After PR squash-merge: update ADR-031 Revision History with `| YYYY-MM-DD | Accepted with post-merge SHA fill | squash commit {SHORT_SHA} | confirmed |` (ADR-027/028/029/030 precedent).
+- [X] T025 [US3] After PR squash-merge: update ADR-031 Revision History with `| YYYY-MM-DD | Accepted with post-merge SHA fill | squash commit {SHORT_SHA} | confirmed |` (ADR-027/028/029/030 precedent). **Completed 2026-04-24: SHA-fill row added recording squash commit `b703e52be2fa` (full: `b703e52be2fac041dd9b5ffc23b1f5b610e8a262`) merged at `2026-04-24T13:51:00Z`. Provisional Accepted-date preserved per ADR-030 precedent.**
 
 **Checkpoint**: Heuristic A three-way signal-class discipline locked in public ADR; LLM09 coverage surface documented.
 
@@ -195,7 +195,7 @@ See Phase 2 T009, T010, T011 — ADR-031 Proposed authoring happens at Wave 1.1 
 **Purpose**: Delivery retrospective slotting per HIGH-2; BLP-01 Coverage Matrix update per SC-013; contingent buffer-day work if R2 materializes.
 
 - [X] T057 **Delivery retrospective slotting per HIGH-2**: if PR merge completes Wave 2.3 PM with ≥1 hour residual capacity, author `specs/206-misinformation-threat-agent/delivery.md` Wave 2.3 PM (mirrors F-1 same-day-as-delivery pattern). Otherwise author 2026-04-29 Wednesday (buffer day) as primary buffer-day activity. Retrospective covers: estimated vs actual duration, surprises encountered, patterns validated (now two-execution-deep post-F-2: F-1 + F-2), lessons learned for F-3/F-4/F-5 authoring. **Authored pre-merge 2026-04-24 at `specs/206-misinformation-threat-agent/delivery.md` — merge metadata fill at post-squash (T025 companion).**
-- [ ] T058 **SC-013 BLP-01 Coverage Matrix update**: after PR squash-merge, update `_internal/strategy/BLP-01-threat-coverage.md`: LLM09:2025 row transitions Planned → Covered with F-2 (Feature 206) named as closure feature. Post-merge documentation commit.
+- [X] T058 **SC-013 BLP-01 Coverage Matrix update**: after PR squash-merge, update `_internal/strategy/BLP-01-threat-coverage.md`: LLM09:2025 row transitions Planned → Covered with F-2 (Feature 206) named as closure feature. Post-merge documentation commit. **Completed 2026-04-24 (private, gitignored — `_internal/` does not enter public git history): (1) LLM09:2025 row Planned → Covered, named F-2 Feature 206 2026-04-24; (2) OWASP LLM Top 10 2025 posture line updated from "Partial — gap remaining at LLM09" to "9 of 10 Covered"; (3) F-2 dependency-tree row Proposed → ✅ Delivered with PR #207 link.**
 - [X] T059 Contingent R2 buffer-day work (ONLY if regeneration friction on `agentic-app` materializes): extend buffer-day capacity to absorb regeneration friction OR invoke Q4 fallback to new `examples/advisory-app/` (~0.5 day consumption) per PRD HIGH-1 buffer-day budget model. If R2 does NOT materialize, buffer-day capacity redirects to T057 delivery retrospective authoring. **NOT FIRED: R2 contingency did not materialize. Wave 4 `agentic-app` regen produced byte-identical output on all 5 non-factual baselines (T039 13 pass / 1 documented skip); no Q4 fallback required; buffer-day redirected to T057 authoring per PRD HIGH-1 budget model. Closed 2026-04-24.**
 
 ---
