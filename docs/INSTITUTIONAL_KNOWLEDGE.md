@@ -33,7 +33,32 @@ This file stores institutional knowledge for {{PROJECT_NAME}} development. It's 
 
 ## Patterns
 
-*No entries yet. Use `/kb-create` to add the first pattern.*
+### KB-037 — Two-execution-deep pattern validation across detection-tier features
+
+**Date**: 2026-04-24
+**Origin**: Feature 206 delivery retrospective ([delivery.md](../specs/206-misinformation-threat-agent/delivery.md))
+**Category**: Architecture — detection-agent pattern reuse
+
+**Pattern**: A new detection-tier feature (F-1, F-2, and onward) re-applies 10 architectural patterns authored-once and confirmed stable across two independent deliveries:
+
+1. Lean-agent shape (≤150 lines, 1 MANDATORY Read, zero MAESTRO) — ADR-023
+2. Companion skill catalog with configurable-category-count pattern list — ADR-023 + F-1 convention
+3. Regex-alternation minor-bump rule (ADR-030 Decision 8; F-2 is 2nd application, F-3 will be 3rd)
+4. Proposed → Accepted dual-commit ADR lifecycle (ADR-027/028/029/030/031)
+5. Additive-only shared-reference edits (`finding-format-shared.md` consumers list) — ADR-023 Decision 3
+6. F-A2 referential-integrity contract (new producer appends, validator unchanged) — ADR-028
+7. Two-part emission gate (keyword match AND structural indicator) — F-1 FR-011
+8. 24-file zero-edit invariant (grows +2 per new detection-tier feature) — ADR-023 Decision 2
+9. Heuristic A signal-class partition (input-side / sink-sanitization / factual-integrity) — ADR-030 Decision 1 + ADR-031 Decision 2
+10. Orchestrator 5-callsite quintet reconciliation (architect-owned per MEDIUM-4) — grows +1 callsite-touch per feature
+
+**When to apply**: Any new detection-tier AI-agent feature (F-3 ASI07, F-4 ASI09, F-5 LLM10, etc.) should treat these 10 patterns as STABLE and reuse the F-1/F-2 pattern library wholesale. Incremental cost is ~0.5 day for pattern-catalog authoring + ~2-3 hours for example regen + ~2 hours for governance overhead (ADR + SC sweep).
+
+**Why it matters**: PRD time-envelopes for F-1 and F-2 were both conservative — F-2 delivered 3–4 days ahead of plan with ~30% under active-hour estimate. F-3+ can safely plan a 1.5-day envelope + 0.5-day buffer when honoring pattern reuse.
+
+**Anti-pattern to avoid**: Re-authoring any of the 10 patterns from scratch. The 5-callsite quintet reconciliation in particular must remain architect-owned (MEDIUM-4) to prevent drift.
+
+**Reference**: `.aod/results/wave5-sc-sweep-206.md`, `specs/206-misinformation-threat-agent/delivery.md` (section "Patterns Validated Two-Execution-Deep")
 
 ---
 

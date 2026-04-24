@@ -1,12 +1,12 @@
 # PRD Index
 
-**Last Updated**: 2026-04-23 (Feature 206 PRD approved — F-2 Misinformation Threat Agent / OWASP LLM09:2025)
+**Last Updated**: 2026-04-24 (Feature 206 delivered — F-2 Misinformation Threat Agent / OWASP LLM09:2025)
 **Legend**: ✓=APPROVED, ⚠=APPROVED_WITH_CONCERNS, 🔄=CHANGES_REQUESTED, ⛔=BLOCKED, ⚠⚡=OVERRIDDEN
 
 
 | # | Feature | PM | Architect | Team-Lead | Status | Date |
 |---|---------|----|-----------|-----------| -------|------|
-| 206 | [F-2 Misinformation Threat Agent (LLM09)](206-misinformation-threat-agent-2026-04-23.md) | ✓ | ⚠ | ⚠ | Approved | 2026-04-23 |
+| 206 | [F-2 Misinformation Threat Agent (LLM09)](206-misinformation-threat-agent-2026-04-23.md) ([PR #207](https://github.com/davidmatousek/tachi/pull/207)) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-24 |
 | 201 | [F-1 Output Integrity Threat Agent (LLM05)](201-output-integrity-threat-agent-2026-04-18.md) ([PR #202](https://github.com/davidmatousek/tachi/pull/202)) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-19 |
 | 194 | [F-B Coverage Attestation Report Section](194-coverage-attestation-report-section-2026-04-18.md) ([PR #195](https://github.com/davidmatousek/tachi/pull/195)) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-18 |
 | 189 | [F-A2 Source Attribution Schema Extension](189-source-attribution-schema-extension-2026-04-17.md) ([PR #190](https://github.com/davidmatousek/tachi/pull/190)) | ⚠ | ✓ | ⚠ | Delivered | 2026-04-17 |
