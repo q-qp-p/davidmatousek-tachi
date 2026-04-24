@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-23T22:25:45Z.
+> Auto-generated from GitHub Issues on 2026-04-24T13:54:48Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -51,7 +51,6 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #206 | F-2 — LLM09 Misinformation Detection [Tier 1] | OPEN | 2026-04-23 |
 | #198 | F-B source_attribution invisible at Tier 1 and Tier 2 (cc/rs findings) | CLOSED | 2026-04-18 |
 | #186 | F-A1.3 follow-on: MITRE ATT&CK + ATLAS catalog expansion | OPEN | 2026-04-17 |
 | #185 | F-A1.2 follow-on: cwe.yaml expansion — add CWE records discovered in T029 drift analysis | OPEN | 2026-04-17 |
