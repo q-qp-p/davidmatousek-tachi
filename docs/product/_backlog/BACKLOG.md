@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-04-25T17:17:07Z.
+> Auto-generated from GitHub Issues on 2026-04-25T17:20:26Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -37,7 +37,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| #212 | Improve executive-architecture infographic: OpenClaw-style flow diagram with nodes, arrows, clusters, and denser callouts | 2026-04-25 | — | 2026-04-25 |
+| — | *No items in this stage* | | |
 
 ## Document
 
