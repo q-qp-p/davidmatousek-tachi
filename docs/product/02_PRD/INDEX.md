@@ -1,12 +1,12 @@
 # PRD Index
 
-**Last Updated**: 2026-04-24 (PRD #212 approved — Improve Executive-Architecture Infographic / quality follow-up to #128)
+**Last Updated**: 2026-04-25 (PRD #212 delivered — Improve Executive-Architecture Infographic / quality follow-up to #128)
 **Legend**: ✓=APPROVED, ⚠=APPROVED_WITH_CONCERNS, 🔄=CHANGES_REQUESTED, ⛔=BLOCKED, ⚠⚡=OVERRIDDEN
 
 
 | # | Feature | PM | Architect | Team-Lead | Status | Date |
 |---|---------|----|-----------|-----------| -------|------|
-| 212 | [Improve Executive-Architecture Infographic](212-improve-executive-architecture-infographic-2026-04-24.md) | ⚠ | ⚠ | ⚠ | Approved | 2026-04-24 |
+| 212 | [Improve Executive-Architecture Infographic](212-improve-executive-architecture-infographic-2026-04-24.md) ([PR #213](https://github.com/davidmatousek/tachi/pull/213)) | ⚠ | ⚠ | ⚠ | Delivered | 2026-04-25 |
 | 206 | [F-2 Misinformation Threat Agent (LLM09)](206-misinformation-threat-agent-2026-04-23.md) ([PR #207](https://github.com/davidmatousek/tachi/pull/207)) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-24 |
 | 201 | [F-1 Output Integrity Threat Agent (LLM05)](201-output-integrity-threat-agent-2026-04-18.md) ([PR #202](https://github.com/davidmatousek/tachi/pull/202)) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-19 |
 | 194 | [F-B Coverage Attestation Report Section](194-coverage-attestation-report-section-2026-04-18.md) ([PR #195](https://github.com/davidmatousek/tachi/pull/195)) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-18 |

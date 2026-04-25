@@ -111,6 +111,14 @@ When invoked as a subagent (via Agent tool), return ONLY:
 - Review `agent-assignments.md` for workload distribution
 
 ## Recent Changes
+- **Feature 212** (2026-04-25): Improve Executive-Architecture Infographic — OpenClaw-style flow diagram
+  - Three-level upgrade: (L1) VERBATIM-locked Gemini prompt for `executive-architecture` template (`.claude/skills/tachi-infographics/references/executive-architecture.md`) — rounded-rectangle nodes, directional arrows, leader-lined callouts, dashed sub-group clusters, compact empty-layer badges
+  - (L2) Callout-selection rewrite in `scripts/extract-infographic-data.py::_select_critical_high_callouts` — Largest Remainder Method picks 6–8 system-wide callouts with per-layer floor rule (≥1 per qualifying layer when total-cap ≤ 8) and 4-callout-per-layer ceiling
+  - (L3) Additive payload extension in `_build_executive_architecture_payload` — new `flow_edges[]` (sourced from `parse_scope_data.data_flows[]`, sorted by `(source.lower(), destination.lower())`, capped at 50 with warning log) and `clusters[]` (sourced from `parse_scope_data.trust_boundaries[]`, sorted by `(_TRUST_LEVEL_ORDER[trust_level], name.lower())`)
+  - Field-name lock to producer contract: `flow_edges[*].destination` (NOT `target`); `clusters[*].members` (NOT `components`); `clusters[*].trust_level` via hyphen→underscore rename
+  - F-128 contracts preserved: output filenames, PDF position pages 2–3, skip behavior on zero Critical/High, portrait orientation, Typst bindings (`has-executive-architecture` / `executive-architecture-image-path`); ADR-017 byte-identical-payload + ADR-021 `SOURCE_DATE_EPOCH=1700000000` byte-identity invariants verified end-to-end
+  - New drift-guard `tests/scripts/test_executive_architecture_payload.py` (12-case fixture matrix: field-name lock, sort stability, empty-array-when-absent, byte-identical determinism, prompt co-landing); enhanced `test_extract_infographic_data.py` per-layer floor-rule fixtures
+  - 37/37 tasks complete (100%); zero new runtime dependencies; PR #213 squash-merged to main as `3df035b`
 - **Feature 206** (2026-04-24): `misinformation` threat agent (OWASP LLM09:2025)
   - New AI-tier detection agent `.claude/agents/tachi/misinformation.md` + companion skill `tachi-misinformation/` — 5 factual-integrity pattern categories (Ungrounded Factual Emission / Citation Fabrication / Overreliance-Missing-HITL / Retrieval-Grounding Gap / Confidence-Calibration Absence)
   - BLP-01 Tier 1 F-2 — 2nd Tier-1 feature after F-1 (Feature 201); closes LLM09:2025 on the Coverage Matrix (Planned → Covered)

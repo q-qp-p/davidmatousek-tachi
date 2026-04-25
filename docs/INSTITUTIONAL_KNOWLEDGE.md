@@ -62,6 +62,26 @@ This file stores institutional knowledge for {{PROJECT_NAME}} development. It's 
 
 ---
 
+### KB-038 — Verbatim-locked Gemini prompts for image-generation templates
+
+**Date**: 2026-04-25
+**Origin**: Feature 212 delivery retrospective ([delivery.md](../specs/212-improve-executive-architecture-infographic/delivery.md))
+**Category**: Process improvement — Gemini prompt management
+
+**Problem**: Image-generation prompts that are dynamically composed at runtime drift between iterations. Subjective visual review (the only validation mode for image output) becomes non-reproducible because two consecutive runs can produce different prompts before they ever reach Gemini, making A/B comparison meaningless and making "did the change cause the visual delta or did the prompt drift?" unanswerable.
+
+**Solution**: Lock the entire prompt block VERBATIM in the skill reference (e.g., `.claude/skills/tachi-infographics/references/executive-architecture.md`). Document the verbatim-lock rule explicitly in `gemini-prompt-construction.md` so future maintainers know not to dynamically recompose aesthetic language. Surfaced via FR-212-6 and enforced by tasks T007/T008.
+
+**When to apply**: Any tachi infographic template (or any future Gemini-image generator) whose visual quality depends on consistent aesthetic directives. Prefer a frozen prompt block over a programmatic builder when the prompt drives subjective output that humans review side-by-side.
+
+**Why it matters**: Feature 212's structural review (4/4 SC-212-1 PASS on iteration-1) was credible only because the prompt that produced the image was the exact prompt committed in `executive-architecture.md`. Dynamic composition would have broken the producer-evidence chain that made the absolute structural review trustworthy as a PM-proxy validation.
+
+**Anti-pattern to avoid**: Building prompts via string interpolation or template engines at runtime when the prompt is the unit of A/B comparison. Reserve dynamic composition for fields that are *data*, not *aesthetic instruction*.
+
+**Reference**: `specs/212-improve-executive-architecture-infographic/delivery.md`, `.claude/skills/tachi-infographics/references/executive-architecture.md` (verbatim-locked block), `.claude/skills/tachi-infographics/references/gemini-prompt-construction.md` (lock rule documentation)
+
+---
+
 ## Bug Fixes
 
 *No entries yet. Use `/kb-create` to add the first bug fix.*
