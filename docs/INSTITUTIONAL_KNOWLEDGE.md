@@ -82,6 +82,34 @@ This file stores institutional knowledge for {{PROJECT_NAME}} development. It's 
 
 ---
 
+### KB-039 — Heuristic A enrichment branch as 5/5-dimension cost reducer for detection-tier features
+
+**Date**: 2026-04-26
+**Origin**: Feature 219 delivery retrospective ([delivery.md](../specs/219-asi07-tool-abuse-enrichment/delivery.md))
+**Category**: Architecture — detection-agent reuse pattern (Heuristic A enrichment branch)
+
+**Pattern**: When a new threat-taxonomy entry maps cleanly to an existing detection agent's signal class, prefer the **enrichment branch** over the new-agent branch. Score the candidate against the 5-dimension reduction checklist at SDR/architect-plan time:
+
+| Dimension | New-agent branch (F-1, F-2 baseline) | Enrichment branch (F-3 reduction) |
+|-----------|---------------------------------------|-----------------------------------|
+| New agent file (`.claude/agents/tachi/{name}.md`) | +1 file (~150 lines) | 0 files |
+| New skill directory (`.claude/skills/tachi-{name}/`) | +1 dir (~3 files, ~400 lines) | 0 dirs |
+| Schema bump (`schemas/finding.yaml` regex alternation) | minor version bump | no change |
+| Consumers-list edit (`finding-format-shared.md`) | +1 line | no change |
+| Functional orchestrator/dispatch edit | +1 entry | no change (cosmetic annotation only ~30s) |
+
+5/5 reductions = 1-day envelope candidate. 3/5 = 2-day envelope (F-2 baseline). ≤2/5 = consider splitting into two features.
+
+**When to apply**: Any new detection-tier feature whose target taxonomy could plausibly extend an existing agent's signal class. Architect adjudicates signal-class identity at SDR time; if disjoint, fall back to new-agent branch. Categories 9 and 10 enrichment of `tool-abuse` for ASI07:2026 (inter-agent / MCP-to-MCP communication) is the precedent — same signal class as existing tool-dispatch coverage (message flow between agent-or-tool endpoints).
+
+**Why it matters**: F-3 completed the build envelope in <24 hours of clock time vs. PRD's 1-day target. Every dimension of edit surface the reduction zeroed out is a dimension of build cost, review cost, and regression-risk surface that did not need to be absorbed. The 24-file zero-edit invariant grew from 22 (F-Foundation) to 24 (post-F-1 + F-2) and held identically through F-3 (F-3 modifies only host files, not invariant files).
+
+**Anti-pattern to avoid**: Defaulting to new-agent for every new taxonomy entry. The Heuristic A signal-class taxonomy (ADR-030 Decision 1; ADR-031 Decision 2 in LLM tier; ADR-032 Decision 1 in AG tier) is the canonical decision rule. Also avoid sub-prefix ID schemes (e.g., `AG-9-{N}`) when enriching — preserve single-namespace ID continuity (`AG-{N}` extends sequentially) for cohesive Agentic-category report rendering. Use the Pattern Category Disambiguation subsection to clarify boundary semantics in prose, not in the ID space.
+
+**Reference**: `specs/219-asi07-tool-abuse-enrichment/delivery.md` (§2.1 5/5-Dimension Reduction Table; §4.1 Replicate Heuristic A When Signal Class Identical), `docs/architecture/02_ADRs/ADR-032-asi07-tool-abuse-enrichment.md` (Decisions D1, D7), `docs/architecture/02_ADRs/ADR-030-output-integrity-agent.md` (Decision 1 — Heuristic A signal-class taxonomy origin), `docs/architecture/02_ADRs/ADR-031-misinformation-agent.md` (Decision 8 — regex-alternation minor-bump rule, F-3 documented asymmetry)
+
+---
+
 ## Bug Fixes
 
 *No entries yet. Use `/kb-create` to add the first bug fix.*
