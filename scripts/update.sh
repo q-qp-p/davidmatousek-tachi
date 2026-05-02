@@ -98,6 +98,7 @@ readonly USER_OWNED_GUARD=(
   'roadmap.md'
   'okrs.md'
   'CHANGELOG.md'
+  'LICENSE'
 )
 
 # -----------------------------------------------------------------------------
