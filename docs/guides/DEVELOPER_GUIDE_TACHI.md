@@ -272,12 +272,15 @@ STRIDE gives you a checklist. For every component in your architecture, you ask:
 
 If your system includes a Large Language Model (LLM), an AI agent, or tool-calling capabilities, traditional STRIDE misses critical threat categories. LLMs can be manipulated through their inputs in ways that no traditional component can. Agents that take autonomous actions introduce risks that have no equivalent in request-response architectures.
 
-Tachi extends STRIDE with 5 AI-specific threat agents that cover these gaps:
+Tachi extends STRIDE with 8 AI-specific threat agents that cover these gaps:
 - **Prompt Injection** -- adversarial inputs that hijack LLM behavior
 - **Data Poisoning** -- corruption of training data or knowledge bases
-- **Model Theft** -- extraction of proprietary model weights or behavior
+- **Model Theft** -- extraction of proprietary model weights or unbounded consumption / denial-of-wallet
+- **Output Integrity** -- improper handling of LLM output flowing into execution sinks (browser, SQL, shell, template engines, outbound HTTP)
+- **Misinformation** -- factually incorrect or fabricated LLM output reaching human decision-makers
 - **Agent Autonomy** -- risks from AI systems taking unsupervised actions
-- **Tool Abuse** -- misuse of tools and capabilities an agent has access to
+- **Tool Abuse** -- misuse of tools, capabilities, or insecure inter-agent communication
+- **Human-Agent Trust Exploitation** -- communication-axis trust manipulation toward human users (undisclosed AI authorship, authority-claim emission, persona-boundary violation)
 
 Whether your application is a traditional web app, a microservice architecture, or an autonomous AI agent, Tachi runs the right combination of threat agents for your specific architecture.
 
@@ -285,7 +288,7 @@ Whether your application is a traditional web app, a microservice architecture, 
 
 ## Section 2 -- Understanding Tachi's Threat Categories
 
-Tachi uses 11 threat categories organized into three groups: 6 STRIDE categories for traditional infrastructure, 3 LLM categories for language model integration, and 2 Agentic categories for autonomous systems.
+Tachi uses 14 threat categories organized into three groups: 6 STRIDE categories for traditional infrastructure, 5 LLM categories for language model integration, and 3 Agentic categories for autonomous systems.
 
 ### STRIDE Categories (6)
 
@@ -361,9 +364,9 @@ Tachi uses 11 threat categories organized into three groups: 6 STRIDE categories
 |----|-----------|--------|------------|--------|------------|------------|
 | E-1 | LLM Agent Orchestrator | User escalates to admin capabilities by manipulating the orchestrator into executing privileged tool calls | MEDIUM | HIGH | High | Role-based access controls on tool invocation; validate authorization before each dispatch |
 
-### AI Categories: Agentic (AG -- 2)
+### AI Categories: Agentic (AG -- 3)
 
-These agents analyze risks specific to autonomous AI systems -- agents that take actions, invoke tools, and operate with varying degrees of independence.
+These agents analyze risks specific to autonomous AI systems -- agents that take actions, invoke tools, operate with varying degrees of independence, and emit content directly to human users.
 
 #### Agent Autonomy (AG)
 
@@ -371,19 +374,27 @@ These agents analyze risks specific to autonomous AI systems -- agents that take
 
 **Real-world example**: An AI agent has access to a tool that sends emails. A user asks the agent to "follow up on all pending invoices." The agent sends 500 emails to customers in 30 seconds, some with incorrect amounts, because nothing required human approval before sending.
 
-**OWASP Reference**: ASI-01 (Agentic Security Initiative)
+**OWASP Reference**: ASI-01 (Agentic Security Initiative), ASI09:2026 (autonomy axis)
 
 #### Tool Abuse (AG)
 
-**What it means**: An agent misuses the tools it has access to, or an attacker manipulates the agent into invoking tools in unintended ways. This includes privilege escalation through tool access, parameter injection, and supply chain attacks through community plugins.
+**What it means**: An agent misuses the tools it has access to, or an attacker manipulates the agent into invoking tools in unintended ways. This includes privilege escalation through tool access, parameter injection, supply chain attacks through community plugins, and insecure inter-agent communication (multi-agent topologies without mutual authentication, message signing, or trust-chain validation).
 
-**Real-world example**: A community-contributed plugin for a coding agent is designed to look helpful but secretly exfiltrates source code to an external server when invoked.
+**Real-world example**: A community-contributed plugin for a coding agent is designed to look helpful but secretly exfiltrates source code to an external server when invoked. Or two agents communicating over a shared message bus without mutual authentication, allowing a compromised agent to forge messages from another agent's identity.
 
-**OWASP Reference**: MCP-03 (MCP Top 10)
+**OWASP Reference**: MCP-03 (MCP Top 10), ASI07:2026 (Insecure Inter-Agent Communication)
 
-### AI Categories: LLM (3)
+#### Human-Agent Trust Exploitation (TE)
 
-These agents analyze risks specific to Large Language Model integration -- prompt handling, training data integrity, and model protection.
+**What it means**: An AI agent emitting content directly to human users exploits or manipulates the trust those users extend to it -- through undisclosed AI authorship, false authority claims, persuasive-tone manipulation, persona-boundary violation, or synthetic-relationship cultivation. This is distinct from prompt injection (machine-victim input manipulation) and misinformation (factual integrity); the threat axis here is the human-user communication channel itself.
+
+**Real-world example**: A wellness companion chatbot subtly claims medical authority ("As your wellness advisor, I'd recommend...") while concealing that it is an LLM, building parasocial rapport across multi-turn dialogue that nudges users toward decisions they would not make if the AI authorship were disclosed.
+
+**OWASP Reference**: ASI09:2026 (Identity Spoofing & Impersonation, communication axis)
+
+### AI Categories: LLM (5)
+
+These agents analyze risks specific to Large Language Model integration -- prompt handling, training data integrity, model protection, output handling, and factual integrity.
 
 #### Prompt Injection (LLM)
 
@@ -403,15 +414,31 @@ These agents analyze risks specific to Large Language Model integration -- promp
 
 #### Model Theft (LLM)
 
-**What it means**: An attacker extracts proprietary model weights, fine-tuning data, or system behavior through the model's API. Even without direct access to model files, repeated querying can allow an attacker to reconstruct the model's behavior (distillation) or reverse-engineer its training data.
+**What it means**: An attacker extracts proprietary model weights, fine-tuning data, or system behavior through the model's API. Even without direct access to model files, repeated querying can allow an attacker to reconstruct the model's behavior (distillation) or reverse-engineer its training data. The same agent also covers unbounded consumption / denial-of-wallet -- cost-amplification attacks where prompt token-budget abuse drives infrastructure spend without traditional availability impact.
 
-**Real-world example**: A competitor makes thousands of API calls to your fine-tuned model with carefully crafted prompts, using the outputs to train their own model that replicates your model's specialized capabilities.
+**Real-world example**: A competitor makes thousands of API calls to your fine-tuned model with carefully crafted prompts, using the outputs to train their own model that replicates your model's specialized capabilities. Or an attacker on a multi-tenant freemium tier crafts maximum-context-window prompts to drive thousands of dollars in inference costs against the victim's account.
 
 **OWASP Reference**: OWASP LLM10:2025
 
+#### Output Integrity (LLM)
+
+**What it means**: LLM-generated output flows into a downstream execution sink -- a browser, SQL client, shell, template engine, outbound HTTP client, or filesystem writer -- without proper sanitization, encoding, or validation. The threat surface is the *output handling*, not the prompt input. This is OWASP LLM05:2025 (Improper Output Handling).
+
+**Real-world example**: A code-generation assistant returns SQL strings that get passed directly to a database client without parameterization. A user asks for "users where name = O'Brien"; the LLM returns `SELECT * FROM users WHERE name = 'O'Brien'`; the unescaped quote breaks the query, and a crafted input could inject arbitrary SQL. Or a chat UI renders the LLM's markdown reply as HTML, allowing image-tag XSS via embedded URLs.
+
+**OWASP Reference**: OWASP LLM05:2025
+
+#### Misinformation (LLM)
+
+**What it means**: An LLM emits factually incorrect, fabricated, or hallucinated output that reaches a human decision-maker or downstream automation that acts on the false content. The threat is factual integrity of the LLM's emission, not prompt manipulation. Particularly acute in advisory systems (clinical summarization, legal research, financial recommendation, regulatory compliance) where users defer to LLM authority.
+
+**Real-world example**: A clinical advisory LLM hallucinates a drug dosage when summarizing patient records, citing a non-existent study. The clinician, trusting the AI summary, transcribes the wrong dosage into the medical record.
+
+**OWASP Reference**: OWASP LLM09:2025
+
 ### How Tachi Decides Which Agents to Run
 
-Tachi does not run all 11 agents on every component. It uses two dispatch mechanisms:
+Tachi does not run all 14 agents on every component. It uses two dispatch mechanisms:
 
 **STRIDE-per-Element dispatch** determines which of the 6 STRIDE categories apply based on the component's role in the architecture:
 
@@ -422,12 +449,12 @@ Tachi does not run all 11 agents on every component. It uses two dispatch mechan
 | Data Store (databases, caches, knowledge bases) | T, I, D |
 | Data Flow (API calls, messages, data transfers) | T, I, D |
 
-**AI keyword dispatch** determines whether the 5 AI agents should run. Tachi scans each component's name and description for keywords:
+**AI keyword dispatch** determines whether the 8 AI agents should run. Tachi scans each component's name and description for keywords:
 
 - **LLM keywords**: "LLM", "model", "GPT", "Claude", "language model", "prompt", "inference", "RAG", "knowledge base", "vector store", "embedding", "fine-tuning"
 - **Agentic keywords**: "agent", "autonomous", "orchestrator", "MCP server", "tool server", "plugin", "function calling", "task runner"
 
-A component matching LLM keywords triggers the 3 LLM agents. A component matching Agentic keywords triggers the 2 AG agents. A component matching both triggers all 5.
+A component matching LLM keywords triggers the 5 LLM agents. A component matching Agentic keywords triggers the 3 AG agents. A component matching both triggers all 8. The Output Integrity, Misinformation, and Human-Agent Trust Exploitation agents apply additional emission gates (e.g., LLM output flowing to an execution sink, advisory-content emission to humans, consumer-facing AI authorship) so they do not always fire on every LLM/AG-keyword component.
 
 ### Cross-Agent Correlation
 
@@ -580,7 +607,7 @@ Rel(api, db, "Reads/writes", "SQL")
 
 This section walks through a complete threat analysis of OpenClaw, a real open-source AI agent platform (https://github.com/openclaw/openclaw, MIT license, 200K+ GitHub stars). OpenClaw is an autonomous AI agent that connects through messaging platforms (WhatsApp, Telegram, Slack, Discord) and can control device capabilities, run community plugins, and execute tools autonomously.
 
-OpenClaw is a perfect example because its architecture triggers **all 11 of Tachi's threat agents** -- STRIDE for its traditional infrastructure, LLM agents for its model integration, and Agentic agents for its autonomous orchestrator and tool dispatch.
+OpenClaw is a perfect example because its architecture triggers **all 14 of Tachi's threat agents** -- STRIDE for its traditional infrastructure, the full LLM bank (prompt-injection, data-poisoning, model-theft, output-integrity, misinformation) for its model integration and tool-streaming output paths, and the full Agentic bank (agent-autonomy, tool-abuse, human-trust-exploitation) for its autonomous orchestrator, plugin dispatch, and consumer-facing chat surface.
 
 ### Step 1: The Architecture Input
 
@@ -694,7 +721,7 @@ When the orchestrator parses this architecture, it classifies each component by 
 - LLM keywords: "LLM API Providers", "Model Resolver", "System Prompt Builder", "Agent Runner" (tool streaming implies LLM integration)
 - Agentic keywords: "Agent Orchestrator", "Agent Runner", "Skill Runner", "Tool dispatch"
 
-Result: both LLM and Agentic agent groups activate. All 11 threat agents will run.
+Result: both LLM and Agentic agent groups activate. All 14 threat agents will run.
 
 ### Step 3: Which Agents Activate and Why
 
@@ -708,9 +735,12 @@ Result: both LLM and Agentic agent groups activate. All 11 threat agents will ru
 | Elevation of Privilege | Yes | All Processes are eligible |
 | Prompt Injection (LLM) | Yes | LLM keywords detected in Agent Core components |
 | Data Poisoning (LLM) | Yes | LLM keywords detected; Knowledge/Memory stores present |
-| Model Theft (LLM) | Yes | LLM keywords detected; API provider integration present |
+| Model Theft (LLM) | Yes | LLM keywords detected; API provider integration present; multi-tenant inference cost surface |
+| Output Integrity (LLM) | Yes | LLM-generated content flows into downstream execution sinks via Browser Automation, Skill Runner, and Canvas/A2UI tool dispatch |
+| Misinformation (LLM) | Yes | LLM emits content directly to human users via WebChat / messaging platforms with no factual-integrity gate |
 | Agent Autonomy (AG) | Yes | Agentic keywords detected; Orchestrator and Runner present |
-| Tool Abuse (AG) | Yes | Agentic keywords detected; Skill Runner + ClawhHub present |
+| Tool Abuse (AG) | Yes | Agentic keywords detected; Skill Runner + ClawhHub present; multi-node inter-agent communication surface |
+| Human-Agent Trust Exploitation (TE) | Yes | Consumer-facing AI authorship across messaging platforms (WhatsApp, Telegram, Slack, Discord) with persistent persona and multi-turn dialogue |
 
 ### Step 4: Key Findings Walkthrough
 
@@ -1762,44 +1792,58 @@ By default, Tachi looks for `docs/security/architecture.md`. If your file is els
 
 ## Appendix A -- OWASP Framework Reference
 
-Tachi maps findings to 4 OWASP frameworks. These frameworks are industry-standard catalogs of security risks that are regularly updated by the security community.
+Tachi maps findings to five OWASP framework families and ships at full coverage on all five (50/50 items). These frameworks are industry-standard catalogs of security risks that are regularly updated by the security community. Tachi additionally cross-references MITRE ATT&CK, MITRE ATLAS, NIST AI RMF, and CWE via the optional `source_attribution` field on every finding (schema 1.5+).
 
-### OWASP Top 10 Web Application Security Risks 2025
+### OWASP Top 10:2021 + API Security Top 10:2023 (Web/API)
 
-The most widely known OWASP list. Covers the 10 most critical security risks to web applications: Broken Access Control, Cryptographic Failures, Injection, Insecure Design, Security Misconfiguration, Vulnerable and Outdated Components, Identification and Authentication Failures, Software and Data Integrity Failures, Security Logging and Monitoring Failures, and Server-Side Request Forgery.
+The most widely known OWASP lists, treated jointly by tachi as the Web/API surface. The 2021 Top 10 covers Broken Access Control, Cryptographic Failures, Injection, Insecure Design, Security Misconfiguration, Vulnerable and Outdated Components, Identification and Authentication Failures, Software and Data Integrity Failures, Security Logging and Monitoring Failures, and Server-Side Request Forgery. The API 2023 Top 10 covers Broken Object Level Authorization, Broken Authentication, Broken Object Property Level Authorization, Unrestricted Resource Consumption, Broken Function Level Authorization, Unrestricted Access to Sensitive Business Flows, Server-Side Request Forgery, Security Misconfiguration, Improper Inventory Management, and Unsafe Consumption of APIs.
 
-Tachi's STRIDE findings frequently map to these categories. For example, Elevation of Privilege findings relate to Broken Access Control, and Spoofing findings relate to Identification and Authentication Failures.
+Tachi's STRIDE findings frequently map to these categories. For example, Elevation of Privilege findings relate to Broken Access Control / API1 / API3 / API5, Spoofing findings relate to Identification and Authentication Failures / API2, and Denial of Service findings relate to A05:2021 / API4. The 11-host `source_attribution` populator wiring (Feature 241) emits per-finding citations across all 11 detection-tier hosts.
 
-### OWASP Top 10 for LLM Applications v2025
+### OWASP Top 10 for LLM Applications 2025
 
 Covers risks specific to applications that integrate Large Language Models: Prompt Injection (LLM01), Sensitive Information Disclosure (LLM02), Supply Chain Vulnerabilities (LLM03), Data and Model Poisoning (LLM04), Insecure Output Handling (LLM05), Excessive Agency (LLM06), System Prompt Leakage (LLM07), Vector and Embedding Weaknesses (LLM08), Misinformation (LLM09), and Unbounded Consumption (LLM10).
 
-Tachi's LLM findings reference these directly: Prompt Injection (LLM-*) -> LLM01:2025, Data Poisoning (LLM-*) -> LLM03:2025, Model Theft (LLM-*) -> LLM10:2025.
+Tachi's LLM findings reference these directly: Prompt Injection (LLM-*) → LLM01:2025; Data Poisoning (LLM-*) → LLM03:2025/LLM04:2025; Model Theft (LLM-*) → LLM10:2025; Output Integrity (OI-*) → LLM05:2025; Misinformation (MI-*) → LLM09:2025. Coverage: **10/10**.
 
 ### OWASP Agentic AI Security Initiative Top 10 2026
 
-Covers risks specific to autonomous AI agents: Excessive Autonomy (ASI-01), Unreliable Tool Execution, Goal Misalignment, Inadequate Sandboxing, Cascading Agent Failures, Memory Manipulation, Identity Confusion, Uncontrolled Resource Consumption, Insufficient Observability, and Trust Boundary Violations.
+Covers risks specific to autonomous AI agents (ASI01-ASI10): Excessive Agency, Unreliable Tool Execution, Goal Misalignment, Inadequate Sandboxing, Cascading Agent Failures, Memory Manipulation, Insecure Inter-Agent Communication, Identity Spoofing & Impersonation, Uncontrolled Resource Consumption, and Insufficient Observability.
 
-Tachi's Agent Autonomy findings (AG-*) reference ASI-01.
+Tachi's Agentic findings reference these: Agent Autonomy (AG-*) → ASI01 + ASI09 autonomy axis; Tool Abuse (AG-*) → MCP-03 + ASI07 (Insecure Inter-Agent Communication); Human-Agent Trust Exploitation (TE-*) → ASI09 communication axis. Coverage: **10/10**.
 
 ### OWASP MCP Top 10 2025
 
-Covers risks specific to the Model Context Protocol (MCP) tool-calling standard: Excessive Permissions (MCP-01), Insufficient Input Validation (MCP-02), Tool Poisoning (MCP-03), Insecure Credential Storage (MCP-04), Insufficient Logging (MCP-05), Resource Exhaustion (MCP-06), Insecure Communication (MCP-07), Insufficient Authorization (MCP-08), Inadequate Error Handling (MCP-09), and Server Spoofing (MCP-10).
+Covers risks specific to the Model Context Protocol (MCP) tool-calling standard: Excessive Permissions (MCP-01), Insufficient Input Validation (MCP-02), Tool Poisoning (MCP-03), Insecure Credential Storage (MCP-04), Insufficient Logging (MCP-05), Resource Exhaustion (MCP-06), Insecure Communication (MCP-07), Insufficient Authorization (MCP-08), Inadequate Error Handling (MCP-09), and Server Spoofing (MCP-10). Tachi's Tool Abuse findings (AG-*) reference MCP-03.
 
-Tachi's Tool Abuse findings (AG-*) reference MCP-03.
+### OWASP Machine Learning Security Top 10 2023
+
+Covers risks specific to predictive ML systems (ML01-ML10): Adversarial Input Manipulation, Data Poisoning Attack, Model Inversion Attack, Membership Inference Attack, Model Theft, AI Supply Chain Attacks, Transfer Learning Attack, Model Skewing, Output Integrity Attack, and Model Poisoning.
+
+Tachi closes ML coverage by enriching three existing agents: tampering (ML01 adversarial input), data-poisoning (ML02/ML06 corpus-side/ML07/ML08), and model-theft (ML03/ML04/ML06 artifact-side); ML05/ML09/ML10 are covered by foundational agents. Coverage: **10/10**.
+
+### OWASP Mobile Top 10 2024
+
+Covers risks specific to mobile applications (M1-M10): Improper Credential Usage, Inadequate Supply Chain Security, Insecure Authentication/Authorization, Insufficient Input/Output Validation, Insecure Communication, Inadequate Privacy Controls, Insufficient Binary Protections, Security Misconfiguration, Insecure Data Storage, and Insufficient Cryptography.
+
+Tachi closes Mobile coverage by enriching five existing agents: spoofing (M1+M3), tampering (M2+M4+M7), info-disclosure (M5+M6+M9+M10), privilege-escalation (M8 priv-gain variant), and repudiation (M8 accountability-loss variant — dual-host carve-up per ADR-036). Coverage: **10/10**.
 
 ### How Finding IDs Map to OWASP References
 
 | Finding Prefix | Threat Category | Common OWASP References |
 |---------------|-----------------|------------------------|
-| S-* | Spoofing | OWASP Top 10 A07:2021 |
-| T-* | Tampering | OWASP Top 10 A03:2021 |
-| R-* | Repudiation | OWASP Top 10 A09:2021 |
-| I-* | Information Disclosure | OWASP Top 10 A01:2021, A02:2021 |
-| D-* | Denial of Service | OWASP Top 10 A05:2021 |
-| E-* | Elevation of Privilege | OWASP Top 10 A01:2021 |
-| AG-* | Agentic | ASI-01, MCP-03 |
-| LLM-* | LLM | LLM01:2025, LLM03:2025, LLM10:2025 |
+| S-* | Spoofing | A07:2021, API2:2023, M1+M3:2024 |
+| T-* | Tampering | A03:2021, A08:2021, M2+M4+M7:2024, ML01:2023 |
+| R-* | Repudiation | A09:2021, M8 (accountability-loss variant) |
+| I-* | Information Disclosure | A01:2021, A02:2021, M5+M6+M9+M10:2024 |
+| D-* | Denial of Service | A05:2021, API4:2023, LLM10:2025 (inference-flooding) |
+| E-* | Elevation of Privilege | A01:2021, API1+API3+API5:2023, M8 (priv-gain variant) |
+| AG-* | Agentic (Autonomy + Tool Abuse) | ASI01, ASI07, MCP-03, ASI09 (autonomy axis) |
+| LLM-* | LLM (Prompt-Injection + Data-Poisoning + Model-Theft) | LLM01:2025, LLM03:2025, LLM04:2025, LLM10:2025, ML02+ML03+ML04+ML06:2023 |
+| OI-* | Output Integrity (Improper Output Handling) | LLM05:2025 |
+| MI-* | Misinformation | LLM09:2025 |
+| TE-* | Human-Agent Trust Exploitation | ASI09:2026 (communication axis) |
+| AGP-* | Agentic Pattern Synthesis (multi-agent topologies) | Cross-cutting MAESTRO patterns (collusion, emergent, temporal, trust-exploitation, communication, resource-competition) |
 
 ---
 
@@ -1823,8 +1867,8 @@ Tachi's Tool Abuse findings (AG-*) reference MCP-03.
 
 | Field | Type | Description | Required |
 |-------|------|-------------|----------|
-| `id` | string | Unique identifier (pattern: `S-1`, `T-2`, `AG-1`, `LLM-3`) | Yes |
-| `category` | enum | `spoofing`, `tampering`, `repudiation`, `info-disclosure`, `denial-of-service`, `privilege-escalation`, `agentic`, `llm` | Yes |
+| `id` | string | Unique identifier (pattern: `S-1`, `T-2`, `AG-1`, `LLM-3`, `OI-1`, `MI-1`, `TE-1`, `AGP-1`) | Yes |
+| `category` | enum | `spoofing`, `tampering`, `repudiation`, `info-disclosure`, `denial-of-service`, `privilege-escalation`, `agentic`, `llm` (OI/MI emit under `llm`; TE/AGP emit under `agentic`) | Yes |
 | `component` | string | Target component name from the architecture input | Yes |
 | `threat` | string | Description of the identified threat | Yes |
 | `likelihood` | enum | `LOW`, `MEDIUM`, `HIGH` | Yes |
@@ -1955,7 +1999,7 @@ The report-assembler agent parses artifacts, generates `report-data.typ` (extrac
 | **CWE** | Common Weakness Enumeration -- a catalog of software and hardware weakness types that can lead to vulnerabilities |
 | **DFD** | Data Flow Diagram -- a visual representation of how data moves through a system, using four element types: External Entity, Process, Data Store, Data Flow |
 | **Exploitability** | A risk scoring dimension (0-10) measuring how easy a vulnerability is to exploit, considering public tool availability and attacker skill requirements |
-| **Finding IR** | Finding Intermediate Representation -- Tachi's internal schema for threat findings, ensuring consistent structure across all 11 threat agents |
+| **Finding IR** | Finding Intermediate Representation -- Tachi's internal schema for threat findings, ensuring consistent structure across all 14 threat agents |
 | **MCP** | Model Context Protocol -- a standard for tool-calling between LLMs and external services |
 | **OWASP** | Open Worldwide Application Security Project -- a nonprofit foundation producing security standards, guides, and tools |
 | **RAG** | Retrieval-Augmented Generation -- an architecture pattern where an LLM retrieves relevant documents from a knowledge base before generating a response |

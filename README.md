@@ -14,7 +14,8 @@
 
 tachi is a threat modeling sidecar that you add to any project. It dispatches 12 specialized threat agents against your architecture description and produces a complete threat model in one command. Five post-pipeline commands enrich your results: `/tachi.risk-score` for quantitative scoring, `/tachi.compensating-controls` for codebase control analysis, `/tachi.infographic` for visual risk diagrams, `/tachi.security-report` for a professional PDF assessment booklet, and `/tachi.architecture` for automated architecture description generation.
 
-- **11 threat categories**: 6 STRIDE + 3 LLM-specific + 2 Agentic
+- **14 threat categories**: 6 STRIDE + 5 LLM-specific + 3 Agentic
+- **OWASP coverage**: 50/50 across five frameworks (LLM Top 10:2025, Agentic Top 10:2026, ML Top 10:2023, Mobile Top 10:2024, Web/API Top 10:2021/2023)
 - **MAESTRO layer mapping**: CSA seven-layer taxonomy (L1-L7) for agentic AI threat classification
 - **5 input formats**: Mermaid, free-text, ASCII, PlantUML, C4
 - **6 commands, 20+ artifacts**: structured findings, SARIF, narrative report, attack trees, risk scores, compensating controls, 5 infographic templates, PDF security report
@@ -274,7 +275,7 @@ Cover, Disclaimer, Table of Contents, Risk Methodology, Assessment Scope, Execut
 
 ## How It Works
 
-tachi uses a multi-agent orchestration pattern. The orchestrator parses your architecture, identifies components and data flows, then dispatches the right combination of 12 threat agents per component:
+tachi uses a multi-agent orchestration pattern. The orchestrator parses your architecture, identifies components and data flows, then dispatches the right combination of 14 threat agents per component:
 
 | Component Type | STRIDE Agents | AI Agents |
 |---------------|---------------|-----------|
@@ -339,15 +340,34 @@ When you run `/tachi.threat-model` on a system that already has a previous run, 
 | **D**enial of Service | Availability attacks | Request flooding exhausting connection pools |
 | **E**levation of Privilege | Unauthorized access | Regular user accessing admin endpoints |
 
-### AI-Specific (5 categories)
+### AI-Specific (8 categories)
 
 | Category | Threat | Example |
 |----------|--------|---------|
 | **Prompt Injection** (LLM) | Adversarial inputs hijacking LLM behavior | Hidden instructions in a document causing the LLM to leak its system prompt |
 | **Data Poisoning** (LLM) | Corrupted training/RAG data | Attacker modifying knowledge base documents to spread misinformation |
-| **Model Theft** (LLM) | Model extraction | Competitor reverse-engineering your fine-tuned model via API queries |
+| **Model Theft** (LLM) | Model extraction or unbounded consumption | Competitor reverse-engineering your fine-tuned model via API queries; cost-amplification denial-of-wallet |
+| **Output Integrity** (LLM) | Improper handling of LLM output flowing into execution sinks | LLM-generated SQL passed to a database client without parameterization; markdown XSS in a rendered chat reply |
+| **Misinformation** (LLM) | Factually incorrect or fabricated LLM output reaching humans/decisions | Clinical advisory LLM hallucinating drug dosages without RAG grounding |
 | **Agent Autonomy** (AG) | Insufficient oversight | AI agent sending 500 emails without human approval |
-| **Tool Abuse** (AG) | Tool misuse or manipulation | Malicious plugin exfiltrating source code when invoked |
+| **Tool Abuse** (AG) | Tool misuse or manipulation | Malicious MCP plugin exfiltrating source code when invoked; insecure inter-agent communication |
+| **Human-Agent Trust Exploitation** (AG) | Communication-axis trust manipulation toward human users | Wellness chatbot subtly claiming medical authority while concealing AI authorship |
+
+---
+
+## OWASP Coverage
+
+tachi ships at full coverage across five OWASP frameworks (50/50 items covered). Every finding can carry an optional [`source_attribution`](docs/architecture/02_ADRs/ADR-028-source-attribution-schema-extension.md) field citing OWASP / MITRE ATT&CK / MITRE ATLAS / NIST AI RMF / CWE items, and the `tachi.security-report` PDF emits a per-architecture **Coverage Attestation** page aggregating coverage across cited frameworks.
+
+| Framework | Items Covered | Detection Surface |
+|-----------|---------------|-------------------|
+| OWASP Top 10 for LLM Applications 2025 | 10/10 | LLM agents (`prompt-injection`, `data-poisoning`, `model-theft`, `output-integrity`, `misinformation`) |
+| OWASP Agentic Top 10 2026 | 10/10 | Agentic agents (`agent-autonomy`, `tool-abuse`, `human-trust-exploitation`) |
+| OWASP ML Top 10 2023 | 10/10 | `tampering` + `data-poisoning` + `model-theft` enrichment for predictive ML |
+| OWASP Mobile Top 10 2024 | 10/10 | `spoofing` + `tampering` + `info-disclosure` + `privilege-escalation` + `repudiation` enrichment for mobile |
+| OWASP Top 10:2021 + API Security Top 10:2023 | 10/10 | STRIDE detection agents with cross-framework `source_attribution` populator wiring |
+
+See [`schemas/taxonomy/`](schemas/taxonomy/README.md) for the cross-framework crosswalk catalog (38 ATT&CK + 7 ATLAS + 41 CWE references currently cited, plus NIST AI RMF mappings).
 
 ---
 
