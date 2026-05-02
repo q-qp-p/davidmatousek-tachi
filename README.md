@@ -12,7 +12,7 @@
 
 ## What is tachi?
 
-tachi is a threat modeling sidecar that you add to any project. It dispatches 12 specialized threat agents against your architecture description and produces a complete threat model in one command. Five post-pipeline commands enrich your results: `/tachi.risk-score` for quantitative scoring, `/tachi.compensating-controls` for codebase control analysis, `/tachi.infographic` for visual risk diagrams, `/tachi.security-report` for a professional PDF assessment booklet, and `/tachi.architecture` for automated architecture description generation.
+tachi is a threat modeling sidecar that you add to any project. It dispatches 14 specialized threat agents against your architecture description and produces a complete threat model in one command. Five post-pipeline commands enrich your results: `/tachi.risk-score` for quantitative scoring, `/tachi.compensating-controls` for codebase control analysis, `/tachi.infographic` for visual risk diagrams, `/tachi.security-report` for a professional PDF assessment booklet, and `/tachi.architecture` for automated architecture description generation.
 
 - **14 threat categories**: 6 STRIDE + 5 LLM-specific + 3 Agentic
 - **OWASP coverage**: 50/50 across five frameworks (LLM Top 10:2025, Agentic Top 10:2026, ML Top 10:2023, Mobile Top 10:2024, Web/API Top 10:2021/2023)
@@ -149,7 +149,7 @@ tachi auto-detects the format. Mermaid, free-text, ASCII, PlantUML, and C4 are a
 /tachi.threat-model
 ```
 
-That's it. One command. tachi validates the setup, reads your architecture, dispatches 12 threat agents, and writes everything to a timestamped folder under `docs/security/`.
+That's it. One command. tachi validates the setup, reads your architecture, dispatches 14 threat agents, and writes everything to a timestamped folder under `docs/security/`.
 
 ### 6. Review your results
 
@@ -403,7 +403,7 @@ The agentic-app example includes a [complete sample report](examples/agentic-app
 | Schemas | [`schemas/`](schemas/) | Machine-readable contracts ([finding.yaml](schemas/finding.yaml), [input.yaml](schemas/input.yaml), [output.yaml](schemas/output.yaml), [risk-scoring.yaml](schemas/risk-scoring.yaml)) |
 | Taxonomy Crosswalk | [`schemas/taxonomy/`](schemas/taxonomy/README.md) | Machine-readable catalog of OWASP/MITRE/NIST/CWE IDs + cross-framework crosswalk (Feature 180 F-A1) |
 | Source Attribution | [`docs/architecture/02_ADRs/ADR-028-source-attribution-schema-extension.md`](docs/architecture/02_ADRs/ADR-028-source-attribution-schema-extension.md) | Optional `source_attribution` finding field (schema 1.5) citing F-A1 framework IDs — contract only (Feature 189 F-A2) |
-| Threat Agents | [`.claude/agents/tachi/`](.claude/agents/tachi/) | 12 threat agents (7 STRIDE + 3 LLM + 2 Agentic) + utility agents |
+| Threat Agents | [`.claude/agents/tachi/`](.claude/agents/tachi/) | 14 detection agents (6 STRIDE + 5 LLM + 3 Agentic) + 7 utility agents (orchestrator, attack-tree-delta, threat-report, threat-infographic, risk-scorer, control-analyzer, report-assembler) |
 | Commands | [`.claude/commands/`](.claude/commands/) | 6 slash commands: tachi.threat-model, tachi.risk-score, tachi.compensating-controls, tachi.infographic, tachi.security-report, tachi.architecture |
 | Developer Guide | [`docs/guides/DEVELOPER_GUIDE_TACHI.md`](docs/guides/DEVELOPER_GUIDE_TACHI.md) | Full walkthrough with worked examples |
 
@@ -419,7 +419,7 @@ Successive threat model runs on the same architecture may produce slightly diffe
 
 **What varies**: Borderline findings in the long tail -- a Medium-severity finding like "missing correlation ID on external API calls" may appear in one run but not the next, depending on how the agent reasons through the architecture.
 
-**Why this happens**: Each of the 12 threat agents makes independent LLM calls. LLM output is non-deterministic by nature, so agents may surface slightly different findings on each invocation.
+**Why this happens**: Each of the 14 threat agents makes independent LLM calls. LLM output is non-deterministic by nature, so agents may surface slightly different findings on each invocation.
 
 **If you need higher consistency**:
 - Run twice and diff the results to catch edge cases
