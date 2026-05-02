@@ -3,9 +3,9 @@
 **Project**: {{PROJECT_NAME}} - {{PROJECT_DESCRIPTION}}
 **Purpose**: Capture learnings, patterns, and solutions to prevent repeated mistakes
 **Created**: {{PROJECT_START_DATE}}
-**Last Updated**: {{CURRENT_DATE}}
+**Last Updated**: 2026-05-01
 
-**Entry Count**: 0 / 20 (KB System Upgrade triggers at 20 — schedule review)
+**Entry Count**: 5 / 20 (KB System Upgrade triggers at 20 — schedule review)
 **Last Review**: {{CURRENT_DATE}}
 **Status**: ✅ Manual mode (file-based)
 
@@ -125,6 +125,42 @@ This file stores institutional knowledge for {{PROJECT_NAME}} development. It's 
 **Anti-pattern to avoid**: Editing the incumbent agent's `owasp_references`, `## Purpose`, or detection-pattern files to *narrow* its scope when the new agent's scope is *additive*. This double-edits the same OWASP entry across two files and creates referential ambiguity about which agent "owns" which axis. Also avoid sub-prefix ID schemes (`AG-9-{N}` or `AG-AUTONOMY-{N}`) — F-4 introduced the `TE-{N}` standalone prefix specifically because the communication-axis signal class is vocabulary-disjoint from the autonomy axis. Three-prefix-family discipline within agentic surface (`AG` autonomy / `AGP` multi-agent topology / `TE` communication) preserves cohesive single-namespace ID continuity per signal class.
 
 **Reference**: `specs/224-trust-exploitation-threat-agent/delivery.md` (Lessons §6 Standalone-branch vs enrichment-branch decision pattern; Verification Highlights — 26-file zero-edit invariant preserved including `agent-autonomy.md` zero-diff), `docs/architecture/02_ADRs/ADR-033-human-trust-exploitation-agent.md` (Decision 2 ASI09 sub-scope carve-up with explicit `agent-autonomy.md` NOT-edit clause), `docs/architecture/02_ADRs/ADR-030-output-integrity-agent.md` (Decision 2 Outcome B — original communication-axis reservation), `.aod/results/wave6-sc-009-26-file-audit.md` (regression guard execution log)
+
+---
+
+### KB-041 — Surgical Section 9 backfill as asymmetric alternative to full pipeline regen
+
+**Date**: 2026-05-01
+**Origin**: Feature 241 delivery retrospective ([delivery.md](../specs/241-web-api-coverage-attestation/delivery.md))
+**Category**: Process improvement — baseline refresh strategy for populator-wiring features
+
+**Pattern**: When a feature's only baseline-impacting change is at the Section 9 YAML level (i.e., new `source_attribution` keys or value changes within existing keys, but no impact on Sections 1–8 narrative content), prefer a **surgical Section 9-only backfill** over a **full orchestrator pipeline regen** for the pre-existing baselines. Tier 1 + Tier 3 parser code paths both read Section 9 via the same `_extract_source_attribution_block` regex, so a targeted append/rewrite of the `## 9. Coverage Attestation` block per baseline is semantically equivalent to a full regen for downstream PDF rendering. The asymmetric pattern reduced wall-clock cost vs. full pipeline regen by ~60% on F-241's 8-baseline scope.
+
+**When to apply**: Any post-BLP-01 feature whose change surface is a populator wiring (e.g., new `source_attribution` keys, value-rewrites within existing keys) without changes to pattern catalogs or new agent introduction. The decision rule: if Sections 1–8 narrative content is provably unchanged across the regen-vs-backfill A/B, the surgical backfill is the cost-optimal path. Persist helper scripts at `.aod/results/sbe-T*-*` for audit-trail. Codify the chosen path in the feature's ADR as the asymmetric pattern (F-241 ADR-037 D-11 is the canonical reference).
+
+**Why it matters**: F-241 enriched 11 host agents (full F-A3 closure across the detection-tier surface) and added 2 new baselines. A naive full regen of 8 baselines would have multiplied compute cost ~8x for content that was provably identical on Sections 1–8. The surgical approach also tightened the scope of test evidence: `test_coverage_attestation.py::test_coverage_percentage_arithmetic` could regression-guard the Section 9 arithmetic without depending on full-pipeline integration. M8 dual-host runtime validation (FIRST at T055) closed ADR-036 D-4 contract within the surgical scope.
+
+**Anti-pattern to avoid**: Defaulting to full orchestrator regen for every populator-wiring feature. This pattern is asymmetric to F-1/F-2/F-4 full-orchestrator regen — those features changed pattern catalog content (which DOES affect Sections 1–8), so surgical backfill would have been incorrect. The asymmetry decision belongs in the ADR with explicit citation of the change-surface analysis.
+
+**Reference**: `specs/241-web-api-coverage-attestation/delivery.md` (§2.3 Surgical Section 9 backfill; §1 Executive Summary point 5), `docs/architecture/02_ADRs/ADR-037-web-api-coverage-attestation-and-populator-wiring.md` (D-11 surgical backfill rationale + M8 dual-host runtime validation FIRST at T055)
+
+---
+
+### KB-042 — Stdlib-only module-load invariant enforced via AST walk regression guard
+
+**Date**: 2026-05-01
+**Origin**: Feature 241 delivery retrospective ([delivery.md](../specs/241-web-api-coverage-attestation/delivery.md))
+**Category**: Architecture — runtime-dependency hygiene for offline-capable pipelines
+
+**Pattern**: When a third-party Python module (e.g., `pyyaml`) is required for a script's runtime functionality but the script must remain importable in stdlib-only environments (CI bootstrap, lint passes, `python -c "import scripts.foo"`), enforce **deferred (function-local) imports** rather than module-top imports. Codify the invariant via an AST-walk regression test that parses the module's `ast.parse()` tree and asserts no third-party imports appear at module-top scope. F-241 introduced `tests/scripts/test_pyyaml_deferred_import.py` as the canonical reference: the test walks `scripts/extract-report-data.py`'s AST, collects all `Import` and `ImportFrom` nodes whose parent is the module body (not nested inside a function/class), and asserts the import set is a subset of stdlib modules.
+
+**When to apply**: Any tachi script that is part of the pipeline import chain AND uses a third-party dependency. The test-author cost is ~30 minutes (AST walk + assertion); the protection is permanent — any future refactor that hoists the deferred import to module-top will fail the regression test before merge. Specifically valuable when the dependency is large (`pyyaml` ~150KB), slow to import (~50ms cold), or unavailable in some target environments.
+
+**Why it matters**: F-241's Stream 4 aggregator extension at `_load_framework_yaml_records()` line 1073 added new `yaml.safe_load` call sites. Without the AST regression guard, a future refactor (e.g., "let's hoist the import for performance") would silently break stdlib-only callers. The test was authored at Wave 5.1 T050 and runs in <100ms — fast enough to be part of every test invocation. The pattern is generalizable: any feature that adds new dependency call sites should also extend the AST regression guard with the new module name.
+
+**Anti-pattern to avoid**: Relying on `try: import foo; except ImportError: ...` patterns at module-top. These don't fail loudly enough for refactor-safety — a future contributor can remove the `try/except` "for cleanliness" and break the invariant without test feedback. The AST walk is the explicit, refactor-resistant enforcement.
+
+**Reference**: `specs/241-web-api-coverage-attestation/delivery.md` (§1 Executive Summary point 2 — "Stdlib-only module-load invariant preserved by AST walk"), `tests/scripts/test_pyyaml_deferred_import.py` (canonical AST-walk implementation), `docs/architecture/02_ADRs/ADR-037-web-api-coverage-attestation-and-populator-wiring.md` (D-8 Stream 4 aggregator extension)
 
 ---
 

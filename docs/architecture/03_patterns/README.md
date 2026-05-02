@@ -1,6 +1,6 @@
 # Design Patterns - tachi
 
-**Last Updated**: 2026-04-11
+**Last Updated**: 2026-05-01
 **Owner**: Architect
 
 ---
@@ -74,6 +74,7 @@ This directory documents reusable design patterns for tachi.
 ### Threat Modeling Patterns (AOD Kit)
 - [STRIDE-per-Element Matrix Targeting](#pattern-stride-per-element-matrix-targeting)
 - [Cross-Agent Correlation Detection](#pattern-cross-agent-correlation-detection)
+- [Heuristic A Enrichment Branch with 11-Host Saturation](#pattern-heuristic-a-enrichment-branch)
 
 ### Stack Pack Architecture Patterns (AOD Kit)
 - [Two-Level Architecture (Build-Time / Run-Time)](#pattern-two-level-architecture)
@@ -1505,6 +1506,79 @@ Coverage matrix uses deduplicated counts (CG-1 members count as 1 per cell). Thr
 #### Related Patterns
 - [STRIDE-per-Element Matrix Targeting](#pattern-stride-per-element-matrix-targeting) -- the dispatch mechanism that produces the findings being correlated
 - [On-Demand Reference File Segmentation](#pattern-on-demand-reference-file-segmentation) -- correlation rules are embedded in the orchestrator prompt, not loaded from external files
+
+---
+
+### Pattern: Heuristic A Enrichment Branch
+
+**Added**: Feature 219 (F-3 single-agent execution); Feature 229 (F-5 two-agent execution); Feature 232 (F-6 three-agent execution); Feature 237 (F-7 four-or-five-agent execution); Feature 241 (F-241 11-host saturation execution — final BLP-01 closure)
+**ADRs**: [ADR-032](../02_ADRs/ADR-032-asi07-tool-abuse-enrichment.md) (single-agent precedent); [ADR-034](../02_ADRs/ADR-034-llm10-unbounded-consumption-audit.md) (two-agent precedent); [ADR-035](../02_ADRs/ADR-035-ml-top-10-coverage-bundle.md) (three-agent precedent); [ADR-036](../02_ADRs/ADR-036-mobile-top-10-coverage-bundle.md) (four-or-five-agent precedent); [ADR-037](../02_ADRs/ADR-037-web-api-coverage-attestation-and-populator-wiring.md) (11-host saturation closure)
+
+#### Problem
+
+When new threat-modeling coverage requirements arrive — e.g., adding a new OWASP framework family entry — the naive response is to author a new threat-detection agent file. At BLP-01 plan time, with 10 framework entries to close (LLM Top 10 + Agentic Top 10 + ML Top 10 + Mobile Top 10 + Web/API combined Top 10) and 11 existing detection-tier hosts, naive new-agent-per-entry growth would have spawned 50+ new agent files, exploding the agent inventory and proliferating bespoke pattern-catalog directories. Each new agent carries fixed costs: ~120 lines of agent file + ~400 lines of companion skill + schema bump + consumers-list edit + orchestrator/dispatch edit. The ADR-023 zero-edit invariant on existing detection agents would have shattered under naive growth.
+
+The orthogonal problem: when a new framework entry's signal-class boundary aligns with an existing host agent's threat semantics, authoring a new agent creates vocabulary collision and inconsistent classification at the dispatch tier (which agent emits the finding when both could?).
+
+#### Solution
+
+The **Heuristic A enrichment branch** extends an existing detection-tier host agent (rather than authoring a new sibling agent) when the new framework entry's signal-class boundary aligns with the host's existing threat semantics. Pattern characteristics:
+
+1. **Signal-class boundary alignment test**: New framework entry's vocabulary / CWE-mapping / mitigation-taxonomy is a vocabulary-disjoint extension of (not overlap with) an existing host's signal class. If alignment holds, enrich the host. If alignment fails, author a new agent (the standalone branch — F-1 / F-2 / F-4).
+2. **Additive-only edits per ADR-023 Decision 3**: Three host-agent anchor points (metadata `owasp_references`, `## Purpose` extension, Detection Workflow Step 5 references list) + N new Pattern Categories appended to companion `detection-patterns.md` + Pattern Category Disambiguation subsection clarifying boundary against pre-existing categories. **Categories pre-existing on the host stay byte-identical** to the pre-enrichment baseline (SC-006 BLOCKER per F-3 precedent).
+3. **5/5-dimension reduction vs new agent**: Zero new agent files / Zero new skill directories / Zero schema bumps (reuses host's existing finding-ID prefix family) / Zero consumers-list edits / Zero functional orchestrator/dispatch edits.
+4. **Per-host edit cost stays linear with fan-out scope**: F-3 enriched 1 host (1x cost); F-5 enriched 2 hosts (2x cost); F-6 enriched 3 hosts (3x cost); F-7 enriched 5 hosts (5x cost); F-241 enriched 11 hosts (11x cost). The reduction holds at every scope through 11-host saturation.
+5. **Saturation point**: At 11/11 detection-tier hosts populating `source_attribution`, the pattern reaches saturation — no further fan-out is possible within the current detection-tier surface. Future growth occurs at the cross-framework attribution tier (BLP-02 envelope) or the asymmetric-pattern application tier rather than within the detection-tier surface.
+
+The pattern is governed by the cumulative ADR-032 → ADR-034 → ADR-035 → ADR-036 → ADR-037 lineage (one ADR per execution), each citing the previous as direct precedent and forecasting the next scope tier. ADR-037 caps the lineage at 11-host scope and closes the four-feature F-A3 deferral lineage.
+
+#### Five-Execution Empirical Cost Reduction Table
+
+| Dimension                              | F-3 (1) | F-5 (2) | F-6 (3) | F-7 (5) | F-241 (11) | Cost saved (vs new agents)            |
+|----------------------------------------|:-------:|:-------:|:-------:|:-------:|:----------:|---------------------------------------|
+| New agent file                         |    0    |    0    |    0    |    0    |     0      | ~120 lines × 11 = ~1320 lines saved   |
+| New skill directory                    |    0    |    0    |    0    |    0    |     0      | ~400 lines × 11 = ~4400 lines saved   |
+| Schema bump (`finding.yaml`)           |  none   |  none   |  none   |  none   |   none     | ADR + schema review cycle eliminated  |
+| Consumers-list edit                    |  none   |  none   |  none   |  none   |   none     | ADR-023 invariant proof scope shrinks |
+| Functional orchestrator/dispatch edit  |  none   |  none   |  none   |  none   |   none     | Orchestrator regression risk eliminated |
+
+#### Cross-Agent Decomposition Sub-Pattern
+
+A complementary sub-pattern emerged across F-5 / F-6 / F-7: **single OWASP framework entry decomposes across two host agents along a non-trivial axis**. Three executions in BLP-01:
+
+| Feature | OWASP Entry | Decomposition Axis | Host A | Host B |
+|---------|-------------|--------------------|--------|--------|
+| F-5     | LLM10:2025 Unbounded Consumption | Q1 SPLIT vector axis | DoS Cat 13 (latency) | model-theft Cat 11 (cost) |
+| F-6     | ML06 AI Supply Chain | Two-facet axis (corpus-side vs artifact-side) | data-poisoning Cat 10 (corpus) | model-theft Cat 14 (artifact) |
+| F-7     | Mobile M8 Security Misconfiguration | Architectural-tell axis (privilege-gain vs accountability-loss) | privilege-escalation host (privilege gain) | repudiation host (accountability loss) |
+
+Disjoint architectural-tells / vocabularies / mitigation-taxonomies prevent duplicate emission on architectures that surface both halves of the decomposed entry. The sub-pattern is documented at the ADR layer only — no schema-tier impact.
+
+#### When to Use
+
+- New framework-entry coverage requirement that aligns with an existing detection-tier host's signal class
+- When the alternative (authoring a new sibling agent) would carry vocabulary collision risk at the dispatch tier
+- When the additive-only edit invariant per ADR-023 can be preserved (Categories pre-existing on the host stay byte-identical)
+- When the host's existing finding-ID prefix family can absorb the new entry without bumping `schemas/finding.yaml::id.pattern`
+
+#### When NOT to Use
+
+- New framework entry's vocabulary / CWE-mapping / mitigation-taxonomy is **vocabulary-disjoint** from the host's existing signal class — author a new sibling agent under the standalone branch (F-1 / F-2 / F-4 precedent)
+- When extending the host would expand the line cap beyond the FR-014 hard cap (≤200 lines per agent file at the F-241 enrichment surface; ≤180 lines pre-F-241)
+- When the new entry's DFD-targets do not align with the host's `dfd_targets` field — DFD targeting is structural, not extensible via enrichment
+
+#### Saturation Implications for Post-BLP-01 Future Work
+
+After F-241, the detection-tier surface is **saturated at 11 hosts** populating `source_attribution`. F-9+ candidates that introduce new framework entries should:
+
+1. **Score against the 5/5-dimension reduction checklist at SDR time** to determine whether enrichment-branch eligibility holds
+2. **Default to the enrichment branch** when signal-class alignment holds; default to the standalone branch otherwise
+3. **Cap line growth per host** at FR-014 (≤200 lines for enrichment surface; ≤180 lines pre-enrichment)
+4. **Use the surgical Section 9-only backfill approach (ADR-037 D-11)** when the only baseline-impacting change is at the Coverage Attestation YAML level — reduces wall-clock cost ~60% on multi-baseline scope vs full pipeline regen
+
+#### Related Patterns
+- [STRIDE-per-Element Matrix Targeting](#pattern-stride-per-element-matrix-targeting) — the dispatch mechanism that determines which host agent receives the new framework-entry pattern category
+- [On-Demand Reference File Segmentation](#pattern-on-demand-reference-file-segmentation) — pattern catalogs live in companion `detection-patterns.md` files loaded on-demand at detection start (single `**MANDATORY**: Read` directive per ADR-023)
 
 ---
 
