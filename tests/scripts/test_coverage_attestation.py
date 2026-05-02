@@ -34,6 +34,8 @@ from unittest.mock import patch
 import pytest
 import yaml
 
+from .conftest import monkeypatch_framework_record_counts
+
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 FIXTURES = Path(__file__).parent / "fixtures" / "coverage_attestation"
@@ -478,35 +480,13 @@ def test_coverage_percentage_na_on_zero_denominator(
         "T045",
     )
 
-    # Use post-F-241 Stream 3 inventory counts in the stub (701 raw /
-    # 323 in-scope for mitre-attack; other frameworks unchanged).
-    def _stub_zero_owasp_raw():
-        return {
-            "owasp": 0,
-            "mitre-attack": 701,
-            "mitre-atlas": 30,
-            "nist-ai-rmf": 72,
-            "cwe": 53,
-        }
-
-    def _stub_zero_owasp_in_scope():
-        return {
-            "owasp": 0,
-            "mitre-attack": 323,
-            "mitre-atlas": 30,
-            "nist-ai-rmf": 72,
-            "cwe": 53,
-        }
-
-    monkeypatch.setattr(
+    # Stream 3 inventory counts: 701 raw / 323 in-scope for mitre-attack;
+    # owasp zeroed to exercise the zero-denominator "N/A" branch.
+    monkeypatch_framework_record_counts(
+        monkeypatch,
         extract_report_data,
-        "load_framework_yaml_record_counts",
-        _stub_zero_owasp_raw,
-    )
-    monkeypatch.setattr(
-        extract_report_data,
-        "load_framework_yaml_in_scope_record_counts",
-        _stub_zero_owasp_in_scope,
+        raw={"owasp": 0, "mitre-attack": 701, "mitre-atlas": 30, "nist-ai-rmf": 72, "cwe": 53},
+        in_scope={"owasp": 0, "mitre-attack": 323, "mitre-atlas": 30, "nist-ai-rmf": 72, "cwe": 53},
     )
 
     # Non-empty finding set so the gate predicate is True.
@@ -567,9 +547,12 @@ def test_aggregator_fails_loud_on_malformed_yaml(extract_report_data):
 
     # Patch yaml.safe_load on the yaml module directly. extract-report-data.py
     # imports yaml lazily inside _load_framework_yaml_records (stdlib-only
-    # module-load invariant per tachi_parsers.py:646/804), so the patch target
-    # is the shared yaml module rather than a module-level attribute of
-    # extract_report_data.
+    # module-load invariant), so the patch target is the shared yaml module
+    # rather than a module-level attribute of extract_report_data. The loader
+    # is lru_cached for hot-path performance; clear the cache so this test
+    # actually exercises yaml.safe_load rather than returning cached records
+    # populated by a prior test in the same session.
+    extract_report_data._load_framework_yaml_records.cache_clear()
     with patch.object(yaml, "safe_load", _raise_yaml_error):
         with pytest.raises((yaml.YAMLError, RuntimeError, OSError)) as exc_info:
             extract_report_data.load_framework_yaml_record_counts()

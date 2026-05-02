@@ -1,52 +1,16 @@
-"""F-241 Wave 5.1 / T049 — SC-009 coverage-percentage cross-check driver.
+"""SC-009 coverage-percentage cross-check driver.
 
 Independently re-derives the coverage-percentage formula from synthetic
 fixtures + live taxonomy YAMLs and asserts byte-identical equality with
 ``extract-report-data.py``'s ``build_per_framework_aggregates`` output.
 
-Formula (per data-model.md §3 lines 156-161 + finding-contract §2):
+Formula:
 
     in_scope_records = [r for r in records if not r.get("out_of_scope", False)]
     denominator      = len(in_scope_records)
     covered_count    = number of records with >=1 primary citation
     coverage_pct     = (covered_count / denominator) * 100  if denominator else "N/A"
                        formatted as "X.XX%"  (zero-numerator yields "0.00%")
-
-The test is the SC-009 verification driver landing at Wave 5.1 — its
-arithmetic results stay valid through Wave 5.2 (T053/T054/T055 baseline
-regen) without any source change. Once Wave 5.2 lands, the same
-parametrized pairs run against richer ``source_attribution``-populated
-baselines and the equality assertion still holds (independent
-re-derivation walks the SAME finding source as the aggregator does).
-
-# AUTHOR'S NOTE — WATCHLIST decision (T049 prompt §"WATCHLIST decision")
-# ----------------------------------------------------------------------
-# Mode (a) DEFERRED chosen.
-#
-# Background: T049 mandates "8 baselines x 5 frameworks = 40 cross-check
-# pairs". Of the 8 baselines, only 6 carry canonical-path baselines today:
-# ``web-app``, ``microservices``, ``ascii-web-api``,
-# ``mermaid-agentic-app``, ``free-text-microservice``, ``maestro-reference``
-# — all at ``examples/<arch>/threats.md``. The 2 net-new baselines for
-# ``predictive-ml-app`` + ``mobile-banking-app`` land at Wave 5.2 (T054 +
-# T055) under the canonical path
-# ``examples/<arch>/sample-report/security-report.pdf.baseline`` per
-# Architect L-1. Their ``sample-report/threats.md`` artifacts exist today
-# but were authored under the pre-F-241 detection-tier inventory (no
-# Section 9 source_attribution), so they're tracked as Wave 5.2 deferrals.
-#
-# Decision: parametrize across the 6 pre-existing baselines x 5 frameworks
-# = 30 ACTIVE cross-check pairs today. The 2 deferred baselines x 5
-# frameworks = 10 SKIPPED pairs are emitted as ``pytest.skip(...)`` markers
-# with a reason naming T054/T055 explicitly. When Wave 5.2 lands, the
-# skip markers can be lifted with no other source change — the test
-# auto-expands to the documented 40-pair matrix.
-#
-# Asymmetry to T048: T048 (test_coverage_attestation_in_scope.py) uses
-# synthetic fixtures only — its arithmetic invariants are independent of
-# baseline state. T049 (this file) couples the cross-check to live
-# baseline ``threats.md`` content so it exercises the full parser ->
-# aggregator -> formula chain on real data.
 
 Cross-check shape (per parametrized pair):
 
@@ -67,39 +31,35 @@ Cross-check shape (per parametrized pair):
 Edge cases (parametrized as separate test classes — exercise the same
 formula on synthetic findings against live YAMLs):
 
-  - Mixed in-scope/OOS taxonomy records cited (reuses
-    ``stream_4_coverage_percentage/findings_mixed.yaml``).
-  - All-Out-of-Scope citations (``findings_oos_only.yaml``) — independent
-    computation returns covered=0; aggregator agrees.
-  - Pre-F-241 backward-compat — taxonomy records that lack the
-    ``out_of_scope`` key entirely are treated as in-scope by both paths.
-  - Zero-denominator (entirely-Out-of-Scope framework) — independent
+  - Mixed in-scope/OOS taxonomy records cited.
+  - All-out-of-scope citations — independent computation returns covered=0.
+  - Records that lack the ``out_of_scope`` key entirely are treated as
+    in-scope by both paths (backward-compat).
+  - Zero-denominator (entirely out-of-scope framework) — independent
     computation returns ``"N/A"``; aggregator agrees (monkeypatched).
 
-Pre-flight (T049 prompt §"Pre-flight"):
-``pytest tests/scripts/test_coverage_attestation_in_scope.py -q`` must
-pass 19/19 before this test is run; that suite validates the aggregator
-path THIS test cross-checks against.
-
-Stdlib-only invariant: ``import yaml`` is permitted in test files (KB-037
-applies to production scripts only). No new top-level dependencies.
-
-Tasks referenced: T049 (this file). Depends on T048 fixtures (consumed
-verbatim from ``tests/scripts/fixtures/stream_4_coverage_percentage/``).
+``import yaml`` is permitted in test files (the stdlib-only invariant
+applies to production scripts only).
 """
 
 from __future__ import annotations
 
+import functools
 import sys
 from pathlib import Path
 
 import pytest
 import yaml
 
+from .conftest import (
+    REPO_ROOT,
+    TAXONOMY_DIR as SCHEMAS_TAXONOMY_DIR,
+    load_yaml_or_empty,
+    monkeypatch_framework_record_counts,
+)
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+
 SCRIPTS_DIR = REPO_ROOT / "scripts"
-SCHEMAS_TAXONOMY_DIR = REPO_ROOT / "schemas" / "taxonomy"
 
 STREAM_4_FIXTURES = (
     Path(__file__).parent / "fixtures" / "stream_4_coverage_percentage"
@@ -166,7 +126,8 @@ BASELINES: tuple[
 # ---------------------------------------------------------------------------
 
 
-def _independent_load_in_scope_records(framework_name: str) -> list:
+@functools.lru_cache(maxsize=None)
+def _independent_load_in_scope_records(framework_name: str) -> tuple:
     """Load the in-scope record list for a framework directly from disk.
 
     Uses ``yaml.safe_load`` and the same ``not r.get("out_of_scope", False)``
@@ -174,15 +135,19 @@ def _independent_load_in_scope_records(framework_name: str) -> list:
     code path (no import of ``extract-report-data``). The whole point of
     this test is to compare two independent computations and assert
     they agree byte-identically.
+
+    Result is memoized via ``functools.lru_cache`` so the 40-pair
+    parametrized cross-check at ``TestBaselineFrameworkCrossCheck`` reads
+    each framework YAML once per session (5 reads) instead of 40 (one per
+    baseline-framework pair). Returns a tuple to discourage mutation.
     """
     path = SCHEMAS_TAXONOMY_DIR / f"{framework_name}.yaml"
     with path.open(encoding="utf-8") as fh:
         data = yaml.safe_load(fh)
     if data is None:
-        return []
-    # Backward-compat: records that omit ``out_of_scope`` default to in-scope
-    # per data-model.md §2 line 91 (``out_of_scope absent -> treated as false``).
-    return [r for r in data if not r.get("out_of_scope", False)]
+        return ()
+    # Records that omit ``out_of_scope`` default to in-scope.
+    return tuple(r for r in data if not r.get("out_of_scope", False))
 
 
 def _independent_count_covered(
@@ -605,33 +570,12 @@ class TestZeroDenominatorEdgeCase:
         stub owasp's in-scope count to 0, verify aggregator emits "N/A",
         verify our independent ``_independent_format_pct`` agrees.
         """
-        def _stub_raw():
-            return {
-                "owasp": 3,
-                "mitre-attack": 701,
-                "mitre-atlas": 30,
-                "nist-ai-rmf": 72,
-                "cwe": 53,
-            }
-
-        def _stub_in_scope():
-            return {
-                "owasp": 0,
-                "mitre-attack": 323,
-                "mitre-atlas": 30,
-                "nist-ai-rmf": 72,
-                "cwe": 53,
-            }
-
-        monkeypatch.setattr(
+        # owasp: raw=3, in_scope=0 (all-OOS); other frameworks unchanged.
+        monkeypatch_framework_record_counts(
+            monkeypatch,
             extract_report_data,
-            "load_framework_yaml_record_counts",
-            _stub_raw,
-        )
-        monkeypatch.setattr(
-            extract_report_data,
-            "load_framework_yaml_in_scope_record_counts",
-            _stub_in_scope,
+            raw={"owasp": 3, "mitre-attack": 701, "mitre-atlas": 30, "nist-ai-rmf": 72, "cwe": 53},
+            in_scope={"owasp": 0, "mitre-attack": 323, "mitre-atlas": 30, "nist-ai-rmf": 72, "cwe": 53},
         )
 
         aggregates = extract_report_data.build_per_framework_aggregates([])
