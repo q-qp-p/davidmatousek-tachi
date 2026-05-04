@@ -1,6 +1,6 @@
 # Design Patterns - tachi
 
-**Last Updated**: 2026-05-01
+**Last Updated**: 2026-05-04
 **Owner**: Architect
 
 ---
@@ -1016,15 +1016,24 @@ any files modified during this build session.
 ### Pattern: Template Variable Expansion
 
 **Added**: Feature 061 (init.sh Personalize All Template Files)
-**ADR**: [ADR-009](../02_ADRs/ADR-009-template-variable-expansion-scope.md)
+**Updated**: Feature 248 (substitution surface hardening — `sed` → bash parameter expansion)
+**ADRs**: [ADR-009](../02_ADRs/ADR-009-template-variable-expansion-scope.md) (scope), [ADR-038](../02_ADRs/ADR-038-placeholder-substitution-strategy.md) (mechanism)
 
 #### Problem
 Template files shipped with the kit contain the kit's own name ("Agentic Oriented Development Kit") as hardcoded text. When an adopter runs `make init`, these files are not personalized, so all user-facing documentation still shows the kit name instead of the adopter's project name. This causes confusion and requires manual find-and-replace by adopters.
 
-#### Solution
-Use the `tachi` double-brace placeholder wherever the project name should appear in a template file. `scripts/init.sh` already performs a `sed` substitution pass over template files during `make init`, replacing `tachi` with the adopter's actual project name. No new code or infrastructure is needed -- add the placeholder to the file content and the init script handles the rest.
+The original `find ... -exec sed -i ... +` mechanism (Feature 061) had three structural defects discovered during BLP-02 Wave 1 scoping (Feature 248): (1) **metacharacter corruption** — sed interprets `&` as match-substitution and `\1`-`\9` as backreferences, so adversarial-but-legitimate values like `AT&T`, `Cats & Dogs`, regex metachars `.*+?^$()`, and pipe-bearing values get corrupted at substitution time; (2) **missing input validation at prompt boundary** — the four `read -p` prompts at `init.sh:24-28` accept multi-line paste, NUL bytes, control characters, and arbitrarily long input without rejection; (3) **missing closed-contract residual scan** — sed silently no-ops on files where no `{{KEY}}` matches exist, so an upstream-introduced orphan placeholder survives substitution undetected.
 
-The convention aligns with other template variables in the kit (`2026-03-21`, `{{TEMPLATE_VARIABLES}}`, etc.) and is consistent with the pre-existing usage in `.aod/memory/constitution.md`.
+#### Solution
+Use the `tachi` double-brace placeholder wherever the project name should appear in a template file. As of Feature 248, `scripts/init.sh` performs the substitution pass via `aod_template_substitute_placeholders <src> <dest>` from `.aod/scripts/bash/template-substitute.sh`, which uses **bash parameter expansion** `${content//\{\{KEY\}\}/value}` (literal pattern + literal replacement, no regex interpretation either side) instead of sed. This eliminates metacharacter corruption while preserving the canonical-12 placeholder contract.
+
+The convention aligns with other template variables in the kit (`2026-03-21`, `{{TEMPLATE_VARIABLES}}`, etc.) and is consistent with the pre-existing usage in `.aod/memory/constitution.md`. Per [ADR-038](../02_ADRs/ADR-038-placeholder-substitution-strategy.md) D-1, bash parameter expansion treats both pattern and replacement as LITERAL strings; adversarial values survive verbatim. Single-branch cross-platform behavior eliminates the `OSTYPE` macOS-vs-Linux split. File mode bits are preserved via `_aod_preserve_mode` (BSD `stat -f` / GNU `stat -c` cross-platform). Atomic writes via `<dest>.tmp` + `mv` rename (interrupt-safe). Trade-off (ADR-038 D-2): bash parameter expansion is structurally slower than sed-batched substitution at init time (T021 measured +658% delta vs T008 baseline) but init.sh runs ONCE per adopter project, and metacharacter corruption defects sed introduces are functional, not cosmetic.
+
+Closed-contract residual scan (ADR-038 D-6) — `aod_template_assert_no_residual` halts non-zero on any orphan canonical-12 placeholder in `personalized` category files only (currently 5 files: `.claude/rules/{context-loading,deployment,design-context-loader,design-quality,governance}.md`); the codebase contains ~110 legitimate non-canonical `{{KEY}}` tokens used by parallel templating systems (stack-pack scaffolds, brand templates, devops docs, doc examples) that a whole-tree scan would falsely halt on.
+
+Constitution authoring is decoupled from substitution (ADR-038 D-3) — `.aod/templates/constitution-instructional.md` ships full template variant (HTML comment block + `## Template Instructions` section), `.aod/templates/constitution-clean.md` ships post-strip variant; `init.sh` performs `cp clean → live` followed by `aod_template_substitute_placeholders` re-substitution instead of in-place sed cleanup.
+
+`.aod/personalization.env` is gitignored by default (ADR-038 D-4) for multi-tenant safety — a fork of an adopter repo MUST NOT inherit the original adopter's `PROJECT_NAME` etc. Migration command for adopters who previously committed the file: `git rm --cached .aod/personalization.env`.
 
 #### Files Using This Pattern
 | File | Placeholder Locations |
@@ -1050,17 +1059,20 @@ The convention aligns with other template variables in the kit (`2026-03-21`, `{
 #### When NOT to Use
 - Internal implementation files that adopters never read directly (e.g., shell scripts, JSON state files)
 - Comments in script files where the kit name is intentional (e.g., attribution headers)
-- Files that are NOT processed by `scripts/init.sh` -- check `init.sh` to confirm a file is in scope before adding the placeholder
+- Files that are NOT processed by `scripts/init.sh` -- check `init.sh` and `.aod/template-manifest.txt` to confirm a file is in scope before adding the placeholder
 
 #### Checklist for New Template Files
 When adding a new user-facing template file to the kit:
 1. Identify every occurrence of "Agentic Oriented Development Kit" or its abbreviation
 2. Replace with `tachi`
-3. Verify the file is included in the `scripts/init.sh` substitution loop
-4. Test with `make init` on a fresh clone to confirm replacement occurs
+3. Verify the file is included in the `scripts/init.sh` substitution loop (specifically the file walk that calls `aod_template_substitute_placeholders`)
+4. If the file is in the `personalized` category of `.aod/template-manifest.txt`, ensure all its `{{KEY}}` tokens are in the canonical 12 (or land in lockstep with an updated `AOD_CANONICAL_PLACEHOLDERS` per ADR-038 D-5 paragraph 4 lockstep contract)
+5. Test with `make init` on a fresh clone to confirm replacement occurs (or run `tests/scripts/test_init_sh_substitution.py` for fixture-replay byte comparison)
+6. If the canonical-12 set changes, regenerate `tests/fixtures/init-baseline-tree/` via `tests/fixtures/regenerate-baseline.sh`
 
 #### Related Patterns
-- None -- this is a content convention, not a runtime pattern
+- [Atomic File Write](#pattern-atomic-file-write) — `aod_template_substitute_placeholders` uses the write-then-rename idiom (`<dest>.tmp` + `mv`) for interrupt-safe substitution
+- [Convention Contract (STACK.md)](#pattern-convention-contract) — the canonical-12 placeholder set is itself a closed convention contract; lockstep updates required (ADR-038 D-5)
 
 ---
 

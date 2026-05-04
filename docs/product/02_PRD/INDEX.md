@@ -1,12 +1,12 @@
 # PRD Index
 
-**Last Updated**: 2026-05-03 (PRD 248 — F-1 Substitution Surface Hardening drafted with PM ✓ Architect ⚠ Team-Lead ⚠; first feature of BLP-02 enterprise hardening initiative; visible response to Daniel Wood's 2026-05-02 LinkedIn note; closes 5 /security vulns (1 HIGH + 2 MEDIUM + 2 LOW) in single PR with public ADR-038)
+**Last Updated**: 2026-05-04 (F-248 Substitution Surface Hardening DELIVERED — BLP-02 Wave 1 complete (1/5); first BLP-02 feature shipped in 2 days from blueprint to merge; 5 /security findings closed (1 HIGH + 2 MEDIUM + 2 LOW); ADR-038 accepted; PR #249 squash-merged 2026-05-04 (commit 6db9a25); visible response to Daniel Wood's 2026-05-02 LinkedIn note now resolved)
 **Legend**: ✓=APPROVED, ⚠=APPROVED_WITH_CONCERNS, 🔄=CHANGES_REQUESTED, ⛔=BLOCKED, ⚠⚡=OVERRIDDEN
 
 
 | # | Feature | PM | Architect | Team-Lead | Status | Date |
 |---|---------|----|-----------|-----------| -------|------|
-| 248 | [F-1 Substitution Surface Hardening (BLP-02 Wave 1)](248-substitution-surface-hardening-2026-05-03.md) | ✓ | ⚠ | ⚠ | Approved with Concerns | 2026-05-03 |
+| 248 | [F-1 Substitution Surface Hardening (BLP-02 Wave 1)](248-substitution-surface-hardening-2026-05-03.md) ([PR #249](https://github.com/davidmatousek/tachi/pull/249)) | ✓ | ⚠ | ⚠ | Delivered | 2026-05-04 |
 | 241 | [F-8 + F-A3 Web/API Coverage Attestation + Populator Wiring [Tier 3]](241-web-api-coverage-attestation-2026-04-29.md) ([PR #242](https://github.com/davidmatousek/tachi/pull/242)) | ✓ | ⚠ | ⚠ | Delivered | 2026-05-01 |
 | 237 | [F-7 Mobile Top 10 Coverage Bundle [Tier 2]](237-mobile-top-10-coverage-bundle-2026-04-28.md) ([PR #238](https://github.com/davidmatousek/tachi/pull/238)) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-29 |
 | 232 | [F-6 ML Top 10 Coverage Bundle [Tier 2]](232-ml-top-10-coverage-bundle-2026-04-27.md) ([PR #235](https://github.com/davidmatousek/tachi/pull/235)) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-28 |

@@ -1,6 +1,6 @@
 # Technology Stack - tachi
 
-**Last Updated**: 2026-05-01
+**Last Updated**: 2026-05-04
 **Owner**: Architect
 
 ---
@@ -251,12 +251,15 @@ python3 -m pytest tests/ --cov=scripts    # with coverage
 
 **Backward-compatibility harness** (Feature 128 Wave 4): `tests/scripts/test_backward_compatibility.py` is a parametrized test that compiles the 5 unmodified example projects through the full PDF pipeline and compares the output byte-for-byte against committed `examples/*/security-report.pdf.baseline` files. The test sets `SOURCE_DATE_EPOCH=1700000000` before `typst compile` to neutralize PDF metadata timestamps — see [ADR-021](../02_ADRs/ADR-021-source-date-epoch-for-deterministic-pdf-comparison.md) for the reproducible-builds rationale.
 
+**init.sh substitution test suite** (Feature 248): `tests/scripts/test_init_sh_*.py` is a 4-file suite (`test_init_sh_substitution.py`, `test_init_sh_adversarial.py`, `test_init_sh_constitution.py`, `test_init_sh_self_delete.py` — 20 tests total) that drives `scripts/init.sh` end-to-end inside isolated `tmp_path` clones via `tests/scripts/init_sh_helpers.run_init_in_clone` and asserts: (1) **metachar literal-preservation** across ≥13 adversarial inputs per NFR-003 (`AT&T`, `Cats & Dogs`, `\1\2 backref`, regex metachars `.*+?^$()`, pipe-bearing values, slashes — Test-2 Cases 1-8); (2) **prompt-boundary input rejection** for newline (multi-line paste), NUL bytes, control characters, and over-length input (Test-2 Cases 9-12); (3) **file-level byte-identity** post-substitution (Test-2 Case 13); (4) **closed-contract residual scan** halting non-zero on any orphan canonical-12 placeholder in personalized-category files; (5) **constitution byte-equality** between `.aod/templates/constitution-clean.md` and `sed`-stripped `constitution-instructional.md` (T007 byte-equivalence proof). Fixture-replay tests use a recorded golden tree under `tests/fixtures/init-baseline-tree/` with `tests/fixtures/regenerate-baseline.sh` as the regen procedure when the canonical-12 set changes (lockstep with [ADR-038](../02_ADRs/ADR-038-placeholder-substitution-strategy.md) D-5 paragraph 4). CI matrix execution at `.github/workflows/tachi-pytest.yml` on `[macos-latest, ubuntu-latest]` per the Bash 3.2 NFR-001 gate above. **Known follow-up at Issue #250**: Test-1 baseline scope refactor + perf — current 30-40min CI runtime needs reduction.
+
 ### Shell Scripts
 
 **Bash 3.2** (macOS default `/bin/bash`)
 - All `.aod/scripts/bash/*.sh` files must be Bash 3.2 compatible
 - Why: macOS ships Bash 3.2.57 due to GPLv3 licensing; portability is mandatory
-- Constraints: No associative arrays, no `${var^^}`, no `readarray`/`mapfile`
+- Constraints: No associative arrays, no `${var^^}`, no `readarray`/`mapfile`, no `&>` redirection, no lowercase parameter expansion `${var,,}`
+- **CI matrix gate (Feature 248 NFR-001)**: `.github/workflows/tachi-pytest.yml` runs the F-248 init.sh suite (`tests/scripts/test_init_sh_*.py` — 20 tests) on a 2-runner matrix `[macos-latest, ubuntu-latest]`. macOS bash 3.2.57 is the OLDEST supported runtime and the **strictest gate** for compatibility constraints in `.aod/scripts/bash/template-substitute.sh` and `.aod/scripts/bash/init-input.sh`; ubuntu bash 5.x is the modern reference shell. A green Ubuntu run on top of a green macOS run proves the test suite is portable, not bash-3.2-quirk-locked. Both legs MUST pass green for [ADR-038](../02_ADRs/ADR-038-placeholder-substitution-strategy.md) §Test Coverage to close. Path-filtered to `scripts/init.sh` + `.aod/scripts/bash/init-input.sh` + `.aod/scripts/bash/template-{substitute,validate,git}.sh` + `.aod/templates/constitution-{clean,instructional}.md` + `.aod/template-manifest.txt` + `tests/scripts/test_init_sh_*.py` + `tests/scripts/init_sh_helpers.py` + `tests/fixtures/init-baseline-tree/**` + `tests/fixtures/regenerate-baseline.sh` + the workflow file itself
 
 **Key scripts**:
 | Script | Purpose | Added |
@@ -267,6 +270,10 @@ python3 -m pytest tests/ --cov=scripts    # with coverage
 | `.aod/scripts/bash/backlog-regenerate.sh` | Regenerate product backlog from GitHub Issues | Pre-022 |
 | `scripts/generate-adapter-version.sh` | Generate `VERSION` manifest for platform adapters with source commit SHA, timestamp, and per-agent SHA-256 checksums for drift detection | Feature 021 |
 | `scripts/install.sh` | Bash 3.2+ install script that copies all distributable files from tachi source to target project using INSTALL_MANIFEST.md machine-parseable section; supports `--source`, `--version` (git tag checkout with trap cleanup), and `--help` flags | Feature 066 |
+| `.aod/scripts/bash/template-substitute.sh` | Per-file placeholder substitution helper using **bash parameter expansion** `${content//\{\{KEY\}\}/value}` (literal pattern + literal replacement, no regex interpretation); supersedes `find ... -exec sed -i ... +` per [ADR-038](../02_ADRs/ADR-038-placeholder-substitution-strategy.md) D-1; provides `aod_template_substitute_placeholders <src> <dest>` (canonical 12 placeholders, atomic write via `<dest>.tmp` + `mv`, file-mode preservation) and `aod_template_assert_no_residual <file>` (residual `{{KEY}}` scan, scoped to `personalized` category from `.aod/template-manifest.txt` per ADR-038 D-6); eager top-of-file source from `init.sh` with pre-flight re-init check; eliminates the `OSTYPE` macOS-vs-Linux sed branching | Feature 248 |
+| `.aod/scripts/bash/init-input.sh` | Interactive `read -p` input validator implementing the **validation triplet pattern** per [ADR-038](../02_ADRs/ADR-038-placeholder-substitution-strategy.md) D-5: `regex-validate` → `reject-on-mismatch` → `printf -v` assignment; rejects newline (multi-line paste), NUL bytes, control characters, over-length input with re-prompt up to 3 strikes before non-zero exit; the function is interactive `read -p`-only (forward-looking F-2 BLP-02 Wave 2 `defaults.env` strict-KV parser reuses the PATTERN, NOT the function) | Feature 248 |
+| `.aod/scripts/bash/template-validate.sh` | Companion validator for `template-substitute.sh` — closed-canonical-12 set verification and helper invariants for personalization.env contract | Feature 248 |
+| `.aod/scripts/bash/template-git.sh` | Companion git helpers for `template-substitute.sh` — supports the personalization.env gitignored-by-default posture per [ADR-038](../02_ADRs/ADR-038-placeholder-substitution-strategy.md) D-4 (multi-tenant fork safety) | Feature 248 |
 
 ### CLI Dependencies
 

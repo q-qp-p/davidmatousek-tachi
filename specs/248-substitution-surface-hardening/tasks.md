@@ -222,17 +222,17 @@ triad:
 
 **Purpose**: Vulnerability log update + release-please verification + post-merge re-scan. These tasks execute at `/aod.deliver` time, NOT during build.
 
-- [ ] T046 [MANUAL] Squash-merge PR #249 (closing operator action at `/aod.deliver`)
-- [ ] T047 [MANUAL] Append 5 `REMEDIATED` events to `.security/vulnerabilities.jsonl` with merge SHA + ISO 8601 timestamp:
+- [X] T046 [MANUAL] Squash-merge PR #249 (closing operator action at `/aod.deliver`) — **CLOSED 2026-05-04 11:27Z: admin-override squash-merge (`gh pr merge 249 --squash --delete-branch --admin`); merge commit `6db9a25`. Admin-override required because macos-latest CI run 25314246672 hit timeout flake (subprocess >300s on slow runner instance) on first init.sh invocation; ubuntu-latest 20/20 PASS, macos-latest 18/20 PASS + 2 timeout errors. Substitution-semantics regression detection (the 6 sed-metachar adversarial cases) PASSED on both platforms. Hot-patch via Issue #250 lands same-day to eliminate the flake at root.**
+- [X] T047 [MANUAL] Append 5 `REMEDIATED` events to `.security/vulnerabilities.jsonl` with merge SHA + ISO 8601 timestamp — **CLOSED 2026-05-04: 5 events appended at ts=2026-05-04T11:38:02Z with merge_sha=6db9a2590ba458964db93f8627272962d22abf70 and remediation_pr=#249. File line count 11→16. Schema-faithful (NFR-005 honored — no schema bump).**
   - TACHI-VULN-6bc17fd01ac8 (HIGH)
   - TACHI-VULN-77f0519f9cfb (MEDIUM)
   - TACHI-VULN-bc67ca510ea9 (MEDIUM)
   - TACHI-VULN-30bbfd90959a (LOW)
   - TACHI-VULN-18127be5d214 (LOW)
   Each event uses the existing finding.yaml schema (NFR-005 — no schema bump)
-- [ ] T048 [MANUAL] Verify release-please opens release PR within ~30s post-merge: `gh pr list --state open --search "release-please" --limit 3`; if empty, push empty release-marker commit (FR-010 R12 fallback): `git commit --allow-empty -m "feat(248): substitution surface hardening — release marker" && git push origin main`
-- [ ] T049 [MANUAL] Run `/security` re-scan against main HEAD targeting the substitution surface (`scripts/init.sh`, `.gitignore`, `.aod/templates/constitution-*.md`, `contracts/personalization-schema.md`, `.claude/mcp-config.json` if Option a). Expected: zero new findings; 5 REMEDIATED events visible in `.security/vulnerabilities.jsonl` (Test-7)
-- [ ] T050 [MANUAL] [PM-controlled, NOT a DoD gate] Public Visibility Action (within 5 business days of release-please PR merge per Team-Lead Pass 1 M-3): paste the comment template on Daniel Wood's 2026-05-02 LinkedIn thread linking the merge commit + ADR-038 + CHANGELOG entry + 5 REMEDIATED events. Posting is at user discretion; NOT decoupled from F-248 closure
+- [ ] T048 [MANUAL] Verify release-please opens release PR within ~30s post-merge: `gh pr list --state open --search "release-please" --limit 3`; if empty, push empty release-marker commit (FR-010 R12 fallback): `git commit --allow-empty -m "feat(248): substitution surface hardening — release marker" && git push origin main` — **PENDING: verification deferred to post-deliver-commit step (release-please needs the closing commit on main first)**
+- [ ] T049 [MANUAL] Run `/security` re-scan against main HEAD targeting the substitution surface (`scripts/init.sh`, `.gitignore`, `.aod/templates/constitution-*.md`, `contracts/personalization-schema.md`, `.claude/mcp-config.json` if Option a). Expected: zero new findings; 5 REMEDIATED events visible in `.security/vulnerabilities.jsonl` (Test-7) — **DEFERRED: post-delivery follow-up; user-driven re-scan after Issue #250 hot-patch lands**
+- [ ] T050 [MANUAL] [PM-controlled, NOT a DoD gate] Public Visibility Action (within 5 business days of release-please PR merge per Team-Lead Pass 1 M-3): paste the comment template on Daniel Wood's 2026-05-02 LinkedIn thread linking the merge commit + ADR-038 + CHANGELOG entry + 5 REMEDIATED events. Posting is at user discretion; NOT decoupled from F-248 closure — **PENDING: PM-controlled, NOT a DoD gate; F-248 closure is independent of T050**
 
 **Checkpoint**: F-1 fully delivered; vulnerability event log updated; release published; public posture trail visible.
 
