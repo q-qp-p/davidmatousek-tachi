@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-05-04T11:41:13Z.
+> Auto-generated from GitHub Issues on 2026-05-04T14:26:51Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -8,7 +8,6 @@
 
 | # | Title | ICE | Evidence | Updated |
 |---|-------|-----|----------|---------|
-| #250 | Test-1 baseline scope refactor + perf — read template-manifest categories, reduce 30-40min CI runtime | Impact: —, Confidence: —, Effort: — = **Not yet scored** | - Retrospective: F-248 delivery (third baseline-staleness... | 2026-05-04 |
 | #168 | Track OWASP AIVSS v1.0 release and first external adopter case study | Impact: —, Confidence: —, Effort: — = **Not yet scored** | Retrospective: Emerged during delivery of Feature 143 (MA... | 2026-04-15 |
 | #126 | Auto-detect architecture drift | | Dimension | Score | Rationale | | — | 2026-04-12 |
 | #98 | MAESTRO coverage matrix — show which layers have threat coverage | — | — | 2026-04-14 |
@@ -52,6 +51,7 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
+| #250 | Test-1 baseline scope refactor + perf — read template-manifest categories, reduce 30-40min CI runtime | OPEN | 2026-05-04 |
 | #217 | detect_images leaves duplicate .jpg/.png pair after recovery write | OPEN | 2026-04-25 |
 | #215 | fix: detect_images picks .jpg by filename, fails Typst when bytes are PNG | CLOSED | 2026-04-25 |
 | #209 | Fix 5 extractor/agent contract-drift bugs | CLOSED | 2026-04-24 |
