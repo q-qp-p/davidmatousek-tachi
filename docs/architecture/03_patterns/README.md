@@ -80,6 +80,10 @@ This directory documents reusable design patterns for tachi.
 - [Two-Level Architecture (Build-Time / Run-Time)](#pattern-two-level-architecture)
 - [Convention Contract (STACK.md)](#pattern-convention-contract)
 
+### Test Architecture Patterns (AOD Kit)
+- [Session-Scoped init.sh Fixture](#pattern-session-scoped-init-sh-fixture)
+- [Asymmetric Baseline File-Set Check](#pattern-asymmetric-baseline-file-set-check)
+
 ---
 
 ## Documented Patterns
@@ -1697,6 +1701,146 @@ Output: `{"Critical": 15, "High": 41, "Medium": 29, "Low": 12, "Note": 3}` (sum=
 
 #### Related Patterns
 - [Shared Parser Module Extraction](#pattern-shared-parser-module-extraction) -- the Largest Remainder Method is implemented in the infographic extraction script that imports from the shared module
+
+---
+
+### Pattern: Session-Scoped init.sh Fixture
+
+**Added**: Feature 250 (Adversarial Unit Extraction Hot-Fix, Phase 6 Option Z)
+**ADR**: [ADR-039](../02_ADRs/ADR-039-test-architecture-fixture-scope-and-asymmetric-baseline.md)
+
+#### Problem
+
+End-to-end tests of `scripts/init.sh` invoke a heavyweight subprocess: each invocation copies the repo into a `tmp_path` clone, runs the full personalization substitution loop, and writes ~50 personalized files. On macos-latest CI runners (3-4× slower than dev hardware on cold-cache filesystem scans), a single invocation costs 300-560s. Multiple test modules (`test_init_sh_substitution.py`, `test_init_sh_constitution.py`, `test_init_sh_self_delete.py`, `test_init_sh_adversarial.py`) historically each held a module-scoped fixture that triggered its own clone-and-init cycle. The CI run multiplied the cold-cache cost across modules: 5 invocations × ~300s = ~25 minutes of init.sh work alone, dominating the total wall time and frequently breaching pytest-timeout caps.
+
+#### Solution
+
+Promote the canonical `init.sh`-invoking fixture to **session scope** in the central `tests/scripts/conftest.py`, so the entire test session runs `init.sh` ONCE in a session-scoped `tmp_path_factory` clone. Every consuming test asserts read-only properties (file existence, byte content, mode bits) of the post-init clone and shares the same canonical state. Tests that pre-seed fixture files into the clone before `init.sh` runs (cannot share canonical state) keep their function-scoped invocation as an explicit carve-out.
+
+#### Example
+
+```python
+# tests/scripts/conftest.py
+@pytest.fixture(scope="session")
+def init_run(tmp_path_factory: pytest.TempPathFactory):
+    """One canonical scripts/init.sh run, shared across all test_init_sh_* modules.
+
+    Sharing is safe because every consuming test asserts READ-ONLY properties
+    of the post-init clone. The session-scoped tmpdir is cleaned up by pytest
+    at session end. Tests that SEED fixture files into the clone before init.sh
+    runs (e.g., test_case_13_file_level_byte_identity) keep their own
+    function-scoped pattern.
+    """
+    from init_sh_helpers import (
+        build_canonical_stdin,
+        clone_into_tmpdir,
+        run_init_in_clone,
+    )
+
+    tmpdir = tmp_path_factory.mktemp("init_sh_canonical")
+    clone_root = clone_into_tmpdir(tmpdir)
+    stdin_payload = build_canonical_stdin(clone_root)
+    result = run_init_in_clone(clone_root, stdin_payload)
+    if result.returncode != 0:
+        pytest.fail(
+            f"canonical init.sh exited {result.returncode}; stderr tail:\n"
+            f"{result.stderr[-1500:]}"
+        )
+    return result
+
+
+# tests/scripts/test_init_sh_substitution.py — consumer
+def test_personalized_tree_bytes_match_baseline(init_run):
+    # init_run.tmpdir already has init.sh applied; assert read-only properties.
+    ...
+```
+
+#### When to Use
+
+- Multiple test modules share a heavyweight, deterministic, read-only setup (process invocation, large fixture tree, network-free build step)
+- Tests downstream of the setup assert ONLY read-only properties of the resulting state
+- The setup cost dominates total wall time and grows linearly with module count
+- A central `conftest.py` exists at the test-suite root (or can be introduced) so the fixture is discoverable without import-magic
+
+#### When NOT to Use
+
+- Tests mutate the post-setup state (sharing causes test-ordering dependencies and flakiness)
+- Tests need to seed pre-setup state (e.g., pre-init fixtures) — these need function-scoped invocation
+- Setup cost is trivially fast (<1s); session scope adds complexity without payoff
+- Different modules need genuinely different setups (use module-scoped fixtures with distinct names instead)
+
+#### Related Patterns
+
+- [Asymmetric Baseline File-Set Check](#pattern-asymmetric-baseline-file-set-check) -- both patterns ship together in F-250 Phase 6 Option Z and combine to drop init.sh invocations from 17 to 5 per CI run
+- [Subshell Isolation for Strict Shell Options](#pattern-subshell-isolation-for-strict-shell-options) -- a related "isolate the cost" pattern at the bash-process layer
+
+---
+
+### Pattern: Asymmetric Baseline File-Set Check
+
+**Added**: Feature 250 (Adversarial Unit Extraction Hot-Fix, Phase 6 Option Z)
+**ADR**: [ADR-039](../02_ADRs/ADR-039-test-architecture-fixture-scope-and-asymmetric-baseline.md)
+
+#### Problem
+
+A baseline-replay test compares a generated tree (e.g., post-`init.sh` personalized tree) to a recorded golden tree. The strict-equality form `set(generated) == set(baseline)` is a regression check, but it fires on TWO independent failure modes: (a) the generator dropped a file that the baseline expects (genuine substitution regression — the file is missing or misnamed), AND (b) the repo grew a file the baseline doesn't have yet (no regression — repo growth is normal between deliberate baseline regenerations). Mode (b) created a recurring maintenance tax: every PR that added or renamed any file in the substitution-target tree had to regenerate the baseline before CI could turn green.
+
+#### Solution
+
+Convert the file-set check from strict equality to **asymmetric**: enforce `baseline ⊆ generated` (every baseline file MUST be in the post-generation tree — drops are FAIL, indicating regression), but tolerate `generated ⊋ baseline` (additions are accepted; repo growth is not a regression). Pair with a deliberate baseline regeneration script that captures only substitution-target files (e.g., files containing canonical `{{KEY}}` placeholders pre-substitution), restricting baseline scope to the meaningful invariant rather than the whole tree.
+
+#### Example
+
+```python
+# tests/scripts/test_init_sh_substitution.py
+def test_personalized_tree_bytes_match_baseline(init_run):
+    """Asymmetric file-set + byte-identity check.
+
+    DROPS are FAIL: every baseline file MUST exist in the generated tree.
+    ADDITIONS are TOLERATED: repo growth is not a regression. Refresh the
+    baseline deliberately via tests/fixtures/regenerate-baseline.sh when a
+    substitution-target file genuinely changes.
+    """
+    baseline_files = set(_relative_paths(BASELINE_DIR))
+    generated_files = set(_relative_paths(init_run.tmpdir))
+
+    missing_from_generated = baseline_files - generated_files
+    assert not missing_from_generated, (
+        f"substitution regression: baseline files missing from post-init tree: "
+        f"{sorted(missing_from_generated)}"
+    )
+    # additions (generated_files - baseline_files) are deliberately NOT asserted
+
+    for rel in baseline_files:
+        baseline_bytes = (BASELINE_DIR / rel).read_bytes()
+        generated_bytes = (init_run.tmpdir / rel).read_bytes()
+        assert generated_bytes == baseline_bytes, f"byte mismatch on {rel}"
+```
+
+```bash
+# tests/fixtures/regenerate-baseline.sh — restrict scope to substitution targets
+# Capture only files that contain canonical {{KEY}} placeholders pre-substitution.
+# Documentation, specs, and generated artifacts now drift freely without
+# requiring baseline refreshes; only genuine substitution-target edits warrant
+# regeneration.
+```
+
+#### When to Use
+
+- A baseline-replay test guards a specific invariant (substitution correctness, schema-shape preservation, asset-pipeline output)
+- The repo grows files outside the invariant's scope between deliberate baseline regenerations
+- The strict-equality form creates recurring "regenerate baseline on every PR that touches X" maintenance overhead
+- The baseline can be deliberately scoped to the invariant subset (substitution-target files, schema-conforming records, etc.)
+
+#### When NOT to Use
+
+- The invariant requires the generated set to exactly equal the baseline (e.g., a manifest that must be exhaustive — extra files would indicate a security regression)
+- Additions are themselves a regression (e.g., the test guards a "no new files" rule)
+- The baseline scope cannot be meaningfully restricted (every file in the tree is part of the invariant)
+
+#### Related Patterns
+
+- [Session-Scoped init.sh Fixture](#pattern-session-scoped-init-sh-fixture) -- both patterns ship together in F-250 Phase 6 Option Z; the asymmetric check works against the session-scoped fixture's canonical post-init state
 
 ---
 

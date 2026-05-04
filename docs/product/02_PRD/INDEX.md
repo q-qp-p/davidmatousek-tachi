@@ -1,12 +1,12 @@
 # PRD Index
 
-**Last Updated**: 2026-05-04 (Issue #250 Hot-Fix PRD APPROVED — adversarial cases 1-12 unit-extraction wedge; targets ≥25min CI savings + ≤15min macos-latest init.sh-suite; PM ✓, Architect ⚠ (3 concerns addressed inline), Team-Lead ⚠ (4 tasks.md-level concerns flagged forward); deferred Path C scope refactor to Issue #250 backlog. Prior: F-248 Substitution Surface Hardening DELIVERED — BLP-02 Wave 1 complete (1/5); 5 /security findings closed; PR #249 squash-merged 2026-05-04 (commit 6db9a25))
+**Last Updated**: 2026-05-04 (F-250 Adversarial Unit Extraction Hot-Fix DELIVERED — 12 adversarial cases extracted to unit-level pytest modules + Phase 6 Option Z permanent CI test process hardening; macos-latest CI wall time 5m19s observed (target ≤15min PASSED); 29 tasks complete (T001-T021 original + T022-T029 Phase 6 expansion); PR #253 squash-merged 2026-05-04T16:39:23Z (release-please PR #254 v4.28.1 patch bump auto-opened ~35s post-merge); PM ✓, Architect ⚠, Team-Lead ⚠. Prior: F-248 Substitution Surface Hardening DELIVERED — BLP-02 Wave 1 complete (1/5); 5 /security findings closed; PR #249 squash-merged 2026-05-04 (commit 6db9a25))
 **Legend**: ✓=APPROVED, ⚠=APPROVED_WITH_CONCERNS, 🔄=CHANGES_REQUESTED, ⛔=BLOCKED, ⚠⚡=OVERRIDDEN
 
 
 | # | Feature | PM | Architect | Team-Lead | Status | Date |
 |---|---------|----|-----------|-----------| -------|------|
-| 250 | [Adversarial Unit Extraction Hot-Fix (BLP-02 follow-up)](250-adversarial-unit-extraction-hotfix-2026-05-04.md) | ✓ | ⚠ | ⚠ | Approved | 2026-05-04 |
+| 250 | [Adversarial Unit Extraction Hot-Fix (BLP-02 follow-up)](250-adversarial-unit-extraction-hotfix-2026-05-04.md) ([PR #253](https://github.com/davidmatousek/tachi/pull/253)) | ✓ | ⚠ | ⚠ | Delivered | 2026-05-04 |
 | 248 | [F-1 Substitution Surface Hardening (BLP-02 Wave 1)](248-substitution-surface-hardening-2026-05-03.md) ([PR #249](https://github.com/davidmatousek/tachi/pull/249)) | ✓ | ⚠ | ⚠ | Delivered | 2026-05-04 |
 | 241 | [F-8 + F-A3 Web/API Coverage Attestation + Populator Wiring [Tier 3]](241-web-api-coverage-attestation-2026-04-29.md) ([PR #242](https://github.com/davidmatousek/tachi/pull/242)) | ✓ | ⚠ | ⚠ | Delivered | 2026-05-01 |
 | 237 | [F-7 Mobile Top 10 Coverage Bundle [Tier 2]](237-mobile-top-10-coverage-bundle-2026-04-28.md) ([PR #238](https://github.com/davidmatousek/tachi/pull/238)) | ✓ | ⚠ | ⚠ | Delivered | 2026-04-29 |
