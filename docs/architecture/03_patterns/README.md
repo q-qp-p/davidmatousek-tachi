@@ -48,6 +48,7 @@ This directory documents reusable design patterns for tachi.
 - [Append-Only Logging with Graceful Failure](#pattern-append-only-logging)
 - [Circuit-Breaker Churn Detection](#pattern-circuit-breaker-churn-detection)
 - [Subshell Isolation for Strict Shell Options](#pattern-subshell-isolation-for-strict-shell-options)
+- [Strict KV-File Parsing (Read-Buffer → Regex-Validate → printf -v)](#pattern-strict-kv-file-parsing)
 
 ### Template Patterns (AOD Kit)
 - [Template Variable Expansion](#pattern-template-variable-expansion)
@@ -947,6 +948,58 @@ The key distinction is between `bash -c '...'` (new process, clean environment) 
 - [Function Library Sourcing](#pattern-function-library-sourcing) -- the standard pattern for calling library functions; subshell isolation is the variant for `set -e` contexts
 - [Graceful CLI Degradation](#pattern-graceful-cli-degradation) -- the outer pattern that skips non-critical operations; subshell isolation is the mechanism that makes graceful degradation safe under `set -e`
 - [Non-Fatal Observability Wrapper](#pattern-non-fatal-observability-wrapper) -- both patterns ensure secondary operations cannot block primary execution
+
+---
+
+### Pattern: Strict KV-File Parsing
+
+**Added**: Feature 256 (F-2 BLP-02 Wave 2 — Source-Pattern Hardening)
+**ADR**: [ADR-040](../02_ADRs/ADR-040-config-file-parsing-hardening.md)
+**Contract**: `contracts/config-load-helper-contract.md`; companion schema `contracts/stack-pack-defaults-schema.md`
+
+#### Problem
+Bash scripts loading configuration files via `source <file>` or `eval "$(grep KEY= <file>)"` route file content through bash's interpretation engine, which honors `$(...)` command substitution, `$VAR` parameter expansion, backtick command substitution, and shell escapes. A tampered, supply-chain-compromised, or arbitrary-write attacker-controlled config file (e.g., a `defaults.env` containing `CUSTOM_HOOK="$(touch /tmp/pwned)"` or a malformed `.aod/aod-kit-version` containing `version='1.0'; touch /tmp/pwned`) executes the side effect at source time. The four enumerated F-2 sites — `scripts/init.sh:106` defaults.env load, `template-git.sh:561` version-file read + `:485-515` writer self-test, `template-substitute.sh` four `eval` invocations, and `template-substitute.sh:162-209` personalization.env subshell-validate-then-caller-source — all exhibited this risk class (TACHI-VULN-6f5a95085056 / bf5496e9fcdf / 9a7512071b4a / 4dc6cf8f88ea).
+
+A naive "validate file then source it" approach has a TOCTOU race window between the validation pass and the source pass. A naive `grep -q $'\x00' <file>` NUL-byte check is also unsound — bash command substitution `$(cat "$path")` silently truncates the captured string at the first NUL byte, so a regex pass on the post-cat buffer never sees embedded NULs at all (an adversarial fixture `KEY=foo\x00bar\n` would be loaded as `KEY=foobar\n` without explicit pre-check, bypassing FR-005 AC-5.4 rejection).
+
+#### Solution
+Use the canonical `aod_template_load_kv_file <path> <var_prefix> [<allowed_keys_array_name>] [<key_case>]` primitive in `.aod/scripts/bash/template-config-load.sh`. The library implements a 7-step pipeline that treats file content as data, not code:
+
+1. **Argument validation** — path / prefix / key_case shape checks (exit 1 on bad args).
+2. **File existence + Step 2b NUL pre-check** — `LC_ALL=C wc -c < "$path"` vs `LC_ALL=C tr -d '\000' < "$path" | wc -c` size-comparison BEFORE the cat-into-buffer step (the file is processed on stdin where NULs survive; `LC_ALL=C` pinning ensures byte-counting semantics regardless of inherited locale; bash 3.2 + BSD-coreutils compatible). Different counts → exit 8 with `"NUL byte detected in <path>"`.
+3. **Single `cat $path` into in-memory buffer** — file is opened ONCE; attacker race window collapses to "before cat opens" (TOCTOU mitigation per H-2). No re-read between validation and assignment.
+4. **Per-line iteration on the here-string** — CRLF strip, leading-whitespace strip, skip blank/comment lines.
+5. **Per-line strict regex** (mode-dependent). Upper mode: `^[A-Z_][A-Z_0-9]*=("[^"$\\\`]*"|'[^']*'|[A-Za-z0-9._/:@+=-]*)$`. Lower mode: same shape with `[a-z_]` start class and `[a-z_0-9]` continuation. The unquoted-value class uses `*` (zero-or-more) per B-1 ruling — permits the bare `KEY=` empty-unquoted form required by version-file contract. The double-quoted alternative explicitly excludes `"`, `$`, `\`, and backtick — rejecting `$(...)`, `${VAR}`, `\n`, and `` `…` ``. The single-quoted alternative permits anything except `'` (single-quotes inhibit bash interpolation by definition). Regex fail → exit 8 + truncated content (no leak of the offending line).
+6. **Whitelist enforcement** — in-pass rejection of disallowed keys + post-pass completeness check on required keys (both report exit 8 with clear messages; the whitelist parameter is optional but mandatory for stack-pack `defaults.env` lockstep schema enforcement).
+7. **Defensive identifier check + `printf -v` caller-scope assignment** — staged (key, value) pairs assigned only after ALL validation passes (no partial assignment on validation failure). `printf -v "${prefix}${key}" '%s' "$value"` writes to the caller's scope without invoking bash interpretation on `$value`.
+
+The library is the **sole entry point** for config-file loading post-F-2 (US-2 acceptance contract). Future config-load sites adopt this function rather than inventing per-site validation.
+
+#### Files Using This Pattern
+| Site | File | Pre-F-2 mechanism | Post-F-2 mechanism |
+|------|------|-------------------|--------------------|
+| A | `scripts/init.sh:106` | `source "stacks/$SELECTED_PACK/defaults.env"` | `aod_template_load_kv_file` (upper, whitelist via `defaults.env` lockstep schema) |
+| B-primary | `.aod/scripts/bash/template-git.sh:561` (`aod_template_read_version_file`) | `source "$path"` | `aod_template_load_kv_file` (lower, whitelist `[version]`) |
+| B-roundtrip | `.aod/scripts/bash/template-git.sh:485-515` (writer self-test) | `source "$tmp_path" 2>/dev/null` | `aod_template_load_kv_file` (lower, whitelist `[version]`) |
+| C | `.aod/scripts/bash/template-substitute.sh:217,249,536,558` | Four `eval` invocations for dynamic variable lookup/assignment | Bash dynamic-deref `${!var}` + `printf -v` (no `eval`) |
+| D | `.aod/scripts/bash/template-substitute.sh:162-209` (`aod_template_load_personalization_env`) | Subshell-validate-then-caller-source | `aod_template_load_kv_file` (upper, whitelist via canonical-12 set) |
+
+#### When to Use
+- Any new config-file load site in `.aod/scripts/bash/` or `scripts/`
+- Adopting `defaults.env`, `*.env`, `*-config`, version-string, or KV-format file ingestion
+- Replacing existing `source <file>` or `eval "$(grep …)"` patterns when discovered
+
+#### When NOT to Use
+- Reading **structured** files (JSON / YAML / TOML) — use a structured parser; `aod_template_load_kv_file` is for flat KV-format only
+- Files with values containing `&`, regex metachars, or pipe characters in unquoted form — values must conform to the `[A-Za-z0-9._/:@+=-]*` unquoted class OR be wrapped in quotes (single-quote for adversarial values, double-quote for tame values that may contain spaces)
+- Reading files where the consumer needs full bash expansion (e.g., `PATH=$HOME/bin:$PATH` semantics) — by design this primitive treats `$` as adversarial; if you need shell expansion, a config file is the wrong contract
+
+#### Related Patterns
+- [Atomic File Write](#pattern-atomic-file-write) — counterpart write-side primitive; the read-buffer pattern collapses TOCTOU on the read side, atomic-write-then-rename collapses it on the write side
+- [Function Library Sourcing](#pattern-function-library-sourcing) — `template-config-load.sh` is sourced via this pattern at top of `init.sh` and from helpers in `.aod/scripts/bash/`
+- [Convention Contract (STACK.md)](#pattern-convention-contract) — the `contracts/stack-pack-defaults-schema.md` lockstep schema is itself a closed convention contract; new keys land in lockstep with whitelist updates
+- [Template Variable Expansion](#pattern-template-variable-expansion) — F-1's BLP-02 Wave 1 substitution pattern; F-2 (this pattern) reuses F-1's validation triplet (regex-validate → reject-on-mismatch → `printf -v`) discipline at file-line scope (F-1 applied it at `read -p` prompt-input scope)
+- [Session-Scoped init.sh Fixture](#pattern-session-scoped-init-sh-fixture) — F-250's pytest fixture pattern; F-2 reuses it for the `hanging_upstream` fixture testing the bundled clone-timeout watchdog
 
 ---
 

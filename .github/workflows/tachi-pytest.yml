@@ -1,15 +1,18 @@
 # =============================================================================
-# tachi pytest matrix — F-248 init.sh substitution test suite (Wave 4 T040)
+# tachi pytest matrix — init.sh substitution + source-pattern hardening suite
 # =============================================================================
 #
-# Purpose: Run the F-248 pytest suite (`tests/scripts/test_init_sh_*.py`)
-# on a 2-runner cross-platform matrix to catch bash-version regressions:
+# Purpose: Run the F-248 substitution-surface suite AND the F-256 source-
+# pattern-hardening suite (`tests/scripts/test_init_sh_*.py` +
+# `tests/scripts/test_template_*.py`) on a 2-runner cross-platform matrix to
+# catch bash-version regressions:
 #
 #   - macos-latest ships bash 3.2.57 (Apple's bundled /bin/bash). This is
 #     the OLDEST supported runtime and the strictest gate for compatibility
-#     constraints in `.aod/scripts/bash/template-substitute.sh` and
-#     `.aod/scripts/bash/init-input.sh` (NFR-001: bash 3.2.57+; no
-#     `mapfile`, no associative arrays, no `${var,,}`).
+#     constraints in `.aod/scripts/bash/template-substitute.sh`,
+#     `.aod/scripts/bash/init-input.sh`, `.aod/scripts/bash/template-git.sh`,
+#     and `.aod/scripts/bash/template-config-load.sh` (NFR-001: bash 3.2.57+;
+#     no `mapfile`, no associative arrays, no `${var,,}`).
 #
 #   - ubuntu-latest ships bash 5.x. This is the modern reference shell;
 #     a green ubuntu run on top of a green macOS run proves the test
@@ -20,26 +23,38 @@
 #   2. Sets up Python 3.11 (matches `tachi-mmdc-preflight.yml` baseline;
 #      pytest is installed via `python -m pip install pytest pytest-timeout`)
 #   3. Asserts `bash --version` to make the matrix gate visible in logs
-#   4. Runs the four init.sh test files with `--timeout=300` (per
-#      `tests/scripts/init_sh_helpers.run_init_in_clone` default of 180s
-#      plus headroom for fixture setup/teardown)
-#   5. Both matrix legs MUST pass green for T040 / G4 to close
+#   4. Runs the F-248 init.sh suite + the F-256 template-* suite with
+#      `--timeout=1080` (per F-250 outer cap rationale; see header comment
+#      on the pytest step below)
+#   5. Both matrix legs MUST pass green
 #
 # Path filter (NFR-005 alignment + scope discipline): the workflow ONLY
-# fires when files in the F-248 substitution-surface change. Pure docs
-# edits, ADR text, or unrelated agent-tier changes do NOT trigger this
-# job. This mirrors the narrow-scope pattern of `tachi-mmdc-preflight.yml`
-# and avoids burning CI minutes on edits that cannot affect the substitution
-# behavior.
+# fires when files in the F-248 + F-256 hardening surfaces change. Pure
+# docs edits, ADR text, or unrelated agent-tier changes do NOT trigger
+# this job. This mirrors the narrow-scope pattern of `tachi-mmdc-preflight.yml`
+# and avoids burning CI minutes on edits that cannot affect substitution or
+# config-loading behavior.
+#
+# Path-filter completeness pattern (F-250 lesson, reinforced by F-256):
+# the `paths:` filter and the `pytest` invocation MUST be kept in lock-step.
+# When adding a new test file or refactoring a new bash library file,
+# update BOTH the `paths:` trigger list AND the `python -m pytest ...`
+# command in the same commit. F-256 added 5 new test modules and a new
+# canonical helper (`template-config-load.sh`); all are now wired through
+# both paths and invocation below.
 #
 # References:
 #   - specs/248-substitution-surface-hardening/spec.md (FR-001..FR-011, NFR-001)
 #   - specs/248-substitution-surface-hardening/tasks.md (T039, T040)
-#   - specs/248-substitution-surface-hardening/agent-assignments.md (G4 gate,
-#     devops as T040 owner)
+#   - specs/250-adversarial-unit-extraction-hotfix/spec.md (timeout philosophy
+#     + session-scoped fixture rationale)
+#   - specs/256-source-pattern-hardening/spec.md (FR-1..FR-9, NFR-1..NFR-6,
+#     SC-1..SC-15) — adds Sites A-D + Stream 4 watchdog + canonical KV-load
+#     primitive `aod_template_load_kv_file`
 #   - docs/architecture/02_ADRs/ADR-038-placeholder-substitution-strategy.md
-#     §Test Coverage (8 substitution + 4 rejection + 1 case-13 + 1 residual
-#     + 1 constitution + 3 self-delete + 2 fixture-replay = 20 tests)
+#     §Test Coverage (F-248)
+#   - docs/architecture/02_ADRs/ADR-040-config-file-parsing-hardening.md
+#     §Test Coverage (F-256)
 # =============================================================================
 
 name: tachi pytest
@@ -52,9 +67,11 @@ on:
       - .aod/scripts/bash/template-substitute.sh
       - .aod/scripts/bash/template-validate.sh
       - .aod/scripts/bash/template-git.sh
+      - .aod/scripts/bash/template-config-load.sh   # F-256
       - .aod/templates/constitution-clean.md
       - .aod/templates/constitution-instructional.md
       - .aod/template-manifest.txt
+      - stacks/*/defaults.env                       # F-256 — Site A whitelist surface
       - tests/scripts/test_init_sh_substitution.py
       - tests/scripts/test_init_sh_adversarial.py
       - tests/scripts/test_init_sh_constitution.py
@@ -62,10 +79,17 @@ on:
       - tests/scripts/test_template_substitute_unit.py
       - tests/scripts/test_init_input_unit.py
       - tests/scripts/test_substitute_shim_canary.py
+      - tests/scripts/test_init_sh_defaults_env.py            # F-256
+      - tests/scripts/test_template_config_load_unit.py       # F-256
+      - tests/scripts/test_template_config_load_integration.py # F-256
+      - tests/scripts/test_template_git_clone_timeout.py      # F-256
+      - tests/scripts/test_template_substitute_lint_no_eval.py # F-256
       - tests/scripts/init_sh_helpers.py
       - tests/scripts/conftest.py
       - tests/fixtures/init-baseline-tree/**
       - tests/fixtures/regenerate-baseline.sh
+      - tests/fixtures/regenerate-config-load-baseline.sh     # F-256
+      - tests/fixtures/config-load/**                         # F-256
       - .github/workflows/tachi-pytest.yml
 
 permissions:
@@ -108,7 +132,7 @@ jobs:
           echo "/bin/bash --version: $(/bin/bash --version | head -1)"
           echo "default bash --version: $(bash --version | head -1)"
 
-      - name: Run F-248 init.sh pytest suite
+      - name: Run F-248 + F-256 hardening pytest suite
         # Direct invocation: `pytest` resolves to the venv-installed binary.
         # `--timeout=1080` is the OUTER pytest per-test cap; the helper's
         # subprocess `run_init_in_clone(timeout_sec=900)` is the INNER cap on
@@ -120,11 +144,21 @@ jobs:
         # ONCE per session instead of once per module — the outer/inner
         # timeouts give ~200s/180s slack on the worst observed scenario.
         #
-        # The 3 unit modules (test_template_substitute_unit, test_init_input_unit,
-        # test_substitute_shim_canary) are sub-second per case — they sit in
-        # the same pytest invocation so their changes also trigger CI on the
-        # F-248 substitution surface. Their timeouts are bound by the outer
-        # `--timeout=1080` pytest cap and finish in milliseconds.
+        # The unit modules (test_template_substitute_unit, test_init_input_unit,
+        # test_substitute_shim_canary, test_template_config_load_unit) are
+        # sub-second per case. The integration modules (test_init_sh_*,
+        # test_template_config_load_integration, test_template_git_clone_timeout)
+        # take longer because they spawn `init.sh` subprocesses or hanging-
+        # upstream fixtures. All sit in the same pytest invocation so changes
+        # to either the substitution surface (F-248) or the source-pattern
+        # surface (F-256) trigger the full CI run.
+        #
+        # F-256 modules added (Wave 3 + Wave 4):
+        #   test_init_sh_defaults_env.py            — Site A — stacks/*/defaults.env
+        #   test_template_config_load_unit.py       — KV-parser primitive
+        #   test_template_config_load_integration.py — full library round-trip
+        #   test_template_git_clone_timeout.py      — Stream 4 watchdog + AOD_FETCH_TIMEOUT
+        #   test_template_substitute_lint_no_eval.py — eval-removal lint guard
         run: |
           python -m pytest \
             tests/scripts/test_init_sh_substitution.py \
@@ -134,4 +168,9 @@ jobs:
             tests/scripts/test_template_substitute_unit.py \
             tests/scripts/test_init_input_unit.py \
             tests/scripts/test_substitute_shim_canary.py \
+            tests/scripts/test_init_sh_defaults_env.py \
+            tests/scripts/test_template_config_load_unit.py \
+            tests/scripts/test_template_config_load_integration.py \
+            tests/scripts/test_template_git_clone_timeout.py \
+            tests/scripts/test_template_substitute_lint_no_eval.py \
             -v --timeout=1080

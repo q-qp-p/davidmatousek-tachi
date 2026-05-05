@@ -1,8 +1,8 @@
 # Environment Variables Contract
 
-**Last Updated**: 2026-05-04
+**Last Updated**: 2026-05-05
 **Owner**: DevOps Agent
-**Scope**: Test-only and CI-only environment variables for the upstream template repository.
+**Scope**: Adopter-facing, test-only, and CI-only environment variables for the upstream template repository.
 
 ---
 
@@ -10,8 +10,51 @@
 
 This document is the single source of truth for environment variables read by template scripts, CI workflows, and test harnesses. Variables fall into two categories:
 
-1. **Adopter-facing** — variables that adopter projects set in their own environments (e.g., `AOD_BOOTSTRAP_*`, `CI`, `FORCE_RETAG`). These are documented in `CI_CD_GUIDE.md` → "Update-Script Environment Variables" and in `docs/guides/DOWNSTREAM_UPDATE.md`.
+1. **Adopter-facing** — variables that adopter projects set in their own environments (e.g., `AOD_BOOTSTRAP_*`, `CI`, `FORCE_RETAG`, `AOD_FETCH_TIMEOUT`). The bulk of these are documented in `CI_CD_GUIDE.md` → "Update-Script Environment Variables" and in `docs/guides/DOWNSTREAM_UPDATE.md`. Adopter-facing variables introduced by individual hardening features (e.g., F-256 `AOD_FETCH_TIMEOUT`) are mirrored below for cross-reference.
 2. **Test-only / CI-only** — variables used solely by the test harness or CI workflows for determinism, fixture regeneration, or matrix isolation. These are NOT public contract and NOT for production use. Documented below.
+
+---
+
+## F-256 Source-Pattern-Hardening Adopter Variable
+
+**Added in Feature 256** (Source-Pattern Hardening, PR #257, merged 2026-05-05).
+
+This variable is **adopter-facing** — adopters MAY set it in their own environments (typically CI runners) to bound the wall-clock cost of `git clone` operations performed by `aod_template_fetch_upstream` (invoked transitively by `/aod.update` and `make update`). It is read by `.aod/scripts/bash/template-git.sh` and validated against a strict regex BEFORE any clone is attempted (Q-3 footgun-rejection ruling).
+
+| Variable | Default | Read at | Purpose |
+|----------|---------|---------|---------|
+| `AOD_FETCH_TIMEOUT` | `60` (seconds; positive integer) | `.aod/scripts/bash/template-git.sh:98` (within `aod_template_fetch_upstream`) | Caps the wall-clock duration of the `git clone` subprocess that fetches the upstream template. On expiry, the watchdog SIGTERMs the clone PID, the partial checkout at `destdir` is `rm -rf`'d, and the function returns exit `9` with stderr `[aod] ERROR: upstream fetch timed out after ${seconds}s for url=<url> ref=<ref>`. Default of 60s matches the pre-F-256 implicit ceiling typical adopters expect; CI runners that want a tighter ceiling (e.g., for fail-fast on hung upstreams) can pass `AOD_FETCH_TIMEOUT=10` or similar. |
+
+**Validation contract** (per ADR-040 + spec FR-7 + Q-3 ruling):
+
+- Regex: `^[1-9][0-9]*$` (positive integer; rejects `0`, leading-zero forms like `01`, signed forms like `+5`, decimals, non-numeric strings, and the empty string).
+- Validation runs BEFORE the clone is attempted — invalid values cause exit `1` with stderr `[aod] ERROR: AOD_FETCH_TIMEOUT must be a positive integer (default 60); rejected: '<value>'`. The clone subprocess never starts, so the failure is fast and free of partial-checkout cleanup concerns.
+- Footgun rejection: `AOD_FETCH_TIMEOUT=0` is treated as malformed (not as "no timeout") because a zero-second timeout would unconditionally kill every clone before it could resolve DNS. The Q-3 PRD adjudication explicitly chose loud-rejection over silently treating it as the default.
+
+**Exit-code contract**:
+
+| Exit | Meaning |
+|------|---------|
+| `0` | Clone succeeded within the configured budget. |
+| `1` | `AOD_FETCH_TIMEOUT` rejected by validation (not numeric, zero, leading-zero, etc.). The clone never started. |
+| `9` | Clone exceeded the configured timeout. The watchdog SIGTERM'd the clone PID and removed the partial checkout. |
+
+**Adopter usage examples**:
+
+```bash
+# CI runner — tight ceiling for fail-fast on hung upstream:
+AOD_FETCH_TIMEOUT=15 make update
+
+# Slow corporate proxy — relaxed ceiling:
+AOD_FETCH_TIMEOUT=120 /aod.update
+
+# Default — most adopter workstations:
+make update    # 60s ceiling applied automatically
+```
+
+**Watchdog process-leak invariant** (per L-1 mitigation in spec): if the outer script (`init.sh` or `update.sh`) is interrupted (Ctrl+C) BEFORE the watchdog fires, `aod_template_fetch_upstream` traps `INT TERM EXIT` and kills the watchdog subshell on the way out — preventing orphaned `sleep ${AOD_FETCH_TIMEOUT}` processes from continuing in the background. Adopters should NOT rely on `wait` against the watchdog PID directly; the in-function trap is the canonical cleanup path.
+
+**Reference**: `docs/architecture/02_ADRs/ADR-040-config-file-parsing-hardening.md` §Stream 4 Watchdog. Spec FR-7 + AC-7.1..AC-7.5 + SC-8 + SC-9 in `specs/256-source-pattern-hardening/spec.md`. Test coverage: `tests/scripts/test_template_git_clone_timeout.py` (6 cases — hanging-upstream timeout at varied seconds, exit-1 footgun rejection for `0` / non-numeric / leading-zero, fast-clone happy path with no zombie watchdog).
 
 ---
 
@@ -65,6 +108,7 @@ These variables are read by `scripts/check-manifest-coverage.sh`, `scripts/check
 ## Cross-References
 
 - **Adopter-facing update env vars**: `docs/devops/CI_CD_GUIDE.md` → "Update-Script Environment Variables" (`CI`, `FORCE_RETAG`, `AOD_UPDATE_TMP_DIR`, `AOD_BOOTSTRAP_*`, `AOD_UPSTREAM_URL`, `YES`, `SKIP_MARKER`).
+- **Adopter-facing fetch-timeout var (F-256)**: `AOD_FETCH_TIMEOUT` documented above. Read by `.aod/scripts/bash/template-git.sh` to bound `git clone` wall-clock cost. Default 60s; positive-integer validation; exit 9 on timeout, exit 1 on invalid value.
 - **Adopter scaffold env vars (Playwright E2E)**: `docs/devops/CI_CD_GUIDE.md` → "Playwright E2E in Adopter CI (FastAPI Stack Packs)" (`TEST_DATABASE_URL`, `TEST_SECRET_KEY`, `BACKEND_TEST_PORT`, `FRONTEND_TEST_PORT`).
 - **`/aod.deliver` exit codes** (consumed by CI scripts, not env vars): `docs/devops/CI_CD_GUIDE.md` → "/aod.deliver Exit-Code Contract".
 

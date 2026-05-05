@@ -3,8 +3,12 @@ prd:
   number: 256
   topic: source-pattern-hardening
   created: 2026-05-04
-  status: Approved with Concerns
+  delivered: 2026-05-05
+  status: Delivered
   type: feature
+  pr: 257
+  pr_url: https://github.com/davidmatousek/tachi/pull/257
+  merge_sha: f959622
 triad:
   pm_signoff: {agent: product-manager, date: 2026-05-04, status: APPROVED, notes: "v1.1 final. Authored as BLP-02 Wave 2 follow-on to F-1 (#248) closure. 5 vuln_ids (2 HIGH + 2 MEDIUM + 1 LOW) bundled into one architectural pass establishing read-buffer → strict-KV-regex → printf-v as canonical config-loading primitive. New library `template-config-load.sh` exposing `aod_template_load_kv_file`; refactor of 4 source/eval sites + clone timeout watchdog. v1.0 Pass 1 surfaced 3 BLOCKING (Architect) + 2 HIGH (Team-Lead); v1.1 addressed all 3 BLOCKING (B-1 regex `*` not `+`; B-2 Path R-2 writer escape pass removal; B-3 line iteration mechanism + CRLF + leading-whitespace) + all 4 HIGH + 5/5 MEDIUM + 3/3 LOW (Architect) and Stream resizing (Team-Lead). Q-1..Q-6 all adjudicated and folded in. Pass 1.5 Architect APPROVED 2026-05-04 (all BLOCKING resolutions MATCH framing). Single-PR bundle with Day-5 conversion-lever; 9.5d active / 11d hard ceiling preserved (2026-05-05 → 2026-05-19)."}
   architect_signoff: {agent: architect, date: 2026-05-04, status: APPROVED, notes: "Pass 1.5 (v1.1): All 3 Pass 1 BLOCKING resolutions MATCH framing. B-1 regex uses `*` quantifier (line 444); Test-1 case 18 has empty-value PASS. B-2 Path R-2 chosen — escape pass removal + F-1 prompt validator amendment + CHANGELOG note all coordinated. B-3 explicit while-read mechanism with CRLF strip + leading-whitespace path-a; Test-1 cases 19-23. All 4 HIGH folded in (H-1 lower-mode regex + defensive identifier check; H-2 TOCTOU residual race window in ADR + FR-1; H-3 function name aod_template_write_version_file:485-515 corrected throughout; H-4 :558 no-`:-` semantics). Q-1..Q-6 all in new \"Open Question Resolutions (v1.1)\" section. Pass 1 (v1.0): 3 BLOCKING + 4 HIGH + 5 MEDIUM + 3 LOW. Full reviews: .aod/results/architect.md."}
@@ -16,8 +20,10 @@ source:
 
 # F-2 — Source-Pattern Hardening: Product Requirements Document
 
-**Status**: Approved with Concerns (v1.1 final — Pass 1.5 Architect APPROVED, Team-Lead APPROVED_WITH_CONCERNS Pass 1, PM APPROVED. v1.1 addressed all 3 Pass 1 BLOCKING + 4 HIGH + 5 MEDIUM + 3 LOW from Architect plus 2 HIGH + 6 MEDIUM + 3 LOW from Team-Lead.)
+**Status**: Delivered (PR #257 squash-merged 2026-05-05, SHA f959622). Closed 2/5 BLP-02 features. 5 /security vuln_ids closed (2 HIGH + 2 MEDIUM + 1 LOW) on bash source/eval surface; canonical `aod_template_load_kv_file` primitive shipped via `.aod/scripts/bash/template-config-load.sh`; 4 source/eval sites refactored; portable git clone timeout watchdog landed; ADR-040 *Config File Parsing Hardening* Proposed→Accepted; 9 new test files + adversarial fixture corpus; 62 tasks complete. ~24h delivery envelope (issue → PR merge), well under 9.5d active / 11d hard ceiling. v1.1 PRD final — Pass 1.5 Architect APPROVED, Team-Lead APPROVED_WITH_CONCERNS Pass 1, PM APPROVED. v1.1 addressed all 3 Pass 1 BLOCKING + 4 HIGH + 5 MEDIUM + 3 LOW from Architect plus 2 HIGH + 6 MEDIUM + 3 LOW from Team-Lead.
 **Created**: 2026-05-04
+**Delivered**: 2026-05-05
+**PR**: [#257](https://github.com/davidmatousek/tachi/pull/257) (SHA f959622)
 **Author**: product-manager
 **Reviewers**: architect (APPROVED Pass 1.5), team-lead (APPROVED_WITH_CONCERNS Pass 1)
 **Phase**: BLP-02 Wave 2 — second feature in the 5-feature enterprise hardening initiative; depends on F-1 (#248) which delivered 2026-05-04
