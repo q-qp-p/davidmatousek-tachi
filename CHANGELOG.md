@@ -9,6 +9,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Hardened config-file load (BLP-02 F-2)
+
+Replaced four bash `source`/`eval` config-file load sites with a hardened
+`aod_template_load_kv_file` library (KV parser; bash 3.2-compatible).
+
+**New library**: `.aod/scripts/bash/template-config-load.sh` — canonical
+config-load primitive. 7-step contract: arg validation → file existence →
+single-cat TOCTOU mitigation → per-line iteration → regex validation →
+whitelist enforcement → defensive identifier check + `printf -v` assignment.
+Internal `eval` carve-out: ONE invocation for bash 3.2 indirect array access
+(per ADR-040 Decision Item 7).
+
+**Refactored sites**:
+- `scripts/init.sh:106` — defaults.env load (Site A; closes
+  TACHI-VULN-6f5a95085056 HIGH). New variables prefixed `STACK_*`
+  (e.g., `STACK_TECH_STACK`).
+- `.aod/scripts/bash/template-git.sh` reader+writer round-trip
+  (Site B; closes TACHI-VULN-bf5496e9fcdf HIGH). Uses
+  `<key_case>=lower` mode for aod-kit-version field naming.
+- `.aod/scripts/bash/template-substitute.sh` 4× `eval` removal
+  (Site C; closes TACHI-VULN-9a7512071b4a MEDIUM). Replaced with
+  `${!var}` / `printf -v`.
+- `.aod/scripts/bash/template-substitute.sh` `aod_template_load_personalization_env`
+  47-line body collapsed to 7-line library delegation (Site D;
+  closes TACHI-VULN-4dc6cf8f88ea MEDIUM).
+
+**New env var**: `AOD_FETCH_TIMEOUT` (default 60s; positive integer regex
+`^[1-9][0-9]*$`) for `aod_template_fetch_upstream` clone watchdog
+(Stream 4; closes TACHI-VULN-851fd6a21ba9 LOW).
+
+**Adopter migration — F-1 contract amendment**: `aod_init_read_validated`
+in `.aod/scripts/bash/init-input.sh` now additionally rejects `$`,
+`\`, and backtick at the prompt boundary (per B-2 Path R-2). If your
+deployment relies on these characters in personalization values, you
+must migrate before adopting this release. New error message:
+`[init] Input rejected: metachar ($, \, backtick) not allowed; please re-enter.`
+
+**Reference**: ADR-040 (config file parsing hardening). Closes 5 vuln_ids:
+TACHI-VULN-6f5a95085056 (HIGH), TACHI-VULN-bf5496e9fcdf (HIGH),
+TACHI-VULN-9a7512071b4a (MEDIUM), TACHI-VULN-4dc6cf8f88ea (MEDIUM),
+TACHI-VULN-851fd6a21ba9 (LOW).
+
 ### Bug Fixes
 
 * **250:** Adversarial Unit Extraction Hot-Fix + Permanent CI Test Process Hardening — eliminates the cold-cache 300s subprocess timeout class on `macos-latest` that admin-overrode F-248's closing CI run (`25314246672`). **Three new pytest modules** at `tests/scripts/`: `test_template_substitute_unit.py` (8 substitution-semantics cases extracted from integration to unit-level), `test_init_input_unit.py` (5 input-rejection cases incl. positive-path canary FR-007), `test_substitute_shim_canary.py` (TC-1 closure asserting `shopt -u patsub_replacement` shim stays in `template-substitute.sh`). Process-substitution invocation pattern (`< <(printf '%s\n' "$INPUT")`) replaces shell pipe to avoid pipe-subshell `printf -v` caller-scope assignment loss (R-1 mitigation, FR-006). `LC_ALL=C` pinned in every per-case subprocess invocation to defend the multibyte UTF-8 case (R-4, FR-008). 12 init.sh integration invocations dropped to 5 (FR-014 / SC-003) — case 13 trailing-newline byte-identity + `test_no_residual_placeholders_after_init` + 3 retained integration modules. **Phase 6 Option Z scope expansion** (mid-build, authorized after CI run `25325616748` exposed recurring root causes the original F-250 PRD scope did not address; TC-4 fences explicitly relaxed; FR-019/FR-020 byte-unchanged invariants on `template-substitute.sh` and `init-input.sh` PRESERVED): session-scoped `init_run` fixture in `tests/scripts/conftest.py` collapses 5 module-scoped duplicates → 1 canonical clone (drops macos cold-cache cost from 5×300s+ to 2×300s+); asymmetric file-set check in `test_init_sh_substitution.py` (drops are FAIL — substitution regression; additions are TOLERATED — repo growth not a regression); substitution-target-only baseline restricted ~600 → ~53 files via refactored `tests/fixtures/regenerate-baseline.sh`; `run_init_in_clone(timeout_sec=)` default bumped 300s → 900s; pytest `--timeout` 360s → 1080s; `tachi-pytest.yml` `paths:` filter and `pytest` invocation extended to include the 3 new unit modules (workflow filter completeness gap). **Observed KPIs on PR #253 own merge**: `macos-latest` 5m19s wall time (target ≤15 min — FAR under; baseline band 30-40 min), `ubuntu-latest` 1m29s (unchanged), CI savings vs baseline `25314246672` ≈ 25-35 min per run (SC-005 ≥25 min target ✓). Both legs green; release-please PR #254 (`chore(main): release 4.28.1`) auto-opened ~35s post-merge. **ADR-039** (Test Architecture: Fixture Scope and Asymmetric Baseline, Accepted 2026-05-04) records the new test-architecture canon repo-wide. **KB Entry 2** captures the meta-lesson: when CI evidence contradicts a PRD's root-cause assumption mid-build, authorize a documented scope expansion (Phase 6 header naming relaxed fences) rather than papering over with retry loops or quick patches; preserved byte-unchanged invariants keep the relaxation reviewable. **Sustained tracking window** (T021) 2026-05-04 → 2026-05-18 captures the next 5 merges to confirm SC-002/SC-004/SC-005 hold under multi-merge load. Helper contracts (ADR-038) byte-unchanged: `git diff main -- .aod/scripts/bash/template-substitute.sh .aod/scripts/bash/init-input.sh` empty post-merge. 29/29 tasks complete (T020 release-please verification + T021 initial KPI sample closed by `/aod.deliver` retrospective). PR #253 squash-merged 2026-05-04 with `fix(250):` Conventional Commit title per R12 belt-and-suspenders enforcement. See `specs/250-adversarial-unit-extraction-hotfix/` for spec/plan/tasks/delivery.

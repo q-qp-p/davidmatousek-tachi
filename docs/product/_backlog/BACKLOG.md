@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-05-04T16:58:03Z.
+> Auto-generated from GitHub Issues on 2026-05-05T13:29:58Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -51,6 +51,7 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
+| #256 | Source-Pattern Hardening | OPEN | 2026-05-05 |
 | #217 | detect_images leaves duplicate .jpg/.png pair after recovery write | OPEN | 2026-04-25 |
 | #215 | fix: detect_images picks .jpg by filename, fails Typst when bytes are PNG | CLOSED | 2026-04-25 |
 | #209 | Fix 5 extractor/agent contract-drift bugs | CLOSED | 2026-04-24 |
