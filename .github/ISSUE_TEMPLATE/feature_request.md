@@ -47,3 +47,17 @@ Which Triad roles does this feature affect?
 ## Additional Context
 
 Mockups, related ADRs, blueprint links, prior art.
+
+---
+
+## Next Step (for contributors)
+
+This Issue captures discovery context. To pick it up via tachi's AOD lifecycle (replace `<NNN>` with this Issue's number after creation):
+
+1. **Re-score** (if priority needs validation against current strategy): `/aod.score <NNN>`
+2. **Promote to PRD**: `/aod.define <NNN>` — generates `docs/product/02_PRD/<NNN>-*.md` with Triad sign-offs (PM + Architect + Team-Lead)
+3. **Plan**: `/aod.plan` — chains spec → project-plan → tasks
+4. **Build**: `/aod.build` — implements per the plan with quality gates
+5. **Deliver**: `/aod.deliver <NNN>` — closure + retrospective
+
+External contributors: see [docs/AOD_TRIAD.md](docs/AOD_TRIAD.md) for governance overview, or jump straight to `/aod.define <NNN>` if scope is already clear from this Issue body.
