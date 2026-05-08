@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-05-08T18:00:02Z.
+> Auto-generated from GitHub Issues on 2026-05-08T18:05:53Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -43,7 +43,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| #272 | SECURITY.md and Private Disclosure Channel | 2026-05-08 | — | 2026-05-08 |
+| — | *No items in this stage* | | |
 
 ## Document
 
