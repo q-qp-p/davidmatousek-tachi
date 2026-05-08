@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "feature": "272-security-md-disclosure",
+  "total_waves": 15,
+  "waves_tested": 0,
+  "waves_skipped": 15,
+  "totals": {
+    "pass": 0,
+    "fail": 0,
+    "skip": 0
+  },
+  "total_regressions": 0,
+  "coverage_trend": null,
+  "gate_decisions": [],
+  "skip_reason": "Documentation-only feature; no source code change. Per Constitution Principle VII §Exceptions and Principle VI testing-excellence exemption noted in plan.md, no automated test tasks. Verification via post-merge /security re-scan (FR-013 — TACHI-VULN-05abc41ad4cc REMEDIATED) plus three [MANUAL-ONLY] UI inspections (FR-010 toggle, FR-011 button visibility, FR-012 URL smoke-test). All four automated/manual gates passed across Sessions 1-4."
+}
