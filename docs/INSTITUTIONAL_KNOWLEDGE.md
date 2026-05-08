@@ -174,6 +174,70 @@ The `tachi-pytest.yml` workflow uses a narrow `paths:` filter (NFR-005 alignment
 
 ---
 
+### Entry 4: F-3 SECURITY.md and Private Disclosure Channel — Delivery Retrospective
+
+## [Technical pattern] - Documentation-only DoD via Principle VII §Exceptions; GitHub-canonical SECURITY.md template; CHANGELOG sibling-h3 BLP-02-cluster placement
+
+**Date**: 2026-05-08
+**Feature**: F-3 (SECURITY.md and Private Disclosure Channel — BLP-02 Wave 3)
+**Category**: Technical pattern / governance / documentation discipline
+**Severity**: Informational (no incident — pattern capture)
+
+### Context
+
+F-3 closed TACHI-VULN-05abc41ad4cc (INFO, A05 Security Misconfiguration) by rewriting `SECURITY.md` to GitHub-canonical 5-section structure, enabling the Private Vulnerability Reporting toggle, adding a `README.md` pointer, and appending a `CHANGELOG.md` `## Unreleased` entry. Pure docs + repo-setting; zero code change. Estimated ≤4h active maintainer time per PRD SC-008; delivered same-day with 23/25 tasks complete (T024 + T025 are `/aod.deliver`-time only). Build report flagged two carry-forward IK notes: N-2 (D-6 sequence variance) and N-4 (CHANGELOG blueprint placement deviation).
+
+### Pattern 1: Documentation-only DoD via Principle VII §Exceptions
+
+**Problem**: tachi's Constitution Principle VI mandates testing-excellence coverage thresholds, but a feature that touches no source code has nothing to test in the unit/integration sense. Principle VII §Exceptions allows the exemption ("Documentation-only changes may not require production deployment"), but the application path needs to be demonstrable.
+
+**Solution**: F-3's plan.md Constitution Check section explicitly invokes the §Exceptions clause and maps all three Principle VII §Non-Negotiable Validation Steps to non-test verification: (1) ✅ Pushed via squash-merge; (2) ✅ Tested via post-merge `/security` re-scan + manual UI inspections (FR-010 toggle, FR-011 button, FR-012 URL form); (3) ✅ User-validated via PR review + post-merge button-visible check. The build's `test-results/summary.json` records `waves_skipped: 15` with rationale citing "Constitution Principle VII §Exceptions and Principle VI testing-excellence exemption noted in plan.md."
+
+**Apply when**: A feature is markdown/policy/repo-setting only, has no executable surface, and cannot be tested by unit/integration runners. Document the exemption in plan.md Constitution Check; map verification to post-merge instrumentation (`/security` re-scan for A05 closures; manual UI inspections for repo-setting changes); record `waves_tested: 0` with explicit `skip_reason` in `test-results/summary.json`. Do NOT silently bypass — the rationale-as-data is the auditable trail.
+
+### Pattern 2: GitHub-canonical SECURITY.md 5-section template
+
+**Problem**: Pre-F-3 `SECURITY.md` was 40 LOC, used non-canonical section names, and lacked procurement-defensible content (vendor disclosure policy, SLA, scope/out-of-scope, supported-versions worked example). Procurement reviewers running CAIQ/SIG-Lite rubrics couldn't mark the disclosure-policy + supported-versions line items GREEN without manual interpretation.
+
+**Solution**: F-3 rewrites `SECURITY.md` to the GitHub-canonical 5-section structure: **Supported Versions** → **Reporting a Vulnerability** → **What to expect** → **Scope** → **Out-of-scope**. Section names match GitHub Docs verbatim where prescribed. Section 1 includes a worked example referencing the latest tag (verified at write-time per FR-003 cross-check command). Section 2 surfaces the *Report a vulnerability* button as primary affordance with URL fallback + public-Issue prohibition + R-2 toggle-dependency footer. Section 3 contains the 5-business-day SLA verbatim + assessment-within-1-week + fix-timeline-after-assessment + credit clause. Section 4 enumerates in-scope tachi paths; Section 5 enumerates out-of-scope routing (Claude Code → Anthropic; third-party MCP → maintainers; adopter personalization → adopter; etc.). Total: 51 LOC (more compact than initial 80 LOC estimate).
+
+**Apply when**: Any tachi-derivative or AOD-Kit-derivative project needs a procurement-defensible SECURITY.md. Reuse the section ordering verbatim. Substitute the project-specific in-scope path enumeration (Section 4) and out-of-scope routing (Section 5). Preserve the 5-business-day SLA as the single-maintainer floor; raise voluntarily for critical reports without contractually committing.
+
+### Pattern 3: CHANGELOG sibling-h3 BLP-02-cluster placement (N-4 carry-forward)
+
+**Problem**: The plan.md blueprint placed the F-3 CHANGELOG entry under `## Unreleased → ### Features` as a top-level subsection. The F-2 precedent (Entry 3 sibling) instead used a sibling `### {Feature title} (BLP-02 F-N)` heading at the same level as `### Features` and `### Bug Fixes`, grouping all BLP-02 features as a cluster. The build T013 result deviated from the blueprint and matched the F-2 precedent: F-3's `### SECURITY.md and private disclosure channel (BLP-02 F-3)` heading sits between `### Hardened config-file load (BLP-02 F-2)` and `### Bug Fixes` rather than under `### Features`. Architect P2 checkpoint flagged this as N-4 minor.
+
+**Solution**: Sibling-h3 placement is the correct pattern for multi-feature initiatives like BLP-02 — it visually clusters related work in CHANGELOG and avoids fragmenting BLP-02 entries across `### Features` (where BLP-02 F-1 + F-3 would land) and `### Bug Fixes` (where the F-250 hot-fix landed). The blueprint placement was the deviation; the build's actual placement is the keeper.
+
+**Apply when**: Adding a CHANGELOG entry for any feature in a multi-feature initiative (BLP-02, BLP-03, future BLPs). Use a sibling h3 heading `### {Feature title} ({INITIATIVE} F-N)` at the same level as `### Features`/`### Bug Fixes`. Group consecutive same-initiative entries together. Future blueprints in plan.md should specify sibling-h3-cluster placement explicitly to avoid re-flagging this deviation.
+
+### Why This Matters
+
+Captured during structured `/aod.deliver` retrospective for F-3. Smooth — no major surprises. The three patterns are reusable: Pattern 1 unblocks future docs-only features (e.g., LICENSE updates, contributing-guide refreshes) from spurious test-coverage gates. Pattern 2 establishes the procurement-defensible SECURITY.md baseline reusable across tachi/AOD-Kit/derivative projects. Pattern 3 clarifies the CHANGELOG-cluster convention for the remaining BLP-02 features (Wave 4 + Wave 5) and future BLPs, removing the architect-N-4-style deviation from the next plan.md blueprint.
+
+**Tags**: #retrospective #delivery #architecture #pattern #docs-only #governance #security #changelog
+
+### Related Files
+
+- `specs/272-security-md-disclosure/spec.md` — Feature specification (5 user stories, 14 FRs, 12/12 ACs)
+- `specs/272-security-md-disclosure/plan.md` — Implementation plan (Constitution Check Principle VII §Exceptions invocation)
+- `specs/272-security-md-disclosure/tasks.md` — Task breakdown (T001–T025; T024+T025 deferred to /aod.deliver)
+- `specs/272-security-md-disclosure/test-results/summary.json` — Documented skip rationale for Principle VII §Exceptions
+- `SECURITY.md` — The 51-LOC GitHub-canonical 5-section rewrite
+- `CHANGELOG.md` — F-3 sibling-h3 BLP-02-cluster placement (the N-4 keeper pattern)
+- `README.md` — `## Community` section AC-12 one-line pointer
+- `.aod/results/security-scan.md` — Post-merge `/security` re-scan recording `TACHI-VULN-05abc41ad4cc → REMEDIATED`
+
+### Cross-References
+
+- **Sibling**: Entry 3 (F-2 / F-256 Source-Pattern Hardening) — F-3 follows F-2 in BLP-02 Wave sequence; CHANGELOG sibling-h3 placement (Pattern 3) was first established by F-2's entry style and is now codified as the BLP-02-cluster convention.
+- **Ancestor**: Entry 1 (F-248) — F-3 closes the LinkedIn-disclosure-pattern that F-248's RCA implicitly depended on (private channel availability); F-3 surfaces the channel as a procurement-defensible artifact.
+- **Pattern class**: "Documentation-as-feature" — F-3 demonstrates that a docs-only delivery can satisfy DoD, close a `/security` finding (TACHI-VULN-05abc41ad4cc), trigger a release-please cycle (#274 chore(main): release 4.33.0), and yield procurement-rubric value — without writing a single line of code.
+- **Initiative**: BLP-02 enterprise-hardening Wave 3 (3-of-5 features delivered). Predecessors: F-1 (#248) Wave 1 + F-250 hot-fix follow-on; F-2 (#256) Wave 2.
+- **Follow-up Issues**: #275 (AC-13 PVR-toggle posture probe), #276 (AC-14 release-please manifest-vs-tag investigation) — both filed at /aod.tasks-time, traced through delivery.
+
+---
+
 ## Bug Fixes
 
 *No entries yet. Use `/kb-create` to add the first bug fix.*

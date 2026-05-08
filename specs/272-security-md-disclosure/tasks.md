@@ -214,8 +214,8 @@ EOF
 
 ### Governance closure (handled at /aod.deliver time)
 
-- [ ] T024 At `/aod.deliver` time, flip `docs/product/02_PRD/INDEX.md` row 272 status `Approved` → `Delivered` and append the squash-merge PR link. The /aod.deliver workflow handles this; this task is listed for traceability only.
-- [ ] T025 At `/aod.deliver` time, update memory file `~/.claude/projects/-Users-david-Projects-tachi/memory/project_blp02_enterprise_hardening.md` to reflect Wave 3 → DELIVERED 3-of-5; append F-3 closure date and PR link to the BLP-02 narrative line. The /aod.deliver workflow handles this; this task is listed for traceability only.
+- [X] T024 At `/aod.deliver` time, flip `docs/product/02_PRD/INDEX.md` row 272 status `Approved` → `Delivered` and append the squash-merge PR link. The /aod.deliver workflow handles this; this task is listed for traceability only. **Result 2026-05-08**: Handled by product-manager agent during /aod.deliver Step 3; row 272 flipped to Delivered, PR #273 link appended; PRD-doc frontmatter also updated with `delivered`/`pr`/`squash_commit` fields. Files modified: `docs/product/02_PRD/INDEX.md`, `docs/product/02_PRD/272-security-md-disclosure-2026-05-08.md`.
+- [X] T025 At `/aod.deliver` time, update memory file `~/.claude/projects/-Users-david-Projects-tachi/memory/project_blp02_enterprise_hardening.md` to reflect Wave 3 → DELIVERED 3-of-5; append F-3 closure date and PR link to the BLP-02 narrative line. The /aod.deliver workflow handles this; this task is listed for traceability only. **Result 2026-05-08**: BLP-02 memory file updated — narrative line flipped to "3-of-5 features delivered through Wave 3"; new "Wave 3 closure (2026-05-08)" paragraph appended with full F-3 details (PR #273, commit 7b1cc53, no-ADR rationale, KB Entry 4 cross-reference); MEMORY.md index entry also updated to reflect Wave 2 + Wave 3 closures (W1 2026-05-04, W2 2026-05-05, W3 2026-05-08).
 
 **Checkpoint**: All FR-001..FR-014 satisfied; SC-001..SC-008 verifiable; BLP-02 Wave 3 ready for Initiative Tracker closure.
 

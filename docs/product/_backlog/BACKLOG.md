@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-05-08T14:53:29Z.
+> Auto-generated from GitHub Issues on 2026-05-08T18:00:02Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -43,7 +43,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| — | *No items in this stage* | | |
+| #272 | SECURITY.md and Private Disclosure Channel | 2026-05-08 | — | 2026-05-08 |
 
 ## Document
 
@@ -57,7 +57,8 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #272 | SECURITY.md and Private Disclosure Channel | OPEN | 2026-05-08 |
+| #276 | [chore] release-please manifest-vs-tag discrepancy investigation (post-F-3 follow-up) | OPEN | 2026-05-08 |
+| #275 | [chore] PVR-toggle posture probe (post-F-3 follow-up) | OPEN | 2026-05-08 |
 | #268 | fix: disentangle tachi-scanner from AOD-Kit positioning in .claude/rules/scope.md | CLOSED | 2026-05-07 |
 | #266 | fix: retitle CONTRIBUTING.md for tachi (currently labeled 'AOD Kit' with stale clone URL) | CLOSED | 2026-05-07 |
 | #264 | feat: adopt dual-frame public positioning (harness reframe) | CLOSED | 2026-05-07 |

@@ -3,7 +3,10 @@ prd:
   number: 272
   topic: security-md-disclosure
   created: 2026-05-08
-  status: Approved
+  status: Delivered
+  delivered: 2026-05-08
+  pr: 273
+  squash_commit: 7b1cc53
   type: feature
 triad:
   pm_signoff: {agent: product-manager, date: 2026-05-08, status: APPROVED, notes: "v1.1 final. Authored as BLP-02 Wave 3 — disclosure-channel counterpart to F-1 (#248) / F-2 (#256) code fixes from the same 2026-05-02 /security scan. v1.0 surfaced 2 BLOCKING (Architect C-1 v4.32.0 reference verification, C-2 90-day deprecation policy clash with daily minor cadence) + 5 lower-severity advisories from Architect and 5 non-blocking advisories from Team-Lead. v1.1 resolved C-1 via post-fetch verification (v4.32.0 IS real; manifest-vs-tag discrepancy captured as AC-14 follow-up Issue), C-2 via Option A (latest-minor-only; immediate deprecation on next minor — honest about single-maintainer cadence), C-3 via reframed dependencies section, C-4 via stacks/*/scaffold/ boundary clarification, R-6 (GitHub vendor-lock) added. Team-Lead advisories folded in: A-4 operational AC-2 cross-check command added, A-5 AC-11 promoted to mandatory + AC-12 README pointer promoted into scope, A-1 AC-13 posture-probe backlog Issue committed at /aod.deliver. Same-day-or-next-day delivery target preserved; ~100 LOC envelope; no code, no ADR, no tests."}
@@ -16,12 +19,13 @@ source:
 
 # F-3 — SECURITY.md and Private Disclosure Channel: Product Requirements Document
 
-**Status**: Approved (v1.1 — PM ✓, Architect ⚠, Team-Lead ⚠)
+**Status**: Delivered 2026-05-08 (PR [#273](https://github.com/davidmatousek/tachi/pull/273) squash-merged as `7b1cc53` on main; release-please PR #274 open)
 **Created**: 2026-05-08
 **Author**: product-manager
 **Reviewers**: architect (APPROVED_WITH_CONCERNS v1.1), team-lead (APPROVED_WITH_CONCERNS v1.0)
-**Phase**: BLP-02 Wave 3 candidate — third feature in the 5-feature enterprise hardening initiative; F-1 (#248) Substitution Surface DELIVERED 2026-05-04, F-2 (#256) Source-Pattern Hardening DELIVERED 2026-05-05, F-250 hot-fix DELIVERED 2026-05-04
+**Phase**: BLP-02 Wave 3 — third feature in the 5-feature enterprise hardening initiative; F-1 (#248) Substitution Surface DELIVERED 2026-05-04, F-2 (#256) Source-Pattern Hardening DELIVERED 2026-05-05, F-250 hot-fix DELIVERED 2026-05-04
 **Priority**: P1 (ICE 22 — I:8 C:7 E:7)
+**Delivered**: 2026-05-08 — closes TACHI-VULN-05abc41ad4cc (post-merge /security re-scan REMEDIATED); 23/25 tasks complete; 12/12 in-scope acceptance criteria pass; follow-up Issues #275 (AC-13 posture probe) + #276 (AC-14 manifest investigation) filed
 
 ---
 
@@ -182,7 +186,7 @@ The Private Vulnerability Reporting toggle lives in GitHub repo settings, not in
 | 1 | F-1 Substitution Surface Hardening | #248 | Delivered | 2026-05-04 |
 | 1 follow-on | F-250 Adversarial Unit Extraction Hot-Fix | #250 | Delivered | 2026-05-04 |
 | 2 | F-2 Source-Pattern Hardening | #256 | Delivered | 2026-05-05 |
-| **3** | **F-3 SECURITY.md and Private Disclosure Channel** | **#272** | **Approved (this PRD)** | **TBD** |
+| **3** | **F-3 SECURITY.md and Private Disclosure Channel** | **#272** | **Delivered (PR #273)** | **2026-05-08** |
 | 4 | F-clone-timeout DoS hardening | (already closed in F-2) | Closed-via-F-2 | 2026-05-05 |
 | 5 | F-constitution-sed migration | TBD | Backlog | TBD |
 
