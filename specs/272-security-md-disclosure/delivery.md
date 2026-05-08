@@ -190,10 +190,10 @@ T024 (PRD INDEX flip) handled by product-manager agent in Step 3. T025 (BLP-02 m
 
 ## Cleanup
 
-- [ ] Feature branch deleted (local + remote `272-security-md-disclosure`)
+- [x] Feature branch deleted (local + remote `272-security-md-disclosure`)
 - [x] All in-scope tasks complete (23 build-time + T024 + T025 = 25/25)
-- [ ] No TBD/TODO in docs (validated post-commit)
-- [ ] Committed and pushed (closure commit pending)
-- [ ] GitHub Issue closed (`stage:done` transition pending)
+- [x] No TBD/TODO in docs (PRD wave-table row 272 flipped from `TBD` to `Delivered (PR #273)` / `2026-05-08`)
+- [x] Committed and pushed (closure commit `d5ca474` + user-stories export `14aef56` on main)
+- [x] GitHub Issue #272 closed (`stage:done` transition complete; closing comment cross-references `specs/272-security-md-disclosure/delivery.md`)
 
 **Feature 272 is now officially CLOSED.**
