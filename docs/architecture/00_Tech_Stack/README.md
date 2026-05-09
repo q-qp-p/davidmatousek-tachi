@@ -1,6 +1,6 @@
 # Technology Stack - tachi
 
-**Last Updated**: 2026-05-04
+**Last Updated**: 2026-05-09
 **Owner**: Architect
 
 ---
@@ -332,6 +332,42 @@ When adding a new user-facing template file to the kit, use `tachi` wherever the
 - See [Minimal-Return Subagent pattern](../03_patterns/README.md#pattern-minimal-return-subagent) for implementation guidance
 
 **Context budget impact**: A full Triad review cycle (3 reviewers) consumes less than 600 tokens in the main context (down from 1,500-6,000 tokens), enabling 90+ minute sustained orchestration sessions.
+
+---
+
+### Claude Code Permissions Baseline (Feature 277)
+
+**Configuration surface**: `.claude/settings.json` — curated four-category Claude Code permissions baseline (~80 LOC after Cat-1 dedup) replacing the pre-F-4 26-rule allow-only file accumulated organically. Schema is strict JSON (RFC 8259, no `//` comments, no JSONC). Committed JSON has only the three Claude-Code-native arrays: `deny` / `ask` / `allow`.
+
+**Policy surface**: [`docs/standards/CLAUDE_PERMISSIONS.md`](../../standards/CLAUDE_PERMISSIONS.md) (~250 LOC) — self-contained policy decision log: per-rule rationale, audit-policy framing for SecOps reviewers, settings-precedence with worked examples, three opt-out paths, known limitations.
+
+**Architecture**: Curated static rule set with documented opt-out paths (Feature 277 — F-4 BLP-02 Wave 4). The four-category framing is a `CLAUDE_PERMISSIONS.md` convention; the `.claude/settings.json` JSON arrays are the runtime surface.
+
+| Category | Surface | Description |
+|----------|---------|-------------|
+| Cat 1 — Read-only auto-approve | `permissions.allow` (~10 non-built-in rules) | `Bash(rg:*)`, `Bash(gh issue view:*)`, `Bash(gh pr view:*)`, etc. Built-in read-only commands (`ls`, `cat`, `head`, `tail`, `grep`, `find`, `wc`, `diff`, `stat`, `du`, `cd`, read-only `git` forms) deliberately omitted as no-op (built-in auto-approve preserved via no-rule probe at T009/T025). |
+| Cat 2 — Local-state auto-approve | `permissions.allow` (~30 rules) | Recoverable mutations (`Edit`, `Write`, `Bash(git add:*)`, `Bash(git commit:*)`, `Bash(npm test:*)`, `Bash(make:*)`); network-touching writes (`Bash(git push:*)`, `Bash(git pull:*)`, `Bash(gh issue create:*)`) live here when destructive variant is denied at Cat 3a. |
+| Cat 3 — Destructive deny+ask | `permissions.deny` (~20 rules) + `permissions.ask` (~12 rules) | Catastrophic-irreversible at `deny`: `Bash(rm -rf:*)`, `Bash(git push --force:*)`, `Bash(git reset --hard:*)`, `Bash(gh release delete:*)`, `Bash(gh repo delete:*)`, `Bash(npm publish:*)`, `Bash(dd:*)`, `Bash(sudo:*)`. Usually-safe-but-warrants-confirmation at `ask`: `Bash(git push --force-with-lease:*)`, `Bash(gh release create:*)`, `Bash(brew install:*)`, `Bash(eval:*)`. |
+| Cat 4 — Network host-allowlist | `permissions.allow` (19 explicit `WebFetch(domain:<host>)` rules) | GitHub family (`github.com`, `api.github.com`, `raw.githubusercontent.com`, `githubusercontent.com`, `objects.githubusercontent.com`, `codeload.github.com`, `github.io`); Anthropic family (`code.claude.com`, `docs.anthropic.com`, `anthropic.com`, `claude.com`, `platform.claude.com`); OWASP family (`owasp.org`, `cheatsheetseries.owasp.org`, `genai.owasp.org`); MITRE family (`mitre.org`, `attack.mitre.org`, `atlas.mitre.org`); NIST (`csrc.nist.gov`). Per-subdomain explicit because subdomain matching is not transitive (Claude Code Issues #15260, #11972, #1217 — `WebFetch(domain:github.com)` does NOT match `api.github.com`; `WebFetch(domain:*)` wildcard does NOT work). |
+
+**Cross-list precedence**: `deny → ask → allow`, first-match-wins per `code.claude.com/docs/en/permissions`. The baseline relies on cross-list ordering (e.g. `Bash(git push --force:*)` deny overrides `Bash(git push:*)` allow at Cat 2) NOT on a "more-specific-pattern-wins-within-a-list" mechanism Claude Code does not implement. Project-level `permissions.deny` shadows adopter `.claude/settings.local.json` allows per AC-12 cross-file probe at T015 (CREATE → ATTEMPT → REMOVE transient fixture).
+
+**Subdomain non-collapse documented (AC-7 ANOMALY at T018)**: `gist.github.com` auto-approves under parent `github.com` rule despite Claude Code Issues #15260/#11972/#1217 documentation — the 19-domain list MAY be reviewed for compaction in a follow-up Issue if Claude Code semantics ever changes to support subdomain collapse.
+
+**Three documented opt-out paths** (`CLAUDE_PERMISSIONS.md §Opt-Out-Paths`):
+- **Path 1 — per-tool disable via Claude Code CLI flag**: short-term sandbox sessions
+- **Path 2 — fork-and-edit `.claude/settings.json`**: load-bearing path for permitting a baseline-denied operation given cross-file deny precedence
+- **Path 3 — `.claude/settings.local.json`**: adding personal allows for operations not denied at the project level (does NOT override project-level denies)
+
+**Known limitations honestly disclosed** (`CLAUDE_PERMISSIONS.md §Known-Limitations`): (R-8) Bash pattern fragility — deny rules pattern-match the literal command-line string, so `bash -c 'rm -rf /tmp/x'` does NOT match `Bash(rm -rf:*)` because the wrapper changes the matched string (calibration: deny rules are casual-typo defense, not adversarial); (R-10) read-only built-in shadow — a future Claude Code update may add a built-in command shadowing an explicit allow rule, making it no-op; documented maintenance contract: re-verify the built-in set against the latest Claude Code release on each `/aod.update` cycle.
+
+**Verification recipe** (`plan.md §Verification-Recipe`): programmatic AC-1 (`jq -e empty` JSON validity) + AC-2 (rule-vs-doc cross-check ensuring every non-built-in rule in `.claude/settings.json` appears in `CLAUDE_PERMISSIONS.md` per-rule table; every table row references a rule or is flagged as built-in) + AC-9 (no-machine-paths grep); interactive AC-6 sub-checks (built-in `git status` auto-approve regression + `Bash(rm -rf)` deny prompt) + AC-7 (subdomain probe) + AC-12 (cross-file fixture). Post-merge `/security` re-scan (FR-014) is regression-only — F-4 closes no `/security` finding directly (posture-gap-closure, not vuln-closure).
+
+**Trade-off**: `.claude/settings.json` is more verbose (~80 LOC vs 26 LOC pre-F-4) — accepted in exchange for safety + auditability. `CLAUDE_PERMISSIONS.md` absorbs the rationale; the JSON itself stays minimal (rule strings only, no inline comments per strict-JSON commit decision).
+
+**Same Wood-thread origin as ADR-040** (F-2 / Feature 256 BLP-02 Wave 2 config-file parsing hardening) but addresses a separate code-path attack surface — ADR-041 is the **first ADR to govern the AI-agent permissions surface** in tachi.
+
+**See**: [ADR-041](../02_ADRs/ADR-041-claude-permissions-baseline.md) for design decision (4 Decisions, 6 Alternatives Considered, 7 Trade-offs); [`docs/standards/CLAUDE_PERMISSIONS.md`](../../standards/CLAUDE_PERMISSIONS.md) for the operator-facing per-rule rationale and opt-out paths.
 
 ---
 

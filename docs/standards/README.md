@@ -8,6 +8,7 @@
 | Document | Purpose |
 |----------|---------|
 | [CLAUDE_MD_ORGANIZATION.md](CLAUDE_MD_ORGANIZATION.md) | CLAUDE.md structure and organization |
+| [CLAUDE_PERMISSIONS.md](CLAUDE_PERMISSIONS.md) | Self-contained policy decision log for the curated four-category `.claude/settings.json` Claude Code permissions baseline — per-rule rationale, audit-policy framing for SecOps reviewers, settings-precedence with worked examples (within-file + cross-file), three opt-out paths (Path 1 per-tool disable / Path 2 fork-and-edit / Path 3 `.claude/settings.local.json` personal allows), known limitations (Bash pattern fragility R-8, read-only built-in shadow R-10), built-in read-only set maintenance contract. Cross-linked one-to-one with the rules in `.claude/settings.json` via the AC-2 cross-check script. Companion to [ADR-041](../architecture/02_ADRs/ADR-041-claude-permissions-baseline.md) (Feature 277 — F-4 Claude Permissions Baseline, BLP-02 Wave 4) |
 | [DEFINITION_OF_DONE.md](DEFINITION_OF_DONE.md) | 3-step validation for feature completion |
 | [EVAL_CONVENTIONS.md](EVAL_CONVENTIONS.md) | Eval suite authoring, schema, execution, and grading for Claude Code skills (Feature 083) |
 | [FILE_HEADER_STANDARDS.md](FILE_HEADER_STANDARDS.md) | Standard headers for documentation files |

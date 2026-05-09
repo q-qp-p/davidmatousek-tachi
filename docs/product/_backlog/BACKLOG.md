@@ -1,6 +1,6 @@
 # Backlog
 
-> Auto-generated from GitHub Issues on 2026-05-09T13:54:35Z.
+> Auto-generated from GitHub Issues on 2026-05-09T18:38:45Z.
 > Source of truth: GitHub Issues with `stage:*` labels.
 > Regenerate: `/aod.status` or `.aod/scripts/bash/backlog-regenerate.sh`
 
@@ -43,7 +43,7 @@
 
 | # | Title | Delivered | Retro | Updated |
 |---|-------|-----------|-------|---------|
-| — | *No items in this stage* | | |
+| #277 | Claude Permissions Baseline | 2026-05-09 | — | 2026-05-09 |
 
 ## Document
 
@@ -57,7 +57,8 @@
 
 | # | Title | State | Updated |
 |---|-------|-------|---------|
-| #277 | Claude Permissions Baseline | OPEN | 2026-05-08 |
+| #281 | [chore] CI integration for F-4 verification recipe (post-F-4 follow-up) | OPEN | 2026-05-09 |
+| #280 | [chore] Pre-commit hook for .claude/settings.json + CLAUDE_PERMISSIONS.md AC-2 cross-check (post-F-4 follow-up) | OPEN | 2026-05-09 |
 | #276 | [chore] release-please manifest-vs-tag discrepancy investigation (post-F-3 follow-up) | OPEN | 2026-05-08 |
 | #275 | [chore] PVR-toggle posture probe (post-F-3 follow-up) | OPEN | 2026-05-08 |
 | #268 | fix: disentangle tachi-scanner from AOD-Kit positioning in .claude/rules/scope.md | CLOSED | 2026-05-07 |
