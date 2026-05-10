@@ -1,7 +1,7 @@
 # ADR-042: Pre-commit Secret-Scanning Default — gitleaks-via-pre-commit + Wrapper-Augmented Refusal Contract + CI Parity Back-stop
 
-**Status**: Proposed
-**Date**: Proposed: 2026-05-10 (PRD v1.0 Approved); to be Accepted at squash-merge of feature 282 per /aod.deliver T034.
+**Status**: Accepted
+**Date**: Proposed: 2026-05-10 (PRD v1.0 Approved); Accepted: 2026-05-10 at squash-merge of feature 282 (PR #283, commit `18378bd`) per /aod.deliver T034.
 **Deciders**: PM (APPROVED 2026-05-10), Architect (APPROVED 2026-05-10), Team-Lead (APPROVED_WITH_CONCERNS 2026-05-10).
 **Feature**: [282-pre-commit-secret-scanning-defaults](../../../specs/282-pre-commit-secret-scanning-defaults/spec.md)
 **Initiative**: BLP-02 Wave 4+ (enterprise hardening — fifth and final feature in the 5-feature initiative; closes the 2026-05-02 Daniel Wood LinkedIn-thread enterprise-hardening rubric alongside F-2 / F-3 / F-4).
