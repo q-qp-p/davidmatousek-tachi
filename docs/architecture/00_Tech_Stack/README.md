@@ -371,6 +371,36 @@ When adding a new user-facing template file to the kit, use `tachi` wherever the
 
 ---
 
+### Pre-commit Secret-Scanning Defaults (Feature 282)
+
+**Configuration surfaces**: `.pre-commit-config.yaml` (~30-50 LOC pinned commit-SHA reference to gitleaks) + `.gitleaks.toml` (~50-80 LOC `[extend] useDefault = true` + `[[allowlists]]` for env-var placeholders + 2 `[[rules]]` for tachi-specific patterns) + `.aod/personalization.env.example` (~10-20 LOC adopter-keys template) + `.aod/scripts/bash/precommit-wrap.sh` (~50 LOC bash 3.2-compatible wrapper) + `.github/workflows/gitleaks.yml` (~25-40 LOC CI parity workflow).
+
+**Policy surface**: [`docs/standards/PRECOMMIT_HOOKS.md`](../../standards/PRECOMMIT_HOOKS.md) (~150-250 LOC) — self-contained 9-section operator handbook: per-rule rationale catalog cross-linked one-to-one to `.gitleaks.toml`; documents installation/opt-out/bypass paths, refused-commit error contract, CI parity, re-init behavior, known limitations, adopter customization.
+
+**Test surface**: `tests/fixtures/gitleaks-rule-interaction/` ships **16 synthetic fixtures** (6 should-fire real-format credentials + 4 placeholder + 4 path-allow-listed + 2 path-excluded) with co-located `bash run.sh` runner per Architect CONCERN-1 (HIGH) — preventive false-positive verification before pin-bump merges (Pre-Mortem FM-3 mitigation).
+
+**Architecture**: scaffold + config + bash-script-delta only (Feature 282 — F-5 BLP-02 Wave 4+). No new agent, no schema bump, no `finding.yaml` shape change. **Five decision items** structure the surface (full rationale in ADR-042; operator-facing form in `PRECOMMIT_HOOKS.md`):
+
+| Decision | Component | Rationale |
+|----------|-----------|-----------|
+| **D1** — gitleaks v8.30.1 (commit-SHA pinned) | `.pre-commit-config.yaml` | Single-binary Go runtime, MIT license, ~150+ default credential patterns, TOML allow-list ergonomics. Selected over **9 alternatives** (trufflehog, detect-secrets, GitHub native push-protection, custom regex hook, opt-out flag, tier the hooks, GitGuardian, SecretLint, git-secrets). **PRD comparison-matrix correction**: trufflehog v3 runtime is Go (not Python — outdated 2018-era v2 carry-forward); decisive axis is allow-list ergonomics (TOML vs Go verifiers), not language runtime. Pin via `pre-commit autoupdate --freeze` produces commit-SHA reference in committed `.pre-commit-config.yaml`. |
+| **D2** — Pre-commit framework v3.5.0+ floor | `.pre-commit-config.yaml` + `scripts/init.sh` | Below this version, `repos[].rev` SHA-pin pattern produced by `--freeze` may silently partial-install or runtime-crash. `init.sh` checks `pre-commit --version` at install time and emits `WARN` (not abort) if below floor. Floor justified in `PRECOMMIT_HOOKS.md` §8.7. |
+| **D3** — Wrapper script (LOCAL-ONLY) for stderr augmentation | `.aod/scripts/bash/precommit-wrap.sh` | gitleaks does NOT support stderr templating natively — wrapper augments refused-commit stderr to a 4-item structured contract (rule ID + file:line + `SKIP=gitleaks` bypass + docs link) for first-time-contributor honest-disclosure. **Pre-Mortem FM-5 exit-code-capture pattern**: capture `rc=$?` BEFORE the stderr augmentation block so a failure inside augmentation cannot mask the underlying gitleaks rc. CI workflow invokes gitleaks binary DIRECTLY (NOT through wrapper) to preserve native SARIF output for GitHub Code Scanning compatibility. |
+| **D4** — Opt-in posture for existing adopters (FR-010) | `scripts/init.sh` (TTY-gated `[ -t 0 ]` prompt + `--no-precommit`/`--precommit` flags) | New adopters via init.sh get default-Y prompt at first-run; existing adopters NOT auto-installed via `git pull` (one-line opt-in via `pre-commit install` documented in CHANGELOG + README pointer). Default-secure for new + opt-in for existing preserves adopter agency (BLP-02 surprise-quotient principle from F-3 / F-4). Raw `read -p` waiver per Q10 (boolean Y/n prompt) — rationale in ADR-042 §Decision Item 4 referencing ADR-040 substitution-model precedent. |
+| **D5** — CI parity workflow with direct binary invocation | `.github/workflows/gitleaks.yml` | Downloads gitleaks binary release tarball + verifies SHA256 checksum (avoids proprietary `gitleaks-action@v2` paid `GITLEAKS_LICENSE` for org repos); full-repo scan on `pull_request` per Q5; SARIF upload via `github/codeql-action/upload-sarif@v3` to GitHub Code Scanning. Native gitleaks output (no wrapper) preserves machine-readable SARIF for tooling consumption. |
+
+**Six concrete pre-F-5 deficits closed**: (1) no automated commit-time gate — credentials reached `origin` before any human review; (2) no allow-list discipline — even if a scanner were added ad-hoc, every documentation-placeholder credit would refuse the commit absent careful allow-list curation; (3) no error-message contract — generic gitleaks output does not tell first-time contributors how to bypass for known-good cases; (4) no CI back-stop — `git commit --no-verify` is one flag and bypass succeeds silently without CI re-scan; (5) no opt-in posture for existing adopters — auto-installing on `git pull` would surprise adopters mid-workflow; (6) no per-rule rationale documentation — SecOps reviewers had no audit-defensible artifact when asked "why this rule?"
+
+**Pin-bump cadence policy** (per Architect A-2): gitleaks `rev` lifts on each **minor** release with empirical re-test against `tests/fixtures/gitleaks-rule-interaction/` BEFORE merging the bump; patch releases bump opportunistically on confirmed CVE/regression fixes; **major** releases trigger ADR re-evaluation (the gitleaks v8 → v9 boundary in particular: schema changes like the `[allowlist]` → `[[allowlists]]` v8.25.0 transition are exactly the kind of break the synthetic-fixture re-test guards against). Owner accountability lives in the BLP-02 closure memo as a recurring maintenance commitment (Architect CONCERN-4 / post-merge follow-up Issue T033).
+
+**No new runtime dependencies** for tachi's own codebase (dev or production). Pre-commit framework + gitleaks are adopter-installed external tooling; `precommit-wrap.sh` uses bash builtins only (bash 3.2.57 macOS-compatible). The harness scope: scanner binary download deferred to install-time (local) and CI workflow run-time (one-time per workflow run, not per-commit metadata phone-home).
+
+**Same Wood-thread origin as ADR-040 + ADR-041** (F-2 / Feature 256 BLP-02 Wave 2 + F-4 / Feature 277 BLP-02 Wave 4) but addresses a separate code-path attack surface — ADR-042 is the **first ADR to govern the credential-scanning surface** in tachi. **F-5 closes BLP-02 5/5** (alongside F-1 / F-2 / F-3 / F-4) and the 2026-05-02 Daniel Wood LinkedIn-thread enterprise-hardening punch-list 3/3 (alongside F-3 + F-4).
+
+**See**: [ADR-042](../02_ADRs/ADR-042-pre-commit-secret-scanning-default.md) for design decision (7 Decision Items, 9 Alternatives Considered, full Consequences); [`docs/standards/PRECOMMIT_HOOKS.md`](../../standards/PRECOMMIT_HOOKS.md) for the operator-facing 9-section handbook with per-rule rationale catalog.
+
+---
+
 ### Stack Packs System
 
 **Directory**: `stacks/` (convention contracts, persona supplements, scaffold templates, rules)

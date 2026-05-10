@@ -1,6 +1,6 @@
 # Environment Variables Contract
 
-**Last Updated**: 2026-05-05
+**Last Updated**: 2026-05-10
 **Owner**: DevOps Agent
 **Scope**: Adopter-facing, test-only, and CI-only environment variables for the upstream template repository.
 
@@ -105,12 +105,27 @@ These variables are read by `scripts/check-manifest-coverage.sh`, `scripts/check
 
 ---
 
+## F-282 / F-5 Pre-commit Secret-Scanning — No New Environment Variables
+
+**Added in Feature 282 / F-5** (Pre-commit Secret-Scanning Defaults, PR #283, merged 2026-05-10). For cross-reference: F-5 introduces **no new environment variables** of any kind (adopter-facing, test-only, or CI-only). The adjacent contracts F-5 interacts with are:
+
+- `SKIP=gitleaks` — pre-existing pre-commit framework env var (NOT tachi-specific). Single-commit bypass for the gitleaks hook only — other hooks still run. Documented in `docs/standards/PRECOMMIT_HOOKS.md` §4.1 as the recommended bypass for one-off commits with intentional credential-shaped content.
+- `pre-commit` framework version floor: enforced via the `pre-commit --version` shell call inside `scripts/init.sh`, NOT via an environment variable. Below v3.5.0 the init script logs a WARN with upgrade guidance and continues — does NOT abort.
+- `--precommit` / `--no-precommit` flags on `scripts/init.sh`: CLI-level, NOT env-var-level. The flags affect first-run init only; post-init opt-out is `pre-commit uninstall`.
+
+The CI parity workflow at `.github/workflows/gitleaks.yml` reads no environment variables either — gitleaks version (`v8.30.1`) and SHA256 checksum (`551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb`) are hardcoded constants in the workflow YAML, intentionally NOT externalized to env vars or repository secrets. Bumping gitleaks requires editing both constants together (see `docs/devops/CI_CD_GUIDE.md` → "Gitleaks CI Parity Workflow (F-282 / F-5)" → Bumping gitleaks).
+
+**Reference**: `docs/architecture/02_ADRs/ADR-042-pre-commit-secret-scanning-default.md` §Decision. Spec FR-001..FR-013 in `specs/282-pre-commit-secret-scanning-defaults/spec.md`. Policy log: `docs/standards/PRECOMMIT_HOOKS.md`.
+
+---
+
 ## Cross-References
 
 - **Adopter-facing update env vars**: `docs/devops/CI_CD_GUIDE.md` → "Update-Script Environment Variables" (`CI`, `FORCE_RETAG`, `AOD_UPDATE_TMP_DIR`, `AOD_BOOTSTRAP_*`, `AOD_UPSTREAM_URL`, `YES`, `SKIP_MARKER`).
 - **Adopter-facing fetch-timeout var (F-256)**: `AOD_FETCH_TIMEOUT` documented above. Read by `.aod/scripts/bash/template-git.sh` to bound `git clone` wall-clock cost. Default 60s; positive-integer validation; exit 9 on timeout, exit 1 on invalid value.
 - **Adopter scaffold env vars (Playwright E2E)**: `docs/devops/CI_CD_GUIDE.md` → "Playwright E2E in Adopter CI (FastAPI Stack Packs)" (`TEST_DATABASE_URL`, `TEST_SECRET_KEY`, `BACKEND_TEST_PORT`, `FRONTEND_TEST_PORT`).
 - **`/aod.deliver` exit codes** (consumed by CI scripts, not env vars): `docs/devops/CI_CD_GUIDE.md` → "/aod.deliver Exit-Code Contract".
+- **F-5 / F-282 pre-commit secret-scanning** (no new env vars; framework-level `SKIP=gitleaks` bypass only): `docs/standards/PRECOMMIT_HOOKS.md` §4. CI parity workflow: `docs/devops/CI_CD_GUIDE.md` → "Gitleaks CI Parity Workflow (F-282 / F-5)".
 
 ---
 
