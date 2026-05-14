@@ -2,7 +2,7 @@
 
 **Status**: Accepted
 **Date**: 2026-05-14 (Proposed) → 2026-05-14 (Accepted, provisional pre-PR; final commit-SHA filled post-merge)
-**Accepted-commit-SHA**: `<pending-post-merge-fill>`
+**Accepted-commit-SHA**: `0629fa2`
 **Feature**: F-292 (PRD #292)
 **Lineage**: Heuristic A enrichment branch, same-agent enrichment within F-1 `output-integrity` (8th BLP-01 execution)
 **Cross-references**: ADR-021, ADR-023, ADR-027, ADR-028, ADR-030, ADR-032, ADR-034, ADR-035

@@ -75,7 +75,7 @@ This directory documents reusable design patterns for tachi.
 ### Threat Modeling Patterns (AOD Kit)
 - [STRIDE-per-Element Matrix Targeting](#pattern-stride-per-element-matrix-targeting)
 - [Cross-Agent Correlation Detection](#pattern-cross-agent-correlation-detection)
-- [Heuristic A Enrichment Branch with 11-Host Saturation](#pattern-heuristic-a-enrichment-branch)
+- [Heuristic A Enrichment Branch with 11-Host Saturation and Same-Agent Sub-Scope](#pattern-heuristic-a-enrichment-branch)
 
 ### Stack Pack Architecture Patterns (AOD Kit)
 - [Two-Level Architecture (Build-Time / Run-Time)](#pattern-two-level-architecture)
@@ -1580,8 +1580,8 @@ Coverage matrix uses deduplicated counts (CG-1 members count as 1 per cell). Thr
 
 ### Pattern: Heuristic A Enrichment Branch
 
-**Added**: Feature 219 (F-3 single-agent execution); Feature 229 (F-5 two-agent execution); Feature 232 (F-6 three-agent execution); Feature 237 (F-7 four-or-five-agent execution); Feature 241 (F-241 11-host saturation execution — final BLP-01 closure)
-**ADRs**: [ADR-032](../02_ADRs/ADR-032-asi07-tool-abuse-enrichment.md) (single-agent precedent); [ADR-034](../02_ADRs/ADR-034-llm10-unbounded-consumption-audit.md) (two-agent precedent); [ADR-035](../02_ADRs/ADR-035-ml-top-10-coverage-bundle.md) (three-agent precedent); [ADR-036](../02_ADRs/ADR-036-mobile-top-10-coverage-bundle.md) (four-or-five-agent precedent); [ADR-037](../02_ADRs/ADR-037-web-api-coverage-attestation-and-populator-wiring.md) (11-host saturation closure)
+**Added**: Feature 219 (F-3 single-agent execution); Feature 229 (F-5 two-agent execution); Feature 232 (F-6 three-agent execution); Feature 237 (F-7 four-or-five-agent execution); Feature 241 (F-241 11-host saturation execution — final BLP-01 closure); Feature 292 (F-292 same-agent enrichment execution — 8th execution at finer-grained scope post-saturation, validates the pattern at within-host scope)
+**ADRs**: [ADR-032](../02_ADRs/ADR-032-asi07-tool-abuse-enrichment.md) (single-agent precedent); [ADR-034](../02_ADRs/ADR-034-llm10-unbounded-consumption-audit.md) (two-agent precedent); [ADR-035](../02_ADRs/ADR-035-ml-top-10-coverage-bundle.md) (three-agent precedent); [ADR-036](../02_ADRs/ADR-036-mobile-top-10-coverage-bundle.md) (four-or-five-agent precedent); [ADR-037](../02_ADRs/ADR-037-web-api-coverage-attestation-and-populator-wiring.md) (11-host saturation closure); [ADR-045](../02_ADRs/ADR-045-output-integrity-cross-sink-refinement.md) (same-agent enrichment scope — F-292 8th execution within F-1 `output-integrity` host)
 
 #### Problem
 
@@ -1601,15 +1601,15 @@ The **Heuristic A enrichment branch** extends an existing detection-tier host ag
 
 The pattern is governed by the cumulative ADR-032 → ADR-034 → ADR-035 → ADR-036 → ADR-037 lineage (one ADR per execution), each citing the previous as direct precedent and forecasting the next scope tier. ADR-037 caps the lineage at 11-host scope and closes the four-feature F-A3 deferral lineage.
 
-#### Five-Execution Empirical Cost Reduction Table
+#### Six-Execution Empirical Cost Reduction Table
 
-| Dimension                              | F-3 (1) | F-5 (2) | F-6 (3) | F-7 (5) | F-241 (11) | Cost saved (vs new agents)            |
-|----------------------------------------|:-------:|:-------:|:-------:|:-------:|:----------:|---------------------------------------|
-| New agent file                         |    0    |    0    |    0    |    0    |     0      | ~120 lines × 11 = ~1320 lines saved   |
-| New skill directory                    |    0    |    0    |    0    |    0    |     0      | ~400 lines × 11 = ~4400 lines saved   |
-| Schema bump (`finding.yaml`)           |  none   |  none   |  none   |  none   |   none     | ADR + schema review cycle eliminated  |
-| Consumers-list edit                    |  none   |  none   |  none   |  none   |   none     | ADR-023 invariant proof scope shrinks |
-| Functional orchestrator/dispatch edit  |  none   |  none   |  none   |  none   |   none     | Orchestrator regression risk eliminated |
+| Dimension                              | F-3 (1) | F-5 (2) | F-6 (3) | F-7 (5) | F-241 (11) | F-292 (same-agent) | Cost saved (vs new agents)            |
+|----------------------------------------|:-------:|:-------:|:-------:|:-------:|:----------:|:------------------:|---------------------------------------|
+| New agent file                         |    0    |    0    |    0    |    0    |     0      |         0          | ~120 lines × 12 = ~1440 lines saved   |
+| New skill directory                    |    0    |    0    |    0    |    0    |     0      |         0          | ~400 lines × 12 = ~4800 lines saved   |
+| Schema bump (`finding.yaml`)           |  none   |  none   |  none   |  none   |   none     |        none        | ADR + schema review cycle eliminated  |
+| Consumers-list edit                    |  none   |  none   |  none   |  none   |   none     |        none        | ADR-023 invariant proof scope shrinks |
+| Functional orchestrator/dispatch edit  |  none   |  none   |  none   |  none   |   none     |        none        | Orchestrator regression risk eliminated |
 
 #### Cross-Agent Decomposition Sub-Pattern
 
@@ -1644,6 +1644,19 @@ After F-241, the detection-tier surface is **saturated at 11 hosts** populating 
 2. **Default to the enrichment branch** when signal-class alignment holds; default to the standalone branch otherwise
 3. **Cap line growth per host** at FR-014 (≤200 lines for enrichment surface; ≤180 lines pre-enrichment)
 4. **Use the surgical Section 9-only backfill approach (ADR-037 D-11)** when the only baseline-impacting change is at the Coverage Attestation YAML level — reduces wall-clock cost ~60% on multi-baseline scope vs full pipeline regen
+
+#### Same-Agent Enrichment Sub-Scope (F-292 / ADR-045)
+
+**Added at F-292**: The pattern extends post-saturation at **finer-grained same-agent scope**, where a single host agent is enriched with additional Pattern Categories within its existing signal class (vs F-3's single-agent-scope precedent that established the pattern at one-host fan-out). F-292 enriched `output-integrity` (host of F-1 / ADR-030) with Pattern Category 6 (Vector / Search-DSL Injection — OWASP LLM08:2025 + CWE-943) plus a Cat 2 keyword extension for package-manager / CI-workflow execution sinks plus a Cross-Agent Handoff Sinks navigational subsection.
+
+**Distinguishing characteristics of same-agent enrichment**:
+
+1. **No new host enrolled** — the enrichment is confined to a host already enriched at a prior execution (vs F-3/F-5/F-6/F-7 enrolling new hosts; F-241 enrolling 6 new hosts as part of 11-host scope-up)
+2. **Per-host edit cost remains constant at 1x** — same-agent enrichment is the finest-grained scope; fan-out is zero
+3. **Cross-agent handoff documentation surface emerges** — the Cross-Agent Handoff Sinks subsection pattern is a new artifact form not present in prior executions; future cross-agent-handoff documentation additions can reuse the boundary phrase → two-agent cross-links → mitigation pattern with worked schema example structure
+4. **Operational signal of signal-class identity preservation** — no-schema-bump status (per ADR-045 D3) is the operational signal that the new categories fall within the host's existing signal class; if a schema bump were needed (e.g., new `OQ-{N}` prefix for "output query injection"), it would implicitly claim the new surface is a distinct signal class, contradicting the enrichment rationale
+
+ADR-045 sets the precedent for same-agent enrichment ADRs going forward (ADR-046+ may follow this template at the same scope when a host's existing signal class extends to capture new framework entries or new architectural-tell surfaces).
 
 #### Related Patterns
 - [STRIDE-per-Element Matrix Targeting](#pattern-stride-per-element-matrix-targeting) — the dispatch mechanism that determines which host agent receives the new framework-entry pattern category

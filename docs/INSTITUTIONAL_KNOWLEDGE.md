@@ -406,6 +406,42 @@ Industry anchors (OWASP ASI06 Memory & Context Poisoning, OWASP Agent Memory Gua
 
 ---
 
+### Entry 7: F-292 Delivery — Post-Merge Task Accountability
+
+## [Process improvement] - Move post-merge community-engagement and SLA-driven tasks into a dedicated follow-up issue at /aod.deliver time
+
+**Date**: 2026-05-14
+**Context**: Delivery retrospective for F-292 Output-Integrity Cross-Sink Refinement. Estimated: 1-2 days. Actual: 1 day (same-day spec → plan → build → deliver). Surprise: "a lot of postponed tasks" — 11 of 36 tasks remained `[ ]` at /aod.deliver entry, all MANUAL-ONLY post-merge or SLA-driven (T005, T017, T019–T024, T026, T031, T034).
+
+**Problem**:
+tasks.md mixed two distinct task classes — (a) build-time technical work that /aod.build must complete, and (b) post-merge / SLA-driven / community-engagement work that can only execute after squash-merge or on a future calendar date (T+5d courtesy nudge, T+7d SLA breach checkpoint). At /aod.deliver entry, /aod.build's "10/36 tasks unchecked" signal looked like incomplete work, when the real status was "build phase done, community phase pending". This forced manual judgment at deliver-time about which incomplete tasks were genuine blockers vs. expected post-merge follow-ups.
+
+**Solution**:
+At /aod.deliver time, generate a dedicated follow-up GitHub Issue that captures every remaining `[ ]` task with MANUAL-ONLY, [POST-MERGE], or calendar-anchored markers, and link it from the closing feature's delivery document. This:
+1. Keeps the closing feature's Issue cleanly transitioning to `stage:done` without ambiguity about residual work.
+2. Creates real accountability for SLA-driven actions (T+5d nudge, T+7d SLA breach) via a tracked Issue rather than a buried tasks.md checkbox.
+3. Enables /schedule or cron follow-ups against a stable Issue number for calendar-bound work.
+4. Surfaces the "post-merge tail" pattern as a first-class deliverable category, not as residual debt.
+
+**Why This Matters**:
+F-292 reused F-260's community-merge precedent (4 mechanical artifacts: CHANGELOG form, 7-day SLA, comment-first-give-choice, Co-Authored-By trailer) and inherited F-260's "long post-merge tail" pattern. Every future community-merge feature will have the same tail. Codifying the follow-up-issue pattern at /aod.deliver time prevents the surprise from recurring and makes the SLA-driven work tractable.
+
+**Tags**: #retrospective #delivery #process #workflow #community-merge
+
+### Related Files:
+- `specs/292-output-integrity-cross-sink-refinement/spec.md` — Feature specification
+- `specs/292-output-integrity-cross-sink-refinement/tasks.md` — Task breakdown (T005, T017, T019–T024, T026, T031 marked MANUAL-ONLY or POST-MERGE)
+- `docs/architecture/02_ADRs/ADR-045-output-integrity-cross-sink-refinement.md` — Architecture decision (8th Heuristic A enrichment)
+- KB Entry 6 — F-292 carve-out planning gap (the build-time twin of this delivery-time lesson)
+
+### Lineage
+
+- **Direct precedent**: F-260 (@north-echo, v4.31.0) — first community-merge feature; same post-merge tail (CHANGELOG sync, attribution, discussion delivery comment, SLA tracking). F-260's tail was handled ad-hoc; F-292 surfaces the pattern explicitly.
+- **Pattern class**: "Post-merge tail as first-class deliverable category" — applies to any feature with community-attribution, SLA-driven actions, release-please verification, or calendar-anchored follow-ups.
+- **Follow-up proposal**: Amend the /aod.deliver skill to auto-generate the follow-up Issue when residual `[ ]` tasks remain and any are marked MANUAL-ONLY, [POST-MERGE], or contain calendar-anchored markers (e.g., "T+5d", "T+7d", "within 24h").
+
+---
+
 ## Bug Fixes
 
 *No entries yet. Use `/kb-create` to add the first bug fix.*
